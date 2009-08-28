@@ -294,16 +294,52 @@ $HeadURL: https://catatylstgettex.svn.sourceforge.net/svnroot/catatylstgettex/Lo
 The module Locale::TextDomain::OO provides a high-level interface
 to Perl message translation.
 
-It is nearly the same like Locale::Text::Domain
-but it has an object oriented interface.
+=head2 Why a new module?
+
+Locale::TextDomain::OO is nearly the same like L<Locale::TextDomain>.
+But this module has an object oriented interface.
+
+L<Locale::TextDomain> depends on L<Locale::Messages>
+and L<Locale::Messages> depends on gettext mo-files.
+
+But if the data are not saved in mo-files
+and the project is not a new project,
+how can I bind a database or anything else to the Locale::TextDomain API?
+
+I can - now!
+And I must not follow the dead end of L<Locale::Maketext>:
+
+ * Locale::Maketext allows 2 plural forms (plus zero) only.
+   The developer has to control this.
+   'quant' is the death of automatic translation.
+ * The plural form is allowed after (not before)
+   a number and a whitespace.
+ * There is no plural form without a nummber in the phrase.
+ * Placeholders are numbered serially.
+   It is difficult to translate this
+   because the sense of the phrase will be lost.
+
+This is the reason for a new module to have:
+
+ * endless (real: up to 4) plural forms
+   controlled by the translater and not by the developer.
+ * Named placeholders.
+ * Locale::Messages::AnyObject is a less bounded gettext interface
+   for gettext without mo-files.
+
+=head2 What is the difference?
 
 As default this module calls the subroutines of module L<Locale::Messages>.
+
 You can change this behaviour.
+
 L<Locale::Messages::AnyObject> maps the subroutine calls back to object calls
 and allows to write your own object-oriented modules.
 L<Locale::Messages::Struct> ist such one.
 The idea is to read the database information into a data structure
 for fast access.
+
+=head2 Read more!
 
 Read the documentation of L<Locale::TextDoamin>
 for more informations.
@@ -498,7 +534,13 @@ Carp
 
 Cwd
 
-L<Locale::Messages>
+English
+
+L<I18N::LangTags::Detect>
+
+L<I18N::LangTags>
+
+Safe
 
 =head1 INCOMPATIBILITIES
 
