@@ -159,6 +159,25 @@ my $perlify_plural_forms = sub {
     return;
 };
 
+sub get_function_ref_nplurals {
+    my ($self, $plural_forms) = @_;
+
+    $perlify_plural_forms->(\$plural_forms);
+    my $code = <<"EOC";
+        sub {
+            my \$n = 0;
+            my (\$nplurals, \$plural);
+            $plural_forms
+
+            return \$nplurals;
+        }
+EOC
+    my $code_ref = Safe->new()->reval($code)
+        or croak "Code of Plural-Forms $plural_forms is not safe, $EVAL_ERROR";
+
+    return $code_ref;
+}
+
 sub get_function_ref_plural {
     my ($self, $plural_forms) = @_;
 
@@ -175,25 +194,6 @@ sub get_function_ref_plural {
 EOC
     my $code_ref = Safe->new()->reval($code)
         or croak "Code $plural_forms is not safe, $EVAL_ERROR";
-
-    return $code_ref;
-}
-
-sub get_function_ref_nplurals {
-    my ($self, $plural_forms) = @_;
-
-    $perlify_plural_forms->(\$plural_forms);
-    my $code = <<"EOC";
-        sub {
-            my \$n = 0;
-            my (\$nplurals, \$plural);
-            $plural_forms
-
-            return \$nplurals;
-        }
-EOC
-    my $code_ref = Safe->new()->reval($code)
-        or croak "Code of Plural-Forms $plural_forms is not safe, $EVAL_ERROR";
 
     return $code_ref;
 }
@@ -291,12 +291,11 @@ $HeadURL$
 
 =head1 DESCRIPTION
 
-The module Locale::TextDomain::OO provides a high-level interface
-to Perl message translation.
+This module provides a high-level interface to Perl message translation.
 
 =head2 Why a new module?
 
-Locale::TextDomain::OO is nearly the same like L<Locale::TextDomain>.
+This module is nearly the same like L<Locale::TextDomain>.
 But this module has an object oriented interface.
 
 L<Locale::TextDomain> depends on L<Locale::Messages>
@@ -304,45 +303,82 @@ and L<Locale::Messages> depends on gettext mo-files.
 
 But if the data are not saved in mo-files
 and the project is not a new project,
-how can I bind a database or anything else to the Locale::TextDomain API?
+how can I bind a database or anything else
+to the L<Locale::TextDomain> API?
 
 I can - now!
 And I must not follow the dead end of L<Locale::Maketext>:
 
- * Locale::Maketext allows 2 plural forms (plus zero) only.
-   The developer has to control this.
-   'quant' is the death of automatic translation.
- * The plural form is allowed after (not before)
-   a number and a whitespace.
- * There is no plural form without a nummber in the phrase.
- * Placeholders are numbered serially.
-   It is difficult to translate this
-   because the sense of the phrase will be lost.
+=over
+
+=item *
+
+L<Locale::Maketext> allows 2 plural forms (and zero) only.
+The developer has to control this.
+But he is not an omniscient translator.
+
+=item *
+
+'quant' is the death of the automatic translation
+because quant is an 'or'-construct.
+
+=item *
+
+The plural form is allowed after a number followed by a whitespace
+and not before a number.
+
+=item *
+
+There is no plural form without a nummber in the phrase.
+
+=item *
+
+Placeholders are numbered serially.
+It is difficult to translate this,
+because the sense of the phrase will be lost.
+
+=back
 
 This is the reason for a new module to have:
 
- * endless (real: up to 4) plural forms
-   controlled by the translater and not by the developer.
- * Named placeholders.
- * Locale::Messages::AnyObject is a less bounded gettext interface
-   for gettext without mo-files.
+=over
+
+=item *
+
+Endless (real: up to 4) plural forms
+controlled by the translater and not by the developer.
+
+=item *
+
+Named placeholders.
+
+=item *
+
+L<Locale::Messages::AnyObject> is a less bounded gettext interface
+for gettext without mo-files.
+
+=back
 
 =head2 What is the difference?
 
 As default this module calls the subroutines of module L<Locale::Messages>.
 
-You can change this behaviour.
+This behaviour is changeable.
 
 L<Locale::Messages::AnyObject> maps the subroutine calls back to object calls
-and allows to write your own object-oriented modules.
+and allows to write own object-oriented modules.
+
 L<Locale::Messages::Struct> ist such one.
-The idea is to read the database information into a data structure
+It implements the idea
+to read the full database information into a data structure
 for fast access.
 
-=head2 Read more!
+=head2 More informations
 
 Read the documentation of L<Locale::TextDoamin>
-for more informations.
+to learn more about the translation subroutines.
+
+Run the examples of this distribution.
 
 =head1 SYNOPSIS
 
@@ -377,7 +413,7 @@ Note the search dirs.
         ...
     );
 
-Note that the default of gettest_package is 'Locale::Messages'.
+Note, that the default of gettest_package is L<Locale::Messages>.
 This package have to implement the subroutines
 'dgettext', 'dngettext', 'dpgettext', 'dnpgettext'
 and can implement the subroutine 'bindtextdomain'.
@@ -391,34 +427,40 @@ and can implement the subroutine 'bindtextdomain'.
 =head2 method get_file_path
 
     my $file_suffix = '.foo';
-    my $file_path = $loc->get_file_path($text_domain, $file_suffix);
+    my $file_path   = $loc->get_file_path($text_domain, $file_suffix);
 
-If a file based database system not exists create an extra file system!
-Write down for wich language and wich text domain a database exists.
-Insted of an "$text_domain$suffix" database file emty dummy files.
-Maybe extract this informations automaticly from the database.
-Than the get_file_path method checks the wanted languages
+If a file based database system not exists,
+create an extra file system.
+Write down for which language and which text domain a database exists.
+Instead of an "$text_domain$suffix" database file
+create some empty dummy files.
+
+If possible, extract this informations automaticly from the database.
+
+Than the method get_file_path checks the wanted languages
 and matches the existing langauges.
 Read L<I18N::LangTags>, panic_languages for more informations.
 
     my ($dir, $language) = $loc->get_file_path($text_domain, $file_suffix);
 
 Another way to use this module with a none file based database system
-is to implement the language selection by yourself.
-
-=head2 method get_function_ref_plural
-
-How many plurals has the translation?
-
-    $code_ref = $self, get_function_ref_plural(
-        'nplurals=2; plural=n != 1;' # look at in po-/mo-file header
-    );
+is to implement the language selection self.
 
 =head2 method get_function_ref_nplurals
 
-Wich plural form sould be used?
+How many plurals has the translation?
+This is one-time interesting to read the translation data.
 
-    $code_ref = $self->get_function_ref_nplurals(
+    $nplurals = $self->get_function_ref_nplurals(
+        'nplurals=2; plural=n != 1;' # look at in po-/mo-file header
+    )->();
+
+=head2 method get_function_ref_plural
+
+Which plural form sould be used?
+The code runs during every plural tranlation.
+
+    $code_ref = $self->get_function_ref_plural(
         'nplurals=2; plural=n != 1;' # look at in po-/mo-file header
     );
 
