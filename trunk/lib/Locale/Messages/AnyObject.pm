@@ -87,9 +87,9 @@ __END__
 
 Locale::Messages::AnyObject - Perl Interface to use gettext but not mo-files
 
-$Id: AnyObject.pm 16 2009-08-28 13:55:35Z steffenw $
+$Id$
 
-$HeadURL: https://catatylstgettex.svn.sourceforge.net/svnroot/catatylstgettex/Locale-Text-Domain-OO/trunk/lib/Locale/Messages/AnyObject.pm $
+$HeadURL$
 
 =head1 VERSION
 

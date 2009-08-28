@@ -139,9 +139,9 @@ __END__
 
 Locale::Messages::Struct - Perl Interface extension to use gettext and not mo-files
 
-$Id: Struct.pm 16 2009-08-28 13:55:35Z steffenw $
+$Id$
 
-$HeadURL: https://catatylstgettex.svn.sourceforge.net/svnroot/catatylstgettex/Locale-Text-Domain-OO/trunk/lib/Locale/Messages/Struct.pm $
+$HeadURL$
 
 =head1 VERSION
 
