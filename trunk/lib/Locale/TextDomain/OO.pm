@@ -386,6 +386,65 @@ to learn more about the translation subroutines.
 
 Run the examples of this distribution.
 
+=head2 Overview
+
+       Application calls          Application calls
+       TextDomain methods          method maketext
+           (the goal)                     |
+               |                          v
+               |         .----------------------------------.
+               |         |          Interface like          |
+               |         |     Locale::Maketext::Simple     |
+               |         |----------------------------------|
+               |         | Locale::TextDomain::OO::Maketext |
+               |         `----------------------------------´
+               |              |
+               v              v
+          .------------------------.
+          |     Interface like     |
+          |   Locale::TextDomain   |
+          |------------------------|
+          | Locale::TextDomain::OO |
+          `------------------------´
+              |                |
+              v                v
+ .------------------.      .-------------------------------.
+ | Locale::Messages |      | Locale::TextDomain::AnyObject |
+ `------------------´      `-------------------------------´
+           |                               |
+           |                               v
+           |                  .--------------------------.
+           |                  | Locale::TextDomainStruct |
+           |                  |     (a possibility)      |
+           |                  `--------------------------´
+           |                               |
+           |                               v
+           |                         .------------.
+           |                         | Datastruct |
+           |                         |------------|
+           |                         |  |         |
+           |                         |  +--[xxx]  |
+           |                         |  |         |
+           |                    .--->|  `--[xxx]  |<---.
+           |                    |    `------------´    |
+           |                    |                      |
+           |       .------------------------.          |
+           |       |       build using      |   .-------------.
+           |       |   po extrction tools   |   | build using |
+           |       |      like DBD::PO      |   |     DBI     |
+           |       | or DBD::PO::Locale::PO |   `-------------´
+           |       `------------------------´          ^
+           |                    ^                      |
+           v                    |                 _____|_____
+    .----------.          .----------.           /_ _ _ _ _ _\
+    | mo-files |-.        | po-files |-.         |           |
+    `----------´ |        `----------´ |         | Database  |
+      `----------´          `----------´         `-----------´
+           ^                    ^                      ^
+           |                    |                      |
+      build using          build using            existing data
+     gettext tools        gettext tools
+
 =head1 SYNOPSIS
 
     require Locale::TextDomain::OO;
