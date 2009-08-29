@@ -297,6 +297,8 @@ But this module has an object oriented interface.
 
 Locale::TextDomain depends on L<Locale::Messages>
 and Locale::Messages depends on gettext mo-files.
+This is a very good idea to do this.
+It is a standard.
 
 But if the data are not saved in mo-files
 and the project is not a new project,
@@ -304,15 +306,17 @@ how can I bind a database or anything else
 to the Locale::TextDomain API?
 
 I can - now!
-And I must not follow the dead end of L<Locale::Maketext>:
+And I must not follow the dead end of L<Locale::Maketext>.
+What is the problem?
 
 =over
 
 =item *
 
 Locale::Maketext allows 2 plural forms (and zero) only.
-The developer has to control this.
-But he is not an omniscient translator.
+This is changable,
+but the developer has to control the plural forms.
+He is not an omniscient translator.
 
 =item *
 
@@ -321,7 +325,7 @@ because quant is an 'or'-construct.
 
 =item *
 
-The plural form is allowed after a number followed by a whitespace
+The plural form is allowed after a number, followed by a whitespace,
 but not before a number.
 
 =item *
@@ -332,7 +336,7 @@ There is no plural form without a nummber in the phrase.
 
 Placeholders are numbered serially.
 It is difficult to translate this,
-because the sense of the phrase can lost.
+because the sense of the phrase could be lost.
 
 =item *
 
