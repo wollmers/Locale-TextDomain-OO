@@ -159,7 +159,7 @@ have both an fuctional interface.
 
 =head1 SYNOPSIS
 
-    use Locale::Messages::Struct;
+    require Locale::Messages::Struct;
 
 =head1 SUBROUTINES/METHODS
 
@@ -178,14 +178,17 @@ have both an fuctional interface.
                 return $plural;
             },
             array_ref => [
+                # as example the keys with an empty value
                 msgctxt      => q{},
-                msgid        => q{},
+                msgid        => 'must have a none empty value',
                 msgid_plural => q{},
                 msgstr       => q{},
                 msgstr_0     => q{},
                 msgstr_1     => q{},
                 msgstr_2     => q{},
                 msgstr_3     => q{},
+                msgstr_4     => q{},
+                msgstr_5     => q{},
             ],
         },
     );

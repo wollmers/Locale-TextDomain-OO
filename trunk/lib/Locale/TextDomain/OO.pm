@@ -159,23 +159,20 @@ my $perlify_plural_forms = sub {
     return;
 };
 
-sub get_function_ref_nplurals {
+sub get_nplurals {
     my ($self, $plural_forms) = @_;
 
     $perlify_plural_forms->(\$plural_forms);
     my $code = <<"EOC";
-        sub {
             my \$n = 0;
             my (\$nplurals, \$plural);
             $plural_forms
-
-            return \$nplurals;
-        }
+            \$nplurals;
 EOC
-    my $code_ref = Safe->new()->reval($code)
+    my $nplurals = Safe->new()->reval($code)
         or croak "Code of Plural-Forms $plural_forms is not safe, $EVAL_ERROR";
 
-    return $code_ref;
+    return $nplurals;
 }
 
 sub get_function_ref_plural {
@@ -298,13 +295,13 @@ This module provides a high-level interface to Perl message translation.
 This module is nearly the same like L<Locale::TextDomain>.
 But this module has an object oriented interface.
 
-L<Locale::TextDomain> depends on L<Locale::Messages>
-and L<Locale::Messages> depends on gettext mo-files.
+Locale::TextDomain depends on L<Locale::Messages>
+and Locale::Messages depends on gettext mo-files.
 
 But if the data are not saved in mo-files
 and the project is not a new project,
 how can I bind a database or anything else
-to the L<Locale::TextDomain> API?
+to the Locale::TextDomain API?
 
 I can - now!
 And I must not follow the dead end of L<Locale::Maketext>:
@@ -313,19 +310,19 @@ And I must not follow the dead end of L<Locale::Maketext>:
 
 =item *
 
-L<Locale::Maketext> allows 2 plural forms (and zero) only.
+Locale::Maketext allows 2 plural forms (and zero) only.
 The developer has to control this.
 But he is not an omniscient translator.
 
 =item *
 
-'quant' is the death of the automatic translation
+'quant' inside a phrase is the end of the automatic translation
 because quant is an 'or'-construct.
 
 =item *
 
 The plural form is allowed after a number followed by a whitespace
-and not before a number.
+but not before a number.
 
 =item *
 
@@ -335,7 +332,11 @@ There is no plural form without a nummber in the phrase.
 
 Placeholders are numbered serially.
 It is difficult to translate this,
-because the sense of the phrase will be lost.
+because the sense of the phrase can lost.
+
+=item *
+
+But there are a lot of modules around Locale::Maketext.
 
 =back
 
@@ -345,7 +346,7 @@ This is the reason for a new module to have:
 
 =item *
 
-Endless (real: up to 4) plural forms
+Endless (real: up to 6) plural forms
 controlled by the translater and not by the developer.
 
 =item *
@@ -356,16 +357,17 @@ Named placeholders.
 
 L<Locale::Messages::AnyObject> is a less bounded gettext interface
 for gettext without mo-files.
+This allows to write modules which can bind other data sources.
 
 =back
 
 =head2 What is the difference?
 
-As default this module calls the subroutines of module L<Locale::Messages>.
+As default this module calls the subroutines of module Locale::Messages.
 
 This behaviour is changeable.
 
-L<Locale::Messages::AnyObject> maps the subroutine calls back to object calls
+Locale::Messages::AnyObject maps the subroutine calls back to object calls
 and allows to write own object-oriented modules.
 
 L<Locale::Messages::Struct> ist such one.
@@ -382,7 +384,7 @@ Run the examples of this distribution.
 
 =head1 SYNOPSIS
 
-    use Locale::TextDomain::OO;
+    require Locale::TextDomain::OO;
 
 =head1 SUBROUTINES/METHODS
 
@@ -446,14 +448,14 @@ Read L<I18N::LangTags>, panic_languages for more informations.
 Another way to use this module with a none file based database system
 is to implement the language selection self.
 
-=head2 method get_function_ref_nplurals
+=head2 method get_nplurals
 
 How many plurals has the translation?
 This is one-time interesting to read the translation data.
 
-    $nplurals = $self->get_function_ref_nplurals(
-        'nplurals=2; plural=n != 1;' # look at in po-/mo-file header
-    )->();
+    $nplurals = $self->get_nplurals(
+        'nplurals=2; plural=n != 1;' # look at po-/mo-file header
+    );
 
 =head2 method get_function_ref_plural
 
@@ -461,7 +463,7 @@ Which plural form sould be used?
 The code runs during every plural tranlation.
 
     $code_ref = $self->get_function_ref_plural(
-        'nplurals=2; plural=n != 1;' # look at in po-/mo-file header
+        'nplurals=2; plural=n != 1;' # look at po-/mo-file header
     );
 
 =head2 Translating methods

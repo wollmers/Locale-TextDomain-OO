@@ -3,39 +3,31 @@
 use strict;
 use warnings;
 
-use Test::More tests => 16 + 1;
-use Test::NoWarnings;
-use Test::Exception;
-use Test::Differences;
+our $VERSION = 0;
+
 use Carp qw(croak);
-use English qw(-no_match_vars $EVAL_ERROR);
+use English qw(-no_match_vars $OS_ERROR $EVAL_ERROR);
 require DBI;
 require DBD::PO; DBD::PO->init(qw(:plural));
+require Locale::TextDomain::OO;
+use Locale::Messages::AnyObject qw(set_object);
+require Locale::Messages::Struct;
 
-BEGIN {
-    require_ok('Locale::TextDomain::OO');
-    use_ok('Locale::Messages::AnyObject', qw(set_object));
-    require_ok('Locale::Messages::Struct');
-}
+local $ENV{LANGUAGE} = 'de_DE';
+my $text_domain      = 'example_02';
 
-$ENV{LANGUAGE}  = 'de_DE';
-my $text_domain = 'test';
-
-my $loc;
-lives_ok(
-    sub {
-        $loc = Locale::TextDomain::OO->new(
-            gettext_package => 'Locale::Messages::AnyObject',
-            text_domain     => $text_domain,
-            search_dirs     => [qw(./t/LocaleData/)],
-        );
-    },
-    'create extended object',
+my $loc = Locale::TextDomain::OO->new(
+    gettext_package => 'Locale::Messages::AnyObject',
+    text_domain     => $text_domain,
+    search_dirs     => [qw(./LocaleData/)],
 );
 
 # find the database for the expected language
 # here fallback to 'de'
 my $file_path = $loc->get_file_path($text_domain, '.po');
+
+binmode STDOUT, ':encoding(utf-8)'
+    or croak "Binmode STDOUT\n$OS_ERROR";
 
 # connect
 my $dbh = DBI->connect(
@@ -49,9 +41,9 @@ my $dbh = DBI->connect(
         PrintError => 0,
     },
 ) or croak DBI->errstr();
-$dbh->{po_tables}->{'test'} = {file => 'test.po'};
+$dbh->{po_tables}->{$text_domain} = {file => "$text_domain.po"};
 
-# Read the header of po-file and extract the 'Plural-Forms'.
+# read header of po-file
 my $plural_forms = $dbh->func(
     {
         table => $text_domain,
@@ -90,106 +82,59 @@ my %struct = (
 );
 set_object($text_domain => Locale::Messages::Struct->new(\%struct));
 
-# check all translation
-eq_or_diff(
+# run all translations
+() = print map {"$_\n"}
     $loc->__(
         'This is a text.',
     ),
-    'Das ist ein Text.',
-    '__',
-);
-
-eq_or_diff(
     $loc->__x(
         '{name} is programming {language}.',
         name     => 'Steffen',
         language => 'Perl',
     ),
-    'Steffen programmiert Perl.',
-    '__x',
-);
-
-eq_or_diff(
     $loc->__n(
         'Singular',
         'Plural',
         1,
     ),
-    'Einzahl',
-    '__n',
-);
-eq_or_diff(
     $loc->__n(
         'Singular',
         'Plural',
-        3,
+        2,
     ),
-    'Mehrzahl',
-    '__n',
-);
-
-eq_or_diff(
     $loc->__nx(
         '{num} shelf',
         '{num} shelves',
         1,
         num => 1,
     ),
-    '1 Regal',
-    '__nx',
-);
-eq_or_diff(
     $loc->__nx(
         '{num} shelf',
         '{num} shelves',
-        3,
-        num => 3,
+        2,
+        num => 2,
     ),
-    '3 Regale',
-    '__nx',
-);
-
-eq_or_diff(
     $loc->__p(
         'maskulin',
         'Dear',
     ),
-    'Sehr geehrter Herr',
-    '__p',
-);
-
-eq_or_diff(
     $loc->__px(
         'maskulin',
         'Dear {name}',
         name => 'Winkler',
     ),
-    'Sehr geehrter Herr Winkler',
-    '__px',
-);
-
-eq_or_diff(
     $loc->__np(
         'better',
         'shelf',
         'shelves',
         1,
     ),
-    'gutes Regal',
-    '__np',
-);
-eq_or_diff(
     $loc->__np(
         'better',
         'shelf',
         'shelves',
-        3,
+        2,
     ),
-    'gute Regale',
-    '__np',
-);
-
-eq_or_diff(
     $loc->__npx(
         'better',
         '{num} shelf',
@@ -197,17 +142,29 @@ eq_or_diff(
         1,
         num => 1,
     ),
-    '1 gutes Regal',
-    '__npx',
-);
-eq_or_diff(
     $loc->__npx(
         'better',
         '{num} shelf',
         '{num} shelves',
-        3,
-        num => 3,
-    ),
-    '3 gute Regale',
-    '__npx',
-);
+        2,
+        num => 2,
+    );
+
+# $Id$
+
+__END__
+
+Output:
+
+Das ist ein Text.
+Steffen programmiert Perl.
+Einzahl
+Mehrzahl
+1 Regal
+2 Regale
+Sehr geehrter Herr
+Sehr geehrter Herr Winkler
+gutes Regal
+gute Regale
+1 gutes Regal
+2 gute Regale
