@@ -598,9 +598,15 @@ none
 
 L<Locale::TextDoamin>
 
+L<Locale::Messages>
+
 L<http://www.gnu.org/software/gettext/manual/gettext.html>
 
 L<http://en.wikipedia.org/wiki/Gettext>
+
+L<http://translate.sourceforge.net/wiki/l10n/pluralforms>
+
+L<http://rassie.org/archives/247> The choice of the right module for the translation.
 
 =head1 AUTHOR
 
