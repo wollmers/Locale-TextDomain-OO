@@ -70,7 +70,7 @@ binmode STDOUT, ':encoding(utf-8)'
         2,
     );
 
-# $Id: 03_gettext_struct_from_dbd_po.pl 13 2009-08-30 06:47:34Z steffenw $
+# $Id$
 
 __END__
 
