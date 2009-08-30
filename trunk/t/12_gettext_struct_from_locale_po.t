@@ -17,7 +17,7 @@ BEGIN {
 }
 
 local $ENV{LANGUAGE} = 'de_DE';
-my $text_domain      = 'example_02';
+my $text_domain      = 'test_02';
 
 my $loc;
 lives_ok(
@@ -25,7 +25,7 @@ lives_ok(
         $loc = Locale::TextDomain::OO->new(
             gettext_package => 'Locale::Messages::AnyObject',
             text_domain     => $text_domain,
-            search_dirs     => [qw(./example/LocaleData/)],
+            search_dirs     => [qw(./t/LocaleData/)],
         );
     },
     'create extended object',

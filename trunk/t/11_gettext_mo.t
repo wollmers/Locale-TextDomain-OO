@@ -14,14 +14,14 @@ BEGIN {
 }
 
 local $ENV{LANGUAGE} = 'de_DE';
-my $text_domain      = 'example_01';
+my $text_domain      = 'test_01';
 
 my $loc;
 lives_ok(
     sub {
         $loc = Locale::TextDomain::OO->new(
             text_domain     => $text_domain,
-            search_dirs     => [qw(./example/LocaleData/)],
+            search_dirs     => [qw(./tLocaleData/)],
         );
     },
     'create object',
