@@ -21,7 +21,7 @@ lives_ok(
     sub {
         $loc = Locale::TextDomain::OO->new(
             text_domain     => $text_domain,
-            search_dirs     => [qw(./tLocaleData/)],
+            search_dirs     => [qw(./t/LocaleData/)],
         );
     },
     'create object',

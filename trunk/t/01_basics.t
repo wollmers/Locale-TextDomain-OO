@@ -16,7 +16,7 @@ my $loc;
 lives_ok(
     sub {
         $loc = Locale::TextDomain::OO->new(
-            text_domain => 'test',
+            text_domain => 'test_01',
             search_dirs => [qw(./t/LocaleData)],
         );
     },
