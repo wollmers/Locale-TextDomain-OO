@@ -108,7 +108,7 @@ sub _expand_maketext {
 }
 
 sub _maketext2gettext {
-    my ($self, $text) = @_;
+    my (undef, $text) = @_;
 
     $text =~ s{
         \[ (?:
@@ -231,7 +231,7 @@ This method ignores zero plural forms.
     );
 
 
-=head3 maketext_p (allow context)
+=head3 maketext_p (allows the context)
 
     print $loc->maketext_p (
         'time',

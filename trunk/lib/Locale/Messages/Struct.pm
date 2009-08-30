@@ -160,23 +160,20 @@ have both an fuctional interface.
 =head1 SYNOPSIS
 
     require Locale::Messages::Struct;
+    require Locale::Text::Domain::OO;
 
 =head1 SUBROUTINES/METHODS
 
 =head2 method new
 
     my $text_domain = 'text_domain';
+
     my %struct = (
         $text_domain => {
-            plural_ref = sub {
-                my $n = shift;
-
-                my ($nplurals, $plural);
+            plural_ref = Locale::Text::Domain::OO->get_function_ref_plural(
                 # The next line is like Plural-Forms at the po/mo-file.
-                $nplurals=2; $plural=$n != 1;
-
-                return $plural;
-            },
+                '$nplurals=2; $plural=$n != 1;'
+            ),
             array_ref => [
                 # as example the keys with an empty value
                 msgctxt      => q{},

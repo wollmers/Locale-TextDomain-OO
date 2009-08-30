@@ -160,7 +160,7 @@ my $perlify_plural_forms = sub {
 };
 
 sub get_nplurals {
-    my ($self, $plural_forms) = @_;
+    my (undef, $plural_forms) = @_;
 
     $perlify_plural_forms->(\$plural_forms);
     my $code = <<"EOC";
@@ -176,7 +176,7 @@ EOC
 }
 
 sub get_function_ref_plural {
-    my ($self, $plural_forms) = @_;
+    my (undef, $plural_forms) = @_;
 
     $perlify_plural_forms->(\$plural_forms);
     my $code = <<"EOC";
@@ -196,7 +196,7 @@ EOC
 }
 
 sub _expand {
-    my ($self, $translation, %args) = @_;
+    my (undef, $translation, %args) = @_;
 
     my $regex = join q{|}, map { quotemeta $_ } keys %args;
     $translation =~ s{
@@ -511,7 +511,7 @@ Read L<I18N::LangTags>, panic_languages for more informations.
 Another way to use this module with a none file based database system
 is to implement the language selection self.
 
-=head2 method get_nplurals
+=head2 object or class method get_nplurals
 
 How many plurals has the translation?
 This is one-time interesting to read the translation data.
@@ -520,12 +520,24 @@ This is one-time interesting to read the translation data.
         'nplurals=2; plural=n != 1;' # look at po-/mo-file header
     );
 
-=head2 method get_function_ref_plural
+or
+
+    $nplurals = Locale::Text::Domain::OO->get_nplurals(
+        'nplurals=2; plural=n != 1;' # look at po-/mo-file header
+    );
+
+=head2 object or class method get_function_ref_plural
 
 Which plural form sould be used?
 The code runs during every plural tranlation.
 
     $code_ref = $self->get_function_ref_plural(
+        'nplurals=2; plural=n != 1;' # look at po-/mo-file header
+    );
+
+or
+
+    $code_ref = Locale::Text::Domain::OO->get_function_ref_plural(
         'nplurals=2; plural=n != 1;' # look at po-/mo-file header
     );
 
