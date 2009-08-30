@@ -11,13 +11,13 @@ $ENV{TEST_EXAMPLE} or plan(
     skip_all => 'Set $ENV{TEST_EXAMPLE} to run this test.'
 );
 
-plan(tests => 3);
+plan(tests => 5);
 
 my @data = (
     {
         test   => 'de',
         path   => 'example',
-        script => '-I../lib -T 01_gettext_default_mo.pl',
+        script => '-I../lib -T 01_gettext_mo.pl',
         result => <<'EOT',
 Das ist ein Text.
 Steffen programmiert Perl.
@@ -69,6 +69,42 @@ gutes Regal
 gute Regale
 1 gutes Regal
 2 gute Regale
+EOT
+    },
+    {
+        test   => 'de',
+        path   => 'example',
+        script => '-I../lib -T 04_maketext_mo.pl',
+        result => <<'EOT',
+Das ist ein Text.
+Steffen programmiert Perl.
+1 Regal
+2 Regale
+Sehr geehrter Herr
+Sehr geehrter Herr Winkler
+1 gutes Regal
+2 gute Regale
+0 Regale
+1 Regal
+2 Regale
+EOT
+    },
+    {
+        test   => 'de',
+        path   => 'example',
+        script => '-I../lib -T 05_maketext_mo_style_gettext.pl',
+        result => <<'EOT',
+Das ist ein Text.
+Steffen programmiert Perl.
+1 Regal
+2 Regale
+Sehr geehrter Herr
+Sehr geehrter Herr Winkler
+1 gutes Regal
+2 gute Regale
+0 Regale
+1 Regal
+2 Regale
 EOT
     },
 );
