@@ -132,7 +132,7 @@ set_object($text_domain => Locale::Messages::Struct->new(\%struct));
         num => 2,
     );
 
-# $Id: 02_gettext_struct_from_po.pl 9 2009-08-29 12:14:33Z steffenw $
+# $Id$
 
 __END__
 
