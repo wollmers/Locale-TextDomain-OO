@@ -18,8 +18,8 @@ BEGIN {
     require_ok('Locale::Messages::Struct');
 }
 
-$ENV{LANGUAGE}  = 'de_DE';
-my $text_domain = 'test';
+local $ENV{LANGUAGE} = 'de_DE';
+my $text_domain      = 'example_03';
 
 my $loc;
 lives_ok(
@@ -49,7 +49,7 @@ my $dbh = DBI->connect(
         PrintError => 0,
     },
 ) or croak DBI->errstr();
-$dbh->{po_tables}->{'test'} = {file => 'test.po'};
+$dbh->{po_tables}->{$text_domain} = {file => "$text_domain.po"};
 
 # Read the header of po-file and extract the 'Plural-Forms'.
 my $plural_forms = $dbh->func(
@@ -90,7 +90,7 @@ my %struct = (
 );
 set_object($text_domain => Locale::Messages::Struct->new(\%struct));
 
-# check all translation
+# run all translations
 eq_or_diff(
     $loc->__(
         'This is a text.',
@@ -116,16 +116,16 @@ eq_or_diff(
         1,
     ),
     'Einzahl',
-    '__n',
+    '__n 1',
 );
 eq_or_diff(
     $loc->__n(
         'Singular',
         'Plural',
-        3,
+        2,
     ),
     'Mehrzahl',
-    '__n',
+    '__n 2',
 );
 
 eq_or_diff(
@@ -136,17 +136,17 @@ eq_or_diff(
         num => 1,
     ),
     '1 Regal',
-    '__nx',
+    '__nx 1',
 );
 eq_or_diff(
     $loc->__nx(
         '{num} shelf',
         '{num} shelves',
-        3,
-        num => 3,
+        2,
+        num => 2,
     ),
-    '3 Regale',
-    '__nx',
+    '2 Regale',
+    '__nx 2',
 );
 
 eq_or_diff(
@@ -176,17 +176,17 @@ eq_or_diff(
         1,
     ),
     'gutes Regal',
-    '__np',
+    '__np 1',
 );
 eq_or_diff(
     $loc->__np(
         'better',
         'shelf',
         'shelves',
-        3,
+        2,
     ),
     'gute Regale',
-    '__np',
+    '__np 2',
 );
 
 eq_or_diff(
@@ -205,9 +205,9 @@ eq_or_diff(
         'better',
         '{num} shelf',
         '{num} shelves',
-        3,
-        num => 3,
+        2,
+        num => 2,
     ),
-    '3 gute Regale',
+    '2 gute Regale',
     '__npx',
 );
