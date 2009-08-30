@@ -302,11 +302,11 @@ It is a standard.
 
 But if the data are not saved in mo-files
 and the project is not a new project,
-how can I bind a database or anything else
+how to bind a database or anything else
 to the Locale::TextDomain API?
 
-I can - now!
-And I must not follow the dead end of L<Locale::Maketext>.
+It runs - now!
+Do not follow the dead end of L<Locale::Maketext>.
 What is the problem?
 
 =over
