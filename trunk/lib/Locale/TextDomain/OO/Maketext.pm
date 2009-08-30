@@ -187,7 +187,27 @@ to move projects from Locale::Maketext to Locale::TextDomain.
 
 =head2 method new
 
-See method new at L<Locale::TextDomain::OO>
+See method new at L<Locale::TextDomain::OO>.
+
+There is an extra parameter 'style'.
+
+    my $loc = Locale::TextDomain::OO::Maketext->new(
+        ...
+        style => 'gettext',
+        ...
+    );
+
+Style 'gettext' allows use gettext like data.
+
+ %1
+ %quant(%1,singular,plural)
+ %*(%1,singular,plural)
+
+instead of
+
+ [_1]
+ [quant,_1,singular,plural]
+ [*,_1,singular,plural]
 
 =head2 Translating methods
 
