@@ -24,7 +24,10 @@ sub new {
 sub _set_style {
     my ($self, $style) = @_;
 
-    $style =~ m{\A (?: maketext | gettext ) \z}xms
+    {
+        maketext => 1,
+        gettext  => 1,
+    }->{$style}
         or croak "$style not allowed at parameter style";
     $self->{style} = $style;
 
@@ -52,7 +55,7 @@ sub _expand_maketext {
             my $singular = $2;
             my $plural   = $3;
             $value = defined $value ? $value : q{};
-            no warnings qw(uninitialized numeric);
+            no warnings qw(uninitialized numeric); ## no critic (NoWarnings)
             return
                 +( defined $plural && $value == 1 )
                 ?(
@@ -68,17 +71,17 @@ sub _expand_maketext {
 
     if ( $self->_is_gettext_style() ) {
         $translation =~ s{
-	   (?:
-	       \% (?: quant | \* )
-	       \(
-	       \% (\d+)              # $1: _n
-	       , ( [^,]* )           # $2: singular
-	       (?: , ( [^,]* ) )?    # $3: plural
-	       (?: , [^,]* )?        # ignore zero
-	       \)
-	       |
-	       \% (\d+)              # $4: _n
-	   )
+            (?:
+                \% (?: quant | \* )
+                \(
+                \% (\d+)              # $1: _n
+                , ( [^,]* )           # $2: singular
+                (?: , ( [^,]* ) )?    # $3: plural
+                (?: , [^,]* )?        # ignore zero
+                \)
+                |
+                \% (\d+)              # $4: _n
+            )
         }
         {
             $replace->()
@@ -86,15 +89,15 @@ sub _expand_maketext {
     }
     else {
         $translation =~ s{
-	   \[ (?:
-	       (?: quant | \* )
-	       , _ (\d+)            # $1: _n
-	       , ( [^,]* )          # $2: singular
-	       (?: , ( [^,]* ) )?   # $3: plural
-	       (?: , [^,]* )?       # ignore zero
-	       |
-	       _ (\d+)              # $4: _n
-	   ) \]
+            \[ (?:
+                (?: quant | \* )
+                , _ (\d+)            # $1: _n
+                , ( [^,]* )          # $2: singular
+                (?: , ( [^,]* ) )?   # $3: plural
+                (?: , [^,]* )?       # ignore zero
+                |
+                _ (\d+)              # $4: _n
+            ) \]
         }
         {
             $replace->()
