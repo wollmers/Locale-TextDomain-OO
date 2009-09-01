@@ -41,7 +41,7 @@ sub new {
 
     my $keys = join ', ', keys %init;
     if ($keys) {
-            croak "Unknown parameter: $keys";
+        croak "Unknown parameter: $keys";
     }
 
     return $self;
@@ -57,9 +57,9 @@ sub _set_gettext_package {
     $self->{sub} = {
         map { ## no critic (ComplexMappings)
             my $code_ref = $gettext_package->can($_);
-           $code_ref
-           ? ( $_ => $code_ref )
-           : ();
+            $code_ref
+            ? ( $_ => $code_ref )
+            : ();
         } qw(bindtextdomain dgettext dngettext dpgettext dnpgettext)
     };
 
@@ -77,7 +77,7 @@ sub _get_default_search_dirs {
 
     return [
         map {
-                   -d "$_/LocaleData"
+            -d "$_/LocaleData"
             ? "$_/LocaleData"
             : ();
         } (
@@ -112,7 +112,7 @@ sub get_file_path {
 
 
     my @languages_want = I18N::LangTags::Detect::detect();
-    my @languages_all = implicate_supers(@languages_want);
+    my @languages_all  = implicate_supers(@languages_want);
     push @languages_all, panic_languages(@languages_all);
     my @search_dirs = map {
         abs_path $_;
@@ -164,10 +164,10 @@ sub get_nplurals {
 
     $perlify_plural_forms->(\$plural_forms);
     my $code = <<"EOC";
-            my \$n = 0;
-            my (\$nplurals, \$plural);
-            $plural_forms
-            \$nplurals;
+        my \$n = 0;
+        my (\$nplurals, \$plural);
+        $plural_forms
+        \$nplurals;
 EOC
     my $nplurals = Safe->new()->reval($code)
         or croak "Code of Plural-Forms $plural_forms is not safe, $EVAL_ERROR";
@@ -634,10 +634,11 @@ Use __ and append this with 'n', 'p' and/or 'x' in alphabetic order.
         num => $num_files,
     );
 
+The sub __xn is the same like sub __nx
+at Locale::TextDomain.
+
 Method __xn is not implemented
 because it is the same like method __nx.
-The sub __xn is the same like sub __nx
-at Locale::TextDomain too.
 
 =head3 __p Context
 
