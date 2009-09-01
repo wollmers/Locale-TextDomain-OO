@@ -162,11 +162,10 @@ sub maketext_p {
                 : $msgid,
             ),
             @args,
-        ),
+        )
         : $self->_get_sub('dpgettext')->(
             $self->_get_text_domain(),
             $msgctxt,
-            $self->_is_gettext_style()
             $msgid,
         );
 }
