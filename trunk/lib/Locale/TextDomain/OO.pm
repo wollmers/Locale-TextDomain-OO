@@ -41,7 +41,7 @@ sub new {
 
     my $keys = join ', ', keys %init;
     if ($keys) {
-    	croak "Unknown parameter: $keys";
+            croak "Unknown parameter: $keys";
     }
 
     return $self;
@@ -57,9 +57,9 @@ sub _set_gettext_package {
     $self->{sub} = {
         map { ## no critic (ComplexMappings)
             my $code_ref = $gettext_package->can($_);
-	   $code_ref
-	   ? ( $_ => $code_ref )
-	   : ();
+           $code_ref
+           ? ( $_ => $code_ref )
+           : ();
         } qw(bindtextdomain dgettext dngettext dpgettext dnpgettext)
     };
 
@@ -77,7 +77,7 @@ sub _get_default_search_dirs {
 
     return [
         map {
-        	   -d "$_/LocaleData"
+                   -d "$_/LocaleData"
             ? "$_/LocaleData"
             : ();
         } (
@@ -211,55 +211,85 @@ sub _expand {
 sub __x {
     my ($self, $msgid, %args) = @_;
 
-    return $self->_expand(
-        $self->_get_sub('dgettext')->(
+    return
+        %args
+        ? $self->_expand(
+            $self->_get_sub('dgettext')->(
+                $self->_get_text_domain(),
+                $msgid,
+            ),
+            %args,
+        )
+        : $self->_get_sub('dgettext')->(
             $self->_get_text_domain(),
             $msgid,
-        ),
-        %args,
-    );
+        );
 }
 
 sub __nx {
     my ($self, $msgid, $msgid_plural, $count, %args) = @_;
 
-    return $self->_expand(
-        $self->_get_sub('dngettext')->(
+    return
+        %args
+        ? $self->_expand(
+            $self->_get_sub('dngettext')->(
+                $self->_get_text_domain(),
+                $msgid,
+                $msgid_plural,
+                $count,
+            ),
+            %args,
+        )
+        : $self->_get_sub('dngettext')->(
             $self->_get_text_domain(),
             $msgid,
             $msgid_plural,
             $count,
-        ),
-        %args,
-    );
+        );
 }
 
 sub __px {
     my ($self, $msgctxt, $msgid, %args) = @_;
 
-    return $self->_expand(
-        $self->_get_sub('dpgettext')->(
+    return
+        %args
+        ? $self->_expand(
+            $self->_get_sub('dpgettext')->(
+                $self->_get_text_domain(),
+                $msgctxt,
+                $msgid,
+            ),
+            %args,
+        )
+        : $self->_get_sub('dpgettext')->(
             $self->_get_text_domain(),
             $msgctxt,
             $msgid,
-        ),
-        %args,
-    );
+        );
 }
 
 sub __npx { ## no critic (ManyArgs)
     my ($self, $msgctxt, $msgid, $msgid_plural, $count, %args) = @_;
 
-    return $self->_expand(
-        $self->_get_sub('dnpgettext')->(
+    return
+        %args
+        ? $self->_expand(
+            $self->_get_sub('dnpgettext')->(
+                $self->_get_text_domain(),
+                $msgctxt,
+                $msgid,
+                $msgid_plural,
+                $count,
+            ),
+            %args
+        )
+        : $self->_get_sub('dnpgettext')->(
             $self->_get_text_domain(),
             $msgctxt,
             $msgid,
             $msgid_plural,
             $count,
-        ),
-        %args
-    );
+        );
 }
 
 BEGIN {

@@ -131,30 +131,44 @@ sub _maketext2gettext {
 sub maketext {
     my ($self, $msgid, @args) = @_;
 
-    return $self->_expand_maketext(
-        $self->_get_sub('dgettext')->(
+    return
+        @args
+        ? $self->_expand_maketext(
+            $self->_get_sub('dgettext')->(
+                $self->_get_text_domain(),
+                $self->_is_gettext_style()
+                ? $self->_maketext2gettext($msgid)
+                : $msgid,
+            ),
+            @args,
+        )
+        : $self->_get_sub('dgettext')->(
             $self->_get_text_domain(),
-            $self->_is_gettext_style()
-            ? $self->_maketext2gettext($msgid)
-            : $msgid,
-        ),
-        @args,
-    );
+            $msgid,
+        );
 }
 
 sub maketext_p {
     my ($self, $msgctxt, $msgid, @args) = @_;
 
-    return $self->_expand_maketext(
-        $self->_get_sub('dpgettext')->(
+    return
+        @args
+        ? $self->_expand_maketext(
+            $self->_get_sub('dpgettext')->(
+                $self->_get_text_domain(),
+                $msgctxt,
+                $self->_is_gettext_style()
+                ? $self->_maketext2gettext($msgid)
+                : $msgid,
+            ),
+            @args,
+        ),
+        : $self->_get_sub('dpgettext')->(
             $self->_get_text_domain(),
             $msgctxt,
             $self->_is_gettext_style()
-            ? $self->_maketext2gettext($msgid)
-            : $msgid,
-        ),
-        @args,
-    );
+            $msgid,
+        );
 }
 
 1;
