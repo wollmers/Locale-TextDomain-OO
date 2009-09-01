@@ -12,6 +12,9 @@ BEGIN {
     require_ok('Locale::TextDomain::OO');
 }
 
+local $ENV{LANGUAGE} = 'de_DE';
+my $text_domain      = 'test_01';
+
 my $loc;
 throws_ok(
     sub {
@@ -33,12 +36,10 @@ throws_ok(
     'unknown package',
 );
 
-$ENV{LANGUAGE} = 'de_DE';
-
 lives_ok(
     sub {
         $loc = Locale::TextDomain::OO->new(
-            text_domain => 'test_01',
+            text_domain => $text_domain,
             search_dirs => [qw(./t/LocaleData)],
         );
     },

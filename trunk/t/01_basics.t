@@ -12,18 +12,19 @@ BEGIN {
     require_ok('Locale::TextDomain::OO');
 }
 
+local $ENV{LANGUAGE} = 'de_DE';
+my $text_domain      = 'test_01';
+
 my $loc;
 lives_ok(
     sub {
         $loc = Locale::TextDomain::OO->new(
-            text_domain => 'test_01',
+            text_domain => $text_domain,
             search_dirs => [qw(./t/LocaleData)],
         );
     },
     'create default object',
 );
-
-$ENV{LANGUAGE} = 'de_DE';
 
 eq_or_diff(
     $loc->__(
