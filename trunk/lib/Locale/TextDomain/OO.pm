@@ -298,6 +298,20 @@ BEGIN {
     *__n  = \&__nx;
     *__p  = \&__px;
     *__np = \&__npx;
+
+    # Dummy methods for string marking.
+    my $dummy = sub {
+        my (undef, @more) = @_;
+        return join ',', map {defined $_ ? $_ : 'undef'} @more;
+    };
+    *N__    = $dummy;
+    *N__x   = $dummy;
+    *N__n   = $dummy;
+    *N__nx  = $dummy;
+    *N__p   = $dummy;
+    *N__px  = $dummy;
+    *N__np  = $dummy;
+    *N__npx = $dummy;
 }
 
 1;
@@ -418,18 +432,22 @@ Run the examples of this distribution.
 
 =head2 Overview
 
-       Application calls          Application calls
-       TextDomain methods          method maketext
-           (the goal)                     |
-               |                          v
-               |         .----------------------------------.
-               |         |          Interface like          |
-               |         |     Locale::Maketext::Simple     |
-               |         |----------------------------------|
-               |         | Locale::TextDomain::OO::Maketext |
-               |         `----------------------------------'
-               |              |
-               v              v
+      Application calls     Application calls     Application calls
+      TextDomain methods    TextDomain methods     method maketext
+          (the goal)       and Maketext methods    (the beginning)
+              |              (the changeover)            |
+              |                      |                   |
+              |                      v                   v
+              |            .----------------------------------.
+              |            |          Interface like          |
+              |            |     Locale::Maketext::Simple     |
+              |            |               and                |
+              |            |      Locale::TextDomain::OO      |
+              |            |----------------------------------|
+              |            | Locale::TextDomain::OO::Maketext |
+              |            `----------------------------------'
+              |                |
+              v                v
           .------------------------.
           |     Interface like     |
           |   Locale::TextDomain   |
@@ -616,6 +634,11 @@ Use __ and append this with 'n', 'p' and/or 'x' in alphabetic order.
         num => $num_files,
     );
 
+Method __xn is not implemented
+because it is the same like method __nx.
+The sub __xn is the same like sub __nx
+at Locale::TextDomain too.
+
 =head3 __p Context
 
     print $loc->__p (
@@ -655,6 +678,35 @@ Use __ and append this with 'n', 'p' and/or 'x' in alphabetic order.
         $books,
         name => $name,
     );
+
+
+=head2 Methods to mark the translation for extraction only
+
+How to bild the method name?
+
+Use N__ and append this with 'n', 'p' and/or 'x' in alphabetic order.
+
+ .----------------------------------------------------------------.
+ | Snippet | Description                                          |
+ |---------+------------------------------------------------------|
+ | N__     | Special marked for extraction.                       |
+ | x       | Last parameters are the hash for named placeholders. |
+ | n       | Using plural forms.                                  |
+ | p       | Context is the first parameter.                      |
+ '----------------------------------------------------------------'
+
+=head3 N__, N__x, N__n, N__nx, N__p, N__px, N__np, N__npx
+
+The extractor is looking for C<__('...'>
+and has no problem with C<$loc->N__('...')>.
+
+This is the idea of the N-Methods.
+
+    $loc->N__();
+
+or
+
+    Locale::Text::Domain::OO->N__('...');
 
 =head1 EXAMPLE
 
