@@ -302,7 +302,7 @@ BEGIN {
     # Dummy methods for string marking.
     my $dummy = sub {
         my (undef, @more) = @_;
-        return join ',', map {defined $_ ? $_ : 'undef'} @more;
+        return join q{,}, map {defined $_ ? $_ : 'undef'} @more;
     };
     *N__    = $dummy;
     *N__x   = $dummy;
