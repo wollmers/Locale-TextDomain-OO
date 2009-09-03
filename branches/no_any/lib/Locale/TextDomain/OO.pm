@@ -17,13 +17,13 @@ sub new {
 
     my $self = bless {}, $class;
 
-    # Set the implementation class of gettext or an object
+    # Set an object that implements gettext ...
     (
-    	exists $init{gettext_object}
-    	&& definded $init{gettext_object}
-    	&& $init{gettext_object}->can('dngettext')
+        defined $init{gettext_object}
+        && $init{gettext_object}->can('dngettext')
     )
     ? $self->_set_object($init{gettext_object})
+    # ... or the implementation class of gettext.
     : $self->_set_gettext_package(
         defined $init{gettext_package}
         ? delete $init{gettext_package}
@@ -79,11 +79,17 @@ sub _get_sub {
 }
 
 sub _get_object {
-    my ($self, $name) = @_;
+    my $self = shift;
+
+    return $self->{object};
 }
 
 sub _set_object {
-    my ($self, $name) = @_;
+    my ($self, $object) = @_;
+
+    $self->{object} = $object;
+
+    return $self;
 }
 
 sub _get_default_search_dirs {
@@ -123,7 +129,6 @@ sub _get_text_domain {
 
 sub get_file_path {
     my ($self, $text_domain, $suffix) = @_;
-
 
     my @languages_want = I18N::LangTags::Detect::detect();
     my @languages_all  = implicate_supers(@languages_want);
@@ -225,34 +230,38 @@ sub _expand {
 sub __x {
     my ($self, $msgid, %args) = @_;
 
-    return
-        %args
-        ? $self->_expand(
-            $self->_get_sub('dgettext')->(
-                $self->_get_text_domain(),
-                $msgid,
-            ),
-            %args,
+    my $object = $self->_get_object();
+    my $translation
+        = $object
+        ? $object->dgettext(
+            $self->_get_text_domain(),
+            $msgid,
         )
         : $self->_get_sub('dgettext')->(
             $self->_get_text_domain(),
             $msgid,
         );
+
+    return
+        %args
+        ? $translation = $self->_expand(
+            $translation,
+            %args,
+        )
+        : $translation;
 }
 
 sub __nx {
     my ($self, $msgid, $msgid_plural, $count, %args) = @_;
 
-    return
-        %args
-        ? $self->_expand(
-            $self->_get_sub('dngettext')->(
-                $self->_get_text_domain(),
-                $msgid,
-                $msgid_plural,
-                $count,
-            ),
-            %args,
+    my $object = $self->_get_object();
+    my $translation
+        = $object
+        ? $object->dngettext(
+            $self->_get_text_domain(),
+            $msgid,
+            $msgid_plural,
+            $count,
         )
         : $self->_get_sub('dngettext')->(
             $self->_get_text_domain(),
@@ -260,30 +269,48 @@ sub __nx {
             $msgid_plural,
             $count,
         );
+
+    return
+        %args
+        ? $translation = $self->_expand(
+            $translation,
+            %args,
+        )
+        : $translation;
 }
 
 sub __px {
     my ($self, $msgctxt, $msgid, %args) = @_;
 
-    return
-        %args
-        ? $self->_expand(
-            $self->_get_sub('dpgettext')->(
-                $self->_get_text_domain(),
-                $msgctxt,
-                $msgid,
-            ),
-            %args,
+    my $object = $self->_get_object();
+    my $translation
+        = $object
+        ? $object->dpgettext(
+            $self->_get_text_domain(),
+            $msgctxt,
+            $msgid,
         )
         : $self->_get_sub('dpgettext')->(
             $self->_get_text_domain(),
             $msgctxt,
             $msgid,
         );
+
+    return
+        %args
+        ? $translation = $self->_expand(
+            $translation,
+            %args,
+        )
+        : $translation;
 }
 
 sub __npx { ## no critic (ManyArgs)
     my ($self, $msgctxt, $msgid, $msgid_plural, $count, %args) = @_;
+
+    my $object = $self->_get_object();
+    my $translation
+        = $object
 
     return
         %args

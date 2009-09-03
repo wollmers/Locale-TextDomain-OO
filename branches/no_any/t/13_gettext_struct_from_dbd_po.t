@@ -21,18 +21,6 @@ BEGIN {
 local $ENV{LANGUAGE} = 'de_DE';
 my $text_domain      = 'test_03';
 
-my $loc;
-lives_ok(
-    sub {
-        $loc = Locale::TextDomain::OO->new(
-            gettext_package => 'Locale::Messages::AnyObject',
-            text_domain     => $text_domain,
-            search_dirs     => [qw(./t/LocaleData/)],
-        );
-    },
-    'create extended object',
-);
-
 # find the database for the expected language
 # here fallback to 'de'
 my $file_path = $loc->get_file_path($text_domain, '.po');
@@ -88,7 +76,17 @@ my %struct = (
         array_ref  => \@array,
     },
 );
-set_object($text_domain => Locale::Messages::Struct->new(\%struct));
+
+my $loc;
+lives_ok(
+    sub {
+        $loc = Locale::TextDomain::OO::Struct->new(
+            text_domain => $text_domain,
+            search_dirs => [qw(./t/LocaleData/)],
+        );
+    },
+    'create extended object',
+);
 
 # run all translations
 eq_or_diff(
