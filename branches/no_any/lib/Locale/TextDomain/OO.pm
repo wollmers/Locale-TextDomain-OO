@@ -17,8 +17,14 @@ sub new {
 
     my $self = bless {}, $class;
 
-    # Set the implementation class of gettext
-    $self->_set_gettext_package(
+    # Set the implementation class of gettext or an object
+    (
+    	exists $init{gettext_object}
+    	&& definded $init{gettext_object}
+    	&& $init{gettext_object}->can('dngettext')
+    )
+    ? $self->_set_object($init{gettext_object})
+    : $self->_set_gettext_package(
         defined $init{gettext_package}
         ? delete $init{gettext_package}
         : 'Locale::Messages'
@@ -70,6 +76,14 @@ sub _get_sub {
     my ($self, $name) = @_;
 
     return $self->{sub}->{$name};
+}
+
+sub _get_object {
+    my ($self, $name) = @_;
+}
+
+sub _set_object {
+    my ($self, $name) = @_;
 }
 
 sub _get_default_search_dirs {
