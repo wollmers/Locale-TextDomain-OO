@@ -1,0 +1,56 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=utf-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+
+# __
+msgid "c: This is a text."
+msgstr "c: Das ist ein Text."
+
+# __x
+msgid "c: {name} is programming {language}."
+msgstr "c: {name} programmiert {language}."
+
+# __n
+msgid "c: Singular"
+msgid_plural "c: Plural"
+msgstr[0] "c: Einzahl"
+msgstr[1] "c: Mehrzahl"
+
+# __nx
+msgid "c: {num} shelf"
+msgid_plural "c: {num} shelves"
+msgstr[0] "c: {num} Regal"
+msgstr[1] "c: {num} Regale"
+
+# __p
+msgctxt "maskulin"
+msgid "c: Dear"
+msgstr "c: Sehr geehrter Herr"
+
+# __px
+msgctxt "maskulin"
+msgid "c: Dear {name}"
+msgstr "c: Sehr geehrter Herr {name}"
+
+# __np
+msgctxt "better"
+msgid "c: shelf"
+msgid_plural "c: shelves"
+msgstr[0] "c: gutes Regal"
+msgstr[1] "c: gute Regale"
+
+# __npx
+msgctxt "better"
+msgid "c: {num} shelf"
+msgid_plural "c: {num} shelves"
+msgstr[0] "c: {num} gutes Regal"
+msgstr[1] "c: {num} gute Regale"
+

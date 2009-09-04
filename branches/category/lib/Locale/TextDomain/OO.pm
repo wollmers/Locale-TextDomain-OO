@@ -24,6 +24,13 @@ sub new {
         : 'Locale::Messages'
     );
 
+    # Category
+    $self->_set_category(
+        defined $init{category}
+        ? delete $init{category}
+        : 'LC_MESSAGES'
+    );
+
     # Search dirs are given or use the defaults
     $self->_set_search_dirs(
         ( ref $init{search_dirs} eq 'ARRAY' )
@@ -72,6 +79,20 @@ sub _get_sub {
     return $self->{sub}->{$name};
 }
 
+sub _set_category {
+    my ($self, $category) = @_;
+
+    $self->{category} = $category;
+
+    return $self;
+}
+
+sub _get_category {
+    my $self = shift;
+
+    return $self->{category};
+}
+
 sub _get_default_search_dirs {
     my $self = shift;
 
@@ -110,7 +131,7 @@ sub _get_text_domain {
 sub get_file_path {
     my ($self, $text_domain, $suffix) = @_;
 
-
+    my $category = $self->_get_category();
     my @languages_want = I18N::LangTags::Detect::detect();
     my @languages_all  = implicate_supers(@languages_want);
     push @languages_all, panic_languages(@languages_all);
@@ -119,12 +140,12 @@ sub get_file_path {
     } @{ $self->_get_search_dirs() };
     for my $language (@languages_all) {
         for my $dir (@search_dirs) {
-            my $file = "$dir/$language/LC_MESSAGES/$text_domain$suffix";
+            my $file = "$dir/$language/$category/$text_domain$suffix";
             if (-f $file || -l $file) {
                 return
                     wantarray
-                    ? ($dir, $language, 'LC_MESSAGES')
-                    : "$dir/$language/LC_MESSAGES";
+                    ? ($dir, $language, $category)
+                    : "$dir/$language/$category";
             }
         }
     }
