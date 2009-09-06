@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 16 + 1;
+use Test::More tests => 15 + 1;
 use Test::NoWarnings;
 use Test::Exception;
 use Test::Differences;
@@ -14,12 +14,23 @@ require DBD::PO; DBD::PO->init(qw(:plural));
 
 BEGIN {
     require_ok('Locale::TextDomain::OO');
-    use_ok('Locale::Messages::AnyObject', qw(set_object));
-    require_ok('Locale::Messages::Struct');
+    require_ok('Locale::Messages::OO::Struct');
 }
 
 local $ENV{LANGUAGE} = 'de_DE';
 my $text_domain      = 'test_03';
+
+my ($loc, %struct);
+lives_ok(
+    sub {
+        $loc = Locale::TextDomain::OO->new(
+            gettext_object => Locale::Messages::OO::Struct->new(\%struct),
+            text_domain    => $text_domain,
+            search_dirs    => [qw(./t/LocaleData/)],
+        );
+    },
+    'create extended object',
+);
 
 # find the database for the expected language
 # here fallback to 'de'
@@ -70,22 +81,11 @@ $sth->finish();
 $dbh->disconnect();
 
 # build the struct and bind the struct as object to the text domain
-my %struct = (
+%struct = (
     $text_domain => {
         plural_ref => $loc->get_function_ref_plural($plural_forms),
         array_ref  => \@array,
     },
-);
-
-my $loc;
-lives_ok(
-    sub {
-        $loc = Locale::TextDomain::OO::Struct->new(
-            text_domain => $text_domain,
-            search_dirs => [qw(./t/LocaleData/)],
-        );
-    },
-    'create extended object',
 );
 
 # run all translations
