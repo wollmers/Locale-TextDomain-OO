@@ -1,4 +1,4 @@
-package Locale::Messages::Struct;
+package Locale::Messages::OO::Struct;
 
 use strict;
 use warnings;
@@ -137,7 +137,7 @@ __END__
 
 =head1 NAME
 
-Locale::Messages::Struct - Perl Interface extension to use gettext and not mo-files
+Locale::Messages::OO::Struct - Perl Interface extension to use gettext and not mo-files
 
 $Id$
 
@@ -159,7 +159,7 @@ have both an fuctional interface.
 
 =head1 SYNOPSIS
 
-    require Locale::Messages::Struct;
+    require Locale::Messages::OO::Struct;
     require Locale::Text::Domain::OO;
 
 =head1 SUBROUTINES/METHODS
@@ -189,7 +189,7 @@ have both an fuctional interface.
             ],
         },
     );
-    my $loc = Locale::Messages::Struct->new($text_domain, \%struct);
+    my $loc = Locale::Messages::Struct->new($text_domain => \%struct);
 
 =head2 method dgettext
 

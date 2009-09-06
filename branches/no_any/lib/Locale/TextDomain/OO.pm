@@ -22,7 +22,7 @@ sub new {
         defined $init{gettext_object}
         && $init{gettext_object}->can('dngettext')
     )
-    ? $self->_set_object($init{gettext_object})
+    ? $self->_set_object(delete $init{gettext_object})
     # ... or the implementation class of gettext.
     : $self->_set_gettext_package(
         defined $init{gettext_package}
@@ -311,18 +311,12 @@ sub __npx { ## no critic (ManyArgs)
     my $object = $self->_get_object();
     my $translation
         = $object
-
-    return
-        %args
-        ? $self->_expand(
-            $self->_get_sub('dnpgettext')->(
-                $self->_get_text_domain(),
-                $msgctxt,
-                $msgid,
-                $msgid_plural,
-                $count,
-            ),
-            %args
+        ? $object->dnpgettext(
+            $self->_get_text_domain(),
+            $msgctxt,
+            $msgid,
+            $msgid_plural,
+            $count,
         )
         : $self->_get_sub('dnpgettext')->(
             $self->_get_text_domain(),
@@ -331,6 +325,14 @@ sub __npx { ## no critic (ManyArgs)
             $msgid_plural,
             $count,
         );
+
+    return
+        %args
+        ? $translation = $self->_expand(
+            $translation,
+            %args,
+        )
+        : $translation;
 }
 
 BEGIN {
