@@ -46,14 +46,20 @@ sub _expand_maketext {
     my ($self, $translation, @args) = @_;
 
     my $replace = sub {
-        if (defined $4) { # replace only
-            my $value = $args[$4 - 1];
+        if (defined $5) { # replace only
+            my $index = $5 - 1;
+            exists $args[$index]
+                or return $1;
+            my $value = $args[$index];
             return defined $value ? $value : q{};
         }
-        if (defined $1) { # quant
-            my $value    = $args[$1 - 1];
-            my $singular = $2;
-            my $plural   = $3;
+        if (defined $2) { # quant
+            my $index = $2 - 1;
+            exists $args[$index]
+                or return $1;
+            my $value    = $args[$index];
+            my $singular = $3;
+            my $plural   = $4;
             $value = defined $value ? $value : q{};
             no warnings qw(uninitialized numeric); ## no critic (NoWarnings)
             return
@@ -71,16 +77,16 @@ sub _expand_maketext {
 
     if ( $self->_is_gettext_style() ) {
         $translation =~ s{
-            (?:
+            (
                 \% (?: quant | \* )
                 \(
-                \% (\d+)              # $1: _n
-                , ( [^,]* )           # $2: singular
-                (?: , ( [^,]* ) )?    # $3: plural
+                \% (\d+)              # $2: _n
+                , ( [^,]* )           # $3: singular
+                (?: , ( [^,]* ) )?    # $4: plural
                 (?: , [^,]* )?        # ignore zero
                 \)
                 |
-                \% (\d+)              # $4: _n
+                \% (\d+)              # $5: _n
             )
         }
         {
@@ -89,15 +95,17 @@ sub _expand_maketext {
     }
     else {
         $translation =~ s{
-            \[ (?:
-                (?: quant | \* )
-                , _ (\d+)            # $1: _n
-                , ( [^,]* )          # $2: singular
-                (?: , ( [^,]* ) )?   # $3: plural
-                (?: , [^,]* )?       # ignore zero
-                |
-                _ (\d+)              # $4: _n
-            ) \]
+            (
+                \[ (?:
+                    (?: quant | \* )
+                    , _ (\d+)            # $2: _n
+                    , ( [^,]* )          # $3: singular
+                    (?: , ( [^,]* ) )?   # $4: plural
+                    (?: , [^,]* )?       # ignore zero
+                    |
+                    _ (\d+)              # $5: _n
+                ) \]
+            )
         }
         {
             $replace->()
