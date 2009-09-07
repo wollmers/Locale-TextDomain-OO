@@ -1,4 +1,4 @@
-package Locale::Messages::Struct;
+package Locale::Messages::OO::Struct;
 
 use strict;
 use warnings;
@@ -137,7 +137,7 @@ __END__
 
 =head1 NAME
 
-Locale::Messages::Struct - Perl Interface extension to use gettext and not mo-files
+Locale::Messages::OO::Struct - Perl Interface extension to use gettext and not mo-files
 
 $Id$
 
@@ -149,18 +149,13 @@ $HeadURL$
 
 =head1 DESCRIPTION
 
-This module allows the access with gettext methods to a data struct.
+This module allows the access using gettext methods to a data struct.
 Maybe such data were read from a database.
-
-To bind this module to L<Locale::TextDomain::OO>
-the module L<Locale::Messages::AnyObject> is necessary
-because L<Locale::Messages> and L<Locale::Messages::AnyObject>
-have both an fuctional interface.
 
 =head1 SYNOPSIS
 
-    require Locale::Messages::Struct;
     require Locale::Text::Domain::OO;
+    require Locale::Messages::OO::Struct;
 
 =head1 SUBROUTINES/METHODS
 
@@ -168,9 +163,16 @@ have both an fuctional interface.
 
     my $text_domain = 'text_domain';
 
+    my $loc = Locale::TextDomain::OO->new(
+       ...
+       gettext_object => Locale::Messages::OO::Struct->new(\my %struct),
+       ...
+    );
+
+    # Read all the data and safe this into the struct.
     my %struct = (
         $text_domain => {
-            plural_ref = Locale::Text::Domain::OO->get_function_ref_plural(
+            plural_ref = $loc->get_function_ref_plural(
                 # The next line is like Plural-Forms at the po/mo-file.
                 '$nplurals=2; $plural=$n != 1;'
             ),
@@ -189,7 +191,6 @@ have both an fuctional interface.
             ],
         },
     );
-    my $loc = Locale::Messages::Struct->new($text_domain, \%struct);
 
 =head2 method dgettext
 

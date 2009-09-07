@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 16 + 1;
+use Test::More tests => 15 + 1;
 use Test::NoWarnings;
 use Test::Exception;
 use Test::Differences;
@@ -12,20 +12,19 @@ require DBD::PO::Locale::PO;
 
 BEGIN {
     require_ok('Locale::TextDomain::OO');
-    use_ok('Locale::Messages::AnyObject', qw(set_object));
-    require_ok('Locale::Messages::Struct');
+    require_ok('Locale::Messages::OO::Struct');
 }
 
 local $ENV{LANGUAGE} = 'de_DE';
 my $text_domain      = 'test_02';
 
-my $loc;
+my ($loc, %struct);
 lives_ok(
     sub {
         $loc = Locale::TextDomain::OO->new(
-            gettext_package => 'Locale::Messages::AnyObject',
-            text_domain     => $text_domain,
-            search_dirs     => [qw(./t/LocaleData/)],
+            gettext_object => Locale::Messages::OO::Struct->new(\%struct),
+            text_domain    => $text_domain,
+            search_dirs    => [qw(./t/LocaleData/)],
         );
     },
     'create extended object',
@@ -63,13 +62,12 @@ for my $entry ( @{$array_ref} ) {
 }
 
 # build the struct and bind the struct as object to the text domain
-my %struct = (
+%struct = (
     $text_domain => {
         plural_ref => $loc->get_function_ref_plural($plural_forms),
         array_ref  => $array_ref,
     },
 );
-set_object($text_domain => Locale::Messages::Struct->new(\%struct));
 
 # run all translations
 eq_or_diff(

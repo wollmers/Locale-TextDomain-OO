@@ -10,16 +10,15 @@ use English qw(-no_match_vars $OS_ERROR $EVAL_ERROR);
 require DBI;
 require DBD::PO; DBD::PO->init(qw(:plural));
 require Locale::TextDomain::OO;
-use Locale::Messages::AnyObject qw(set_object);
-require Locale::Messages::Struct;
+require Locale::Messages::OO::Struct;
 
 local $ENV{LANGUAGE} = 'de_DE';
 my $text_domain      = 'example_03';
 
 my $loc = Locale::TextDomain::OO->new(
-    gettext_package => 'Locale::Messages::AnyObject',
-    text_domain     => $text_domain,
-    search_dirs     => [qw(./LocaleData/)],
+    gettext_object => Locale::Messages::OO::Struct->new(\my %struct),
+    text_domain    => $text_domain,
+    search_dirs    => [qw(./LocaleData/)],
 );
 
 # find the database for the expected language
@@ -74,13 +73,12 @@ $sth->finish();
 $dbh->disconnect();
 
 # build the struct and bind the struct as object to the text domain
-my %struct = (
+%struct = (
     $text_domain => {
         plural_ref => $loc->get_function_ref_plural($plural_forms),
         array_ref  => \@array,
     },
 );
-set_object($text_domain => Locale::Messages::Struct->new(\%struct));
 
 # run all translations
 () = print map {"$_\n"}
