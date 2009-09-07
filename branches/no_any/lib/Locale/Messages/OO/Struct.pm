@@ -164,12 +164,15 @@ Maybe such data were read from a database.
     my $text_domain = 'text_domain';
 
     my $loc = Locale::TextDomain::OO->new(
-        $text_domain => locale\my %struct,
-    #--------
+       ...
+       gettext_object => Locale::Messages::OO::Struct->new(\my %struct),
+       ...
     );
+
+    # Read all the data and safe this into the struct.
     my %struct = (
         $text_domain => {
-            plural_ref = Locale::Text::Domain::OO->get_function_ref_plural(
+            plural_ref = $loc->get_function_ref_plural(
                 # The next line is like Plural-Forms at the po/mo-file.
                 '$nplurals=2; $plural=$n != 1;'
             ),
