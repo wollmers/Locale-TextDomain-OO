@@ -394,7 +394,7 @@ to the Locale::TextDomain API?
 
 It runs - now!
 Do not follow the dead end of L<Locale::Maketext>.
-What is the problem?
+What is the problem of?
 
 =over
 
@@ -446,9 +446,12 @@ Named placeholders.
 
 =item *
 
-L<Locale::Messages::AnyObject> is a less bounded gettext interface
-for gettext without mo-files.
-This allows to write modules which can bind other data sources.
+L<Locale::TextDomain::OO> can bind gettext subroutines
+or gettext methods.
+
+An example for binding subroutines is the default Locale::Messages.
+
+An example for object binding is L<Locale::Messages::OO::Struct>.
 
 =back
 
@@ -457,13 +460,12 @@ This allows to write modules which can bind other data sources.
 As default this module calls the subroutines of module Locale::Messages.
 
 This behaviour is changeable.
+Choose a functional or object oriented module.
+Locale::Messages is an functional module.
+Locale::Messages::OO::Struct is an object oriented module.
 
-Locale::Messages::AnyObject maps the subroutine calls back to object calls
-and allows to write own object-oriented modules.
-
-L<Locale::Messages::Struct> ist such one.
-It implements the idea
-to read the full database information into a data structure
+Locale::Messages::OO::Struct implements the idea
+to read the full data into a data structure
 for fast access.
 
 =head2 More informations
@@ -484,7 +486,7 @@ Run the examples of this distribution.
               |            .----------------------------------.
               |            |          Interface like          |
               |            |     Locale::Maketext::Simple     |
-              |            |               and                |
+              |            |               and (!)            |
               |            |      Locale::TextDomain::OO      |
               |            |----------------------------------|
               |            | Locale::TextDomain::OO::Maketext |
@@ -499,42 +501,38 @@ Run the examples of this distribution.
           `------------------------'
               |                |
               v                v
- .------------------.      .-------------------------------.
- | Locale::Messages |      | Locale::TextDomain::AnyObject |
- `------------------'      `-------------------------------'
+ .------------------.    .--------------------------------.
+ | Locale::Messages |    | Locale::TextDomain::OO::Struct |
+ |  (the default)   |    |        (a possibility)         |
+ `------------------'    `--------------------------------'
            |                               |
            |                               v
-           |                  .--------------------------.
-           |                  | Locale::TextDomainStruct |
-           |                  |     (a possibility)      |
-           |                  `--------------------------'
-           |                               |
-           |                               v
-           |                         .------------.
-           |                         | Datastruct |
-           |                         |------------|
-           |                         |  |         |
-           |                         |  +--[xxx]  |
-           |                         |  |         |
-           |                    .--->|  `--[xxx]  |<---.
-           |                    |    `------------'    |
-           |                    |                      |
-           |       .------------------------.          |
-           |       |       build using      |   .-------------.
-           |       |   po extrction tools   |   | build using |
-           |       |      like DBD::PO      |   |     DBI     |
-           |       | or DBD::PO::Locale::PO |   `-------------'
-           |       `------------------------'          ^
-           |                    ^                      |
-           v                    |                 _____|_____
-    .----------.          .----------.           /_ _ _ _ _ _\
-    | mo-files |-.        | po-files |-.         |           |
-    `----------' |        `----------' |         | Database  |
-      `----------'          `----------'         `-----------'
-           ^                    ^                      ^
-           |                    |                      |
-      build using          build using            existing data
-     gettext tools        gettext tools
+           |                     .-------------------.
+           |                     |    Datastruct     |
+           |                     |-------------------|
+           |                     |  |                |
+           |                     |  +--[text domain] |
+           |                     |     |             |
+           |                     |     `--[...]      |
+           |                     `-------------------'
+           |                       ^               ^
+           |                       |               |
+           |   .------------------------.          |
+           |   |       build using      |   .-------------.
+           |   |   po extrction tools   |   | build using |
+           |   |      like DBD::PO      |   |     DBI     |
+           |   | or DBD::PO::Locale::PO |   `-------------'
+           |   `------------------------'          ^
+           |                ^                      |
+           v                |                 _____|_____
+    .----------.      .----------.           /_ _ _ _ _ _\
+    | mo-files |-.    | po-files |-.         |           |
+    `----------' |    `----------' |         | Database  |
+      `----------'      `----------'         `-----------'
+           ^                ^                      ^
+           |                |                      |
+      build using      build using            existing data
+     gettext tools    gettext tools
 
 =head1 SYNOPSIS
 
@@ -576,6 +574,15 @@ and can implement the subroutine 'bindtextdomain'.
 
     my $loc = Locale::TextDoamin::OO->new(
         gettext_package => 'Locale::Messages::AnyObject',
+        text_domain     => 'example',
+        local_dirs      => \@local_dirs,
+    );
+
+Or the package have to implement the methods
+'dgettext', 'dngettext', 'dpgettext', 'dnpgettext'.
+
+    my $loc = Locale::TextDoamin::OO->new(
+        gettext_object => Locale::Messages::OO::Struct->new(\my %struct),
         text_domain     => 'example',
         local_dirs      => \@local_dirs,
     );
@@ -746,7 +753,7 @@ and has no problem with C<$loc->N__('...')>.
 
 This is the idea of the N-Methods.
 
-    $loc->N__();
+    $loc->N__('...');
 
 or
 
