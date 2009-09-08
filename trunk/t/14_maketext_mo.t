@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 13 + 1;
+use Test::More tests => 14 + 1;
 use Test::NoWarnings;
 use Test::Exception;
 use Test::Differences;
@@ -43,6 +43,14 @@ eq_or_diff(
     ),
     'Steffen programmiert Perl.',
     'maketext like __x',
+);
+eq_or_diff(
+    $loc->maketext(
+        '[_1] is programming [_2].',
+        'Steffen',
+    ),
+    'Steffen programmiert [_2].',
+    'maketext like __x (missing placeholder)',
 );
 
 eq_or_diff(

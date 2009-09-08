@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 14 + 1;
+use Test::More tests => 15 + 1;
 use Test::NoWarnings;
 use Test::Exception;
 use Test::Differences;
@@ -42,6 +42,14 @@ eq_or_diff(
     ),
     'Steffen programmiert Perl.',
     '__x',
+);
+eq_or_diff(
+    $loc->__x(
+        '{name} is programming {language}.',
+        name => 'Steffen',
+    ),
+    'Steffen programmiert {language}.',
+    '__x (missing palaceholder)',
 );
 
 eq_or_diff(
