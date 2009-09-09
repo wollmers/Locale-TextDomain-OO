@@ -45,6 +45,16 @@ sub new {
         : caller
     );
 
+    # codeset
+    if ( defined $init{codeset} ) {
+        $self->_set_codeset( delete $init{codeset} );
+    }
+
+    # filter
+    if ( defined $init{filter} ) {
+        $self->_set_filter( delete $init{filter} );
+    }
+
     my $keys = join ', ', keys %init;
     if ($keys) {
         croak "Unknown parameter: $keys";
@@ -66,7 +76,10 @@ sub _set_gettext_package {
             $code_ref
             ? ( $_ => $code_ref )
             : ();
-        } qw(bindtextdomain dgettext dngettext dpgettext dnpgettext)
+        } qw(
+            bindtextdomain bind_textdomain_codeset bind_textdomain_filter
+            dgettext dngettext dpgettext dnpgettext
+        )
     };
 
     return $self;
@@ -164,6 +177,36 @@ sub _set_text_domain {
 
     local $ENV{LANGUAGE} = $language;
     $self->_get_sub('bindtextdomain')->($text_domain => $dir);
+
+    return $self;
+}
+
+sub _set_codeset {
+    my ($self, $encoding) = @_;
+
+    $self->_get_sub('bind_textdomain_codeset')
+        or croak 'codeset not set';
+
+    $self->_get_sub('bind_textdomain_codeset')->(
+        $self->_get_text_domain(),
+        $encoding,
+    );
+
+    return $self;
+}
+
+sub _set_filter {
+    my ($self, $filter) = @_;
+
+    $self->_get_sub('bind_textdomain_filter')
+        or croak 'filter not set';
+
+    $self->_get_sub('bind_textdomain_filter')->(
+        $self->_get_text_domain(),
+        ref $filter eq 'ARRAY'
+        ? @{$filter}
+        : $filter
+    );
 
     return $self;
 }
