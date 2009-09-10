@@ -6,7 +6,7 @@ use warnings;
 our $VERSION = 0;
 
 use Carp qw(croak);
-use English qw(-no_match_vars $OS_ERROR $EVAL_ERROR);
+use English qw(-no_match_vars $OS_ERROR);
 require DBI;
 require DBD::PO; DBD::PO->init(qw(:plural));
 require Locale::TextDomain::OO;

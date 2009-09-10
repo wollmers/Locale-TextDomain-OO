@@ -6,7 +6,7 @@ use warnings;
 our $VERSION = 0;
 
 use Carp qw(croak);
-use English qw(-no_match_vars $OS_ERROR $EVAL_ERROR);
+use English qw(-no_match_vars $OS_ERROR);
 require Locale::TextDomain::OO::Maketext;
 
 local $ENV{LANGUAGE} = 'de_DE';
