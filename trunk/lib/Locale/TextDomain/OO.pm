@@ -11,6 +11,7 @@ use English qw(-no_match_vars $EVAL_ERROR);
 use I18N::LangTags::Detect;
 use I18N::LangTags qw(implicate_supers panic_languages);
 require Safe;
+use Encode qw(decode);
 
 sub new {
     my ($class, %init) = @_;
@@ -76,10 +77,7 @@ sub _set_gettext_package {
             $code_ref
             ? ( $_ => $code_ref )
             : ();
-        } qw(
-            bindtextdomain bind_textdomain_codeset bind_textdomain_filter
-            dgettext dngettext dpgettext dnpgettext
-        )
+        } qw(bindtextdomain dgettext dngettext dpgettext dnpgettext)
     };
 
     return $self;
@@ -184,31 +182,29 @@ sub _set_text_domain {
 sub _set_codeset {
     my ($self, $encoding) = @_;
 
-    $self->_get_sub('bind_textdomain_codeset')
-        or croak 'codeset not set';
-
-    $self->_get_sub('bind_textdomain_codeset')->(
-        $self->_get_text_domain(),
-        $encoding,
-    );
+    $self->{codeset} = $encoding;
 
     return $self;
+}
+
+sub _get_codeset {
+    my $self = shift;
+
+    return $self->{codeset};
 }
 
 sub _set_filter {
     my ($self, $filter) = @_;
 
-    $self->_get_sub('bind_textdomain_filter')
-        or croak 'filter not set';
-
-    $self->_get_sub('bind_textdomain_filter')->(
-        $self->_get_text_domain(),
-        ref $filter eq 'ARRAY'
-        ? @{$filter}
-        : $filter
-    );
+    $self->{filter} = $filter;
 
     return $self;
+}
+
+sub _get_filter {
+    my $self = shift;
+
+    return $self->{filter};
 }
 
 my $perlify_plural_forms = sub {
@@ -270,6 +266,28 @@ sub _expand {
     return $translation;
 }
 
+sub _run_codeset_and_filter {
+    my ($self, $translation_ref) = @_;
+
+    my $codeset = $self->_get_codeset();
+    if ($codeset) {
+        ${$translation_ref} = decode(
+            $codeset,
+            ${$translation_ref},
+        );
+    }
+
+    my $filter = $self->_get_filter();
+    if ($filter) {
+        ${$translation_ref} = $filter->(
+            ${$translation_ref},
+            ref $filter eq 'ARRAY' ? @{$filter} : $filter,
+        );
+    }
+
+    return $self;
+}
+
 sub __x {
     my ($self, $msgid, %args) = @_;
 
@@ -284,6 +302,8 @@ sub __x {
             $self->_get_text_domain(),
             $msgid,
         );
+
+    $self->_run_codeset_and_filter(\$translation);
 
     return
         %args
@@ -313,6 +333,8 @@ sub __nx {
             $count,
         );
 
+    $self->_run_codeset_and_filter(\$translation);
+
     return
         %args
         ? $translation = $self->_expand(
@@ -338,6 +360,8 @@ sub __px {
             $msgctxt,
             $msgid,
         );
+
+    $self->_run_codeset_and_filter(\$translation);
 
     return
         %args
@@ -368,6 +392,8 @@ sub __npx { ## no critic (ManyArgs)
             $msgid_plural,
             $count,
         );
+
+    $self->_run_codeset_and_filter(\$translation);
 
     return
         %args
