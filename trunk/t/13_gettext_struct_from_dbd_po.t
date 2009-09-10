@@ -8,7 +8,6 @@ use Test::NoWarnings;
 use Test::Exception;
 use Test::Differences;
 use Carp qw(croak);
-use English qw(-no_match_vars $EVAL_ERROR);
 require DBI;
 require DBD::PO; DBD::PO->init(qw(:plural));
 

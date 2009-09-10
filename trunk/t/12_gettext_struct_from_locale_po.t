@@ -7,7 +7,6 @@ use Test::More tests => 15 + 1;
 use Test::NoWarnings;
 use Test::Exception;
 use Test::Differences;
-use English qw(-no_match_vars $EVAL_ERROR);
 require DBD::PO::Locale::PO;
 
 BEGIN {

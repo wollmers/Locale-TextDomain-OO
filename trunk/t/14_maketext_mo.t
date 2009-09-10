@@ -7,7 +7,6 @@ use Test::More tests => 14 + 1;
 use Test::NoWarnings;
 use Test::Exception;
 use Test::Differences;
-use English qw(-no_match_vars $EVAL_ERROR);
 
 BEGIN {
     require_ok('Locale::TextDomain::OO::Maketext');
