@@ -53,7 +53,7 @@ sub new {
 
     # output filter
     if ( defined $init{filter} ) {
-        $self->_set_msgstr_filter( delete $init{filter} );
+        $self->_set_output_filter( delete $init{filter} );
     }
 
     my $keys = join ', ', keys %init;
