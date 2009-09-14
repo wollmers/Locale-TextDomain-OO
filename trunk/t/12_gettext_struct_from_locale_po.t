@@ -15,7 +15,7 @@ BEGIN {
 }
 
 local $ENV{LANGUAGE} = 'de_DE';
-my $text_domain      = 'test_02';
+my $text_domain      = 'test';
 
 my ($loc, %struct);
 lives_ok(

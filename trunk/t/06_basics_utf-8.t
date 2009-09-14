@@ -15,7 +15,7 @@ BEGIN {
 }
 
 local $ENV{LANGUAGE} = 'ru';
-my $text_domain      = 'test_06';
+my $text_domain      = 'test';
 
 my $loc;
 lives_ok(

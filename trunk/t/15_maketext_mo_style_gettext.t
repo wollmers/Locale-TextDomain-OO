@@ -13,7 +13,7 @@ BEGIN {
 }
 
 local $ENV{LANGUAGE} = 'de_DE';
-my $text_domain      = 'test_05';
+my $text_domain      = 'test_maketext_style_gettext';
 
 my $loc;
 lives_ok(

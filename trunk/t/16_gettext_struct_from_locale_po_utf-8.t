@@ -17,7 +17,7 @@ BEGIN {
 }
 
 local $ENV{LANGUAGE} = 'ru';
-my $text_domain      = 'test_06';
+my $text_domain      = 'test_maketext_style_gettext';
 
 my ($loc, %struct);
 lives_ok(
