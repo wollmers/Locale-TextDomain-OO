@@ -11,7 +11,6 @@ use English qw(-no_match_vars $EVAL_ERROR);
 use I18N::LangTags::Detect;
 use I18N::LangTags qw(implicate_supers panic_languages);
 require Safe;
-use Encode qw(decode);
 
 sub new {
     my ($class, %init) = @_;
