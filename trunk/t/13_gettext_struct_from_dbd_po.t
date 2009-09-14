@@ -39,7 +39,7 @@ my $file_path = $loc->get_file_path($text_domain, '.po');
 my $dbh = DBI->connect(
     'DBI:PO:'
     . "f_dir=$file_path;"
-    . 'po_charset=utf-8',
+    . 'po_charset=', # pass bytes of ISO-8859-1 mo file
     undef,
     undef,
     {
