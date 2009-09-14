@@ -139,43 +139,54 @@ sub _maketext2gettext {
 sub maketext {
     my ($self, $msgid, @args) = @_;
 
-    return
-        @args
-        ? $self->_expand_maketext(
-            $self->_get_sub('dgettext')->(
-                $self->_get_text_domain(),
-                $self->_is_gettext_style()
-                ? $self->_maketext2gettext($msgid)
-                : $msgid,
-            ),
+    if ( @args && $self->_is_gettext_style() ) {
+        $msgid = $self->_maketext2gettext($msgid);
+    }
+
+    $self->_run_input_filter(\$msgid);
+
+    my $translation = $self->_get_sub('dgettext')->(
+        $self->_get_text_domain(),
+        $msgid,
+    );
+
+    $self->_run_output_filter(\$translation);
+
+    if (@args) {
+        $translation = $self->_expand_maketext(
+            $translation,
             @args,
-        )
-        : $self->_get_sub('dgettext')->(
-            $self->_get_text_domain(),
-            $msgid,
         );
+    }
+
+    return $translation;
 }
 
 sub maketext_p {
     my ($self, $msgctxt, $msgid, @args) = @_;
 
-    return
-        @args
-        ? $self->_expand_maketext(
-            $self->_get_sub('dpgettext')->(
-                $self->_get_text_domain(),
-                $msgctxt,
-                $self->_is_gettext_style()
-                ? $self->_maketext2gettext($msgid)
-                : $msgid,
-            ),
+    if ( @args && $self->_is_gettext_style() ) {
+        $msgid = $self->_maketext2gettext($msgid);
+    }
+
+    $self->_run_input_filter(\$msgctxt, \$msgid);
+
+    my $translation = $self->_get_sub('dpgettext')->(
+        $self->_get_text_domain(),
+        $msgctxt,
+        $msgid,
+    );
+
+    $self->_run_output_filter(\$translation);
+
+    if (@args) {
+        $translation = $self->_expand_maketext(
+            $translation,
             @args,
-        )
-        : $self->_get_sub('dpgettext')->(
-            $self->_get_text_domain(),
-            $msgctxt,
-            $msgid,
         );
+    }
+
+    return $translation;
 }
 
 1;

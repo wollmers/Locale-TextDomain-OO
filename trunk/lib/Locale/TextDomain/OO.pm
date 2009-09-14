@@ -46,14 +46,14 @@ sub new {
         : caller
     );
 
-    # codeset
-    if ( defined $init{codeset} ) {
-        $self->_set_codeset( delete $init{codeset} );
+    # input filter
+    if ( defined $init{input_filter} ) {
+        $self->_set_input_filter( delete $init{input_filter} );
     }
 
-    # filter
+    # output filter
     if ( defined $init{filter} ) {
-        $self->_set_filter( delete $init{filter} );
+        $self->_set_msgstr_filter( delete $init{filter} );
     }
 
     my $keys = join ', ', keys %init;
@@ -179,32 +179,32 @@ sub _set_text_domain {
     return $self;
 }
 
-sub _set_codeset {
-    my ($self, $encoding) = @_;
-
-    $self->{codeset} = $encoding;
-
-    return $self;
-}
-
-sub _get_codeset {
-    my $self = shift;
-
-    return $self->{codeset};
-}
-
-sub _set_filter {
+sub _set_input_filter {
     my ($self, $filter) = @_;
 
-    $self->{filter} = $filter;
+    $self->{input_filter} = $filter;
 
     return $self;
 }
 
-sub _get_filter {
+sub _get_input_filter {
     my $self = shift;
 
-    return $self->{filter};
+    return $self->{input_filter};
+}
+
+sub _set_output_filter {
+    my ($self, $filter) = @_;
+
+    $self->{output_filter} = $filter;
+
+    return $self;
+}
+
+sub _get_output_filter {
+    my $self = shift;
+
+    return $self->{output_filter};
 }
 
 my $perlify_plural_forms = sub {
@@ -266,21 +266,30 @@ sub _expand {
     return $translation;
 }
 
-sub _run_codeset_and_filter {
-    my ($self, $translation_ref) = @_;
+sub _run_input_filter {
+    my ($self, @refs) = @_;
 
-    my $codeset = $self->_get_codeset();
-    if ($codeset) {
-        ${$translation_ref} = decode(
-            $codeset,
-            ${$translation_ref},
-        );
+    my $filter = $self->_get_input_filter();
+    if ($filter) {
+        my @filter = ref $filter eq 'ARRAY' ? @{$filter} : ($filter);
+        for my $ref (@refs) {
+            ${$ref} = $filter->(
+                ${$ref},
+                @filter,
+            );
+        }
     }
 
-    my $filter = $self->_get_filter();
+    return $self;
+}
+
+sub _run_output_filter {
+    my ($self, $ref) = @_;
+
+    my $filter = $self->_get_output_filter();
     if ($filter) {
-        ${$translation_ref} = $filter->(
-            ${$translation_ref},
+        ${$ref} = $filter->(
+            ${$ref},
             ref $filter eq 'ARRAY' ? @{$filter} : $filter,
         );
     }
@@ -290,6 +299,8 @@ sub _run_codeset_and_filter {
 
 sub __x {
     my ($self, $msgid, %args) = @_;
+
+    $self->_run_input_filter(\$msgid);
 
     my $object = $self->_get_object();
     my $translation
@@ -303,7 +314,7 @@ sub __x {
             $msgid,
         );
 
-    $self->_run_codeset_and_filter(\$translation);
+    $self->_run_output_filter(\$translation);
 
     return
         %args
@@ -316,6 +327,8 @@ sub __x {
 
 sub __nx {
     my ($self, $msgid, $msgid_plural, $count, %args) = @_;
+
+    $self->_run_input_filter(\$msgid, \$msgid_plural);
 
     my $object = $self->_get_object();
     my $translation
@@ -333,7 +346,7 @@ sub __nx {
             $count,
         );
 
-    $self->_run_codeset_and_filter(\$translation);
+    $self->_run_output_filter(\$translation);
 
     return
         %args
@@ -346,6 +359,8 @@ sub __nx {
 
 sub __px {
     my ($self, $msgctxt, $msgid, %args) = @_;
+
+    $self->_run_input_filter(\$msgctxt, \$msgid);
 
     my $object = $self->_get_object();
     my $translation
@@ -361,7 +376,7 @@ sub __px {
             $msgid,
         );
 
-    $self->_run_codeset_and_filter(\$translation);
+    $self->_run_output_filter(\$translation);
 
     return
         %args
@@ -374,6 +389,8 @@ sub __px {
 
 sub __npx { ## no critic (ManyArgs)
     my ($self, $msgctxt, $msgid, $msgid_plural, $count, %args) = @_;
+
+    $self->_run_input_filter(\$msgctxt, \$msgid, \$msgid_plural);
 
     my $object = $self->_get_object();
     my $translation
@@ -393,7 +410,7 @@ sub __npx { ## no critic (ManyArgs)
             $count,
         );
 
-    $self->_run_codeset_and_filter(\$translation);
+    $self->_run_output_filter(\$translation);
 
     return
         %args
