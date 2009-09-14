@@ -12,7 +12,7 @@ require Locale::TextDomain::OO;
 require Locale::Messages::OO::Struct;
 
 local $ENV{LANGUAGE} = 'de_DE';
-my $text_domain      = 'example_02';
+my $text_domain      = 'example';
 
 my $loc = Locale::TextDomain::OO->new(
     gettext_object => Locale::Messages::OO::Struct->new(\my %struct),

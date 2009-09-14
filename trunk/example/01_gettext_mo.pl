@@ -10,7 +10,7 @@ use English qw(-no_match_vars $OS_ERROR);
 require Locale::TextDomain::OO;
 
 local $ENV{LANGUAGE} = 'de_DE';
-my $text_domain      = 'example_01';
+my $text_domain      = 'example';
 
 my $loc = Locale::TextDomain::OO->new(
     text_domain     => $text_domain,
