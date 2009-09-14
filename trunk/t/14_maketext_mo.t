@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 14 + 1;
+use Test::More tests => 15 + 1;
 use Test::NoWarnings;
 use Test::Exception;
 use Test::Differences;
@@ -13,7 +13,7 @@ BEGIN {
 }
 
 local $ENV{LANGUAGE} = 'de_DE';
-my $text_domain      = 'test';
+my $text_domain      = 'test_maketext';
 
 my $loc;
 lives_ok(
@@ -32,6 +32,13 @@ eq_or_diff(
     ),
     'Das ist ein Text.',
     'maketext like __',
+);
+eq_or_diff(
+    $loc->maketext(
+        '§ book',
+    ),
+    '§ Buch',
+    'maketext like __ and umlaut',
 );
 
 eq_or_diff(

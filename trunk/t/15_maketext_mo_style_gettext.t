@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 13 + 1;
+use Test::More tests => 14 + 1;
 use Test::NoWarnings;
 use Test::Exception;
 use Test::Differences;
@@ -34,6 +34,13 @@ eq_or_diff(
     ),
     'Das ist ein Text.',
     'maketext_like __',
+);
+eq_or_diff(
+    $loc->maketext(
+        '§ book',
+    ),
+    '§ Buch',
+    'maketext_like __ and umlaut',
 );
 
 eq_or_diff(

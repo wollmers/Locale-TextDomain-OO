@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 14 + 1;
+use Test::More tests => 15 + 1;
 use Test::NoWarnings;
 use Test::Exception;
 use Test::Differences;
@@ -33,6 +33,13 @@ eq_or_diff(
     ),
     'Das ist ein Text.',
     '__',
+);
+eq_or_diff(
+    $loc->__(
+        '§ book',
+    ),
+    '§ Buch',
+    '__ umlaut',
 );
 
 eq_or_diff(

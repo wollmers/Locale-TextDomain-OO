@@ -8,7 +8,7 @@ use Test::More tests => 4 + 1;
 use Test::NoWarnings;
 use Test::Exception;
 use Test::Differences;
-use Encode qw(decode_utf8);
+use Encode qw(encode_utf8 decode_utf8);
 require DBD::PO::Locale::PO;
 
 BEGIN {
@@ -26,11 +26,8 @@ lives_ok(
             gettext_object => Locale::Messages::OO::Struct->new(\%struct),
             text_domain    => $text_domain,
             search_dirs    => [qw(./t/LocaleData)],
-            filter         => sub {
-                my $string = shift;
-                return decode_utf8($string);
-            },
-
+            input_filter   => \&decode_utf8,
+            filter         => \&encode_utf8,
         );
     },
     'create extended object',
@@ -81,4 +78,11 @@ eq_or_diff(
     ),
     'книга',
     '__',
+);
+eq_or_diff(
+    $loc->__(
+        '§ book',
+    ),
+    '§ книга',
+    '__ umlaut',
 );
