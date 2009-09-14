@@ -24,8 +24,8 @@ my $loc = Locale::TextDomain::OO->new(
 # here fallback to 'de'
 my $file_path = $loc->get_file_path($text_domain, '.po');
 
-binmode STDOUT, ':encoding(utf-8)'
-    or croak "Binmode STDOUT\n$OS_ERROR";
+#binmode STDOUT, ':encoding(utf-8)'
+#    or croak "Binmode STDOUT\n$OS_ERROR";
 
 my $locale_po = DBD::PO::Locale::PO->new();
 my $array_ref = $locale_po->load_file_asarray("$file_path/$text_domain.po");

@@ -17,8 +17,8 @@ my $loc = Locale::TextDomain::OO::Maketext->new(
     search_dirs => [qw(./LocaleData/)],
 );
 
-binmode STDOUT, ':encoding(utf-8)'
-    or croak "Binmode STDOUT\n$OS_ERROR";
+#binmode STDOUT, ':encoding(utf-8)'
+#    or croak "Binmode STDOUT\n$OS_ERROR";
 
 # run all translations
 () = print map {"$_\n"}

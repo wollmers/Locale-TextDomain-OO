@@ -25,14 +25,14 @@ my $loc = Locale::TextDomain::OO->new(
 # here fallback to 'de'
 my $file_path = $loc->get_file_path($text_domain, '.po');
 
-binmode STDOUT, ':encoding(utf-8)'
-    or croak "Binmode STDOUT\n$OS_ERROR";
+#binmode STDOUT, ':encoding(utf-8)'
+#    or croak "Binmode STDOUT\n$OS_ERROR";
 
 # connect
 my $dbh = DBI->connect(
     'DBI:PO:'
     . "f_dir=$file_path;"
-    . 'po_charset=utf-8',
+    . 'po_charset=', # pass bytes of ISO-8859-1 po file
     undef,
     undef,
     {
