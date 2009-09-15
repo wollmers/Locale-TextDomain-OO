@@ -7,6 +7,7 @@ use utf8;
 our $VERSION = 0;
 
 use Carp qw(croak);
+use English qw(-no_match_vars $OS_ERROR);
 require DBI;
 require DBD::PO; DBD::PO->init(qw(:plural));
 require Locale::TextDomain::OO;
@@ -75,6 +76,10 @@ $dbh->disconnect();
         array_ref  => \@array,
     },
 );
+
+# all unicode chars encode to UTF-8
+binmode STDOUT, ':encoding(utf-8)'
+    or croak "Binmode STDOUT\n$OS_ERROR";
 
 # run all translations
 () = print map{"$_\n"}

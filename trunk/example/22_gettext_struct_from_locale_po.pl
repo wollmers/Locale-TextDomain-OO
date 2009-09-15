@@ -5,8 +5,6 @@ use warnings;
 
 our $VERSION = 0;
 
-use Carp qw(croak);
-use English qw(-no_match_vars $OS_ERROR);
 require DBD::PO::Locale::PO;
 require Locale::TextDomain::OO;
 require Locale::Messages::OO::Struct;
@@ -23,9 +21,6 @@ my $loc = Locale::TextDomain::OO->new(
 # find the database for the expected language
 # here fallback to 'de'
 my $file_path = $loc->get_file_path($text_domain, '.po');
-
-#binmode STDOUT, ':encoding(utf-8)'
-#    or croak "Binmode STDOUT\n$OS_ERROR";
 
 my $locale_po = DBD::PO::Locale::PO->new();
 my $array_ref = $locale_po->load_file_asarray("$file_path/$text_domain.po");

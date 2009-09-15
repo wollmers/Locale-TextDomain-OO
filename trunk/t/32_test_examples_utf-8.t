@@ -2,11 +2,12 @@
 
 use strict;
 use warnings;
-use utf8; # ﻿
+use utf8;
 
 use Test::More;
 use Test::Differences;
 use Cwd qw(getcwd chdir);
+use Encode qw(decode_utf8);
 
 $ENV{TEST_EXAMPLE} or plan(
     skip_all => 'Set $ENV{TEST_EXAMPLE} to run this test.'
@@ -29,7 +30,7 @@ EOT
 for my $data (@data) {
     my $dir = getcwd();
     chdir("$dir/$data->{path}");
-    my $result = qx{perl $data->{script} 2>&3};
+    my $result = decode_utf8 qx{perl $data->{script} 2>&3};
     chdir($dir);
     eq_or_diff(
         $result,

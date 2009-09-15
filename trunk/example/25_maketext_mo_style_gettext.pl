@@ -5,8 +5,6 @@ use warnings;
 
 our $VERSION = 0;
 
-use Carp qw(croak);
-use English qw(-no_match_vars $OS_ERROR);
 require Locale::TextDomain::OO::Maketext;
 
 local $ENV{LANGUAGE} = 'de_DE';
@@ -17,9 +15,6 @@ my $loc = Locale::TextDomain::OO::Maketext->new(
     search_dirs => [qw(./LocaleData/)],
     style       => 'gettext',
 );
-
-#binmode STDOUT, ':encoding(utf-8)'
-#    or croak "Binmode STDOUT\n$OS_ERROR";
 
 # run all translations
 () = print map {"$_\n"}

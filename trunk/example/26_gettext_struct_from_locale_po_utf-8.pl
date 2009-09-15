@@ -6,6 +6,8 @@ use utf8;
 
 our $VERSION = 0;
 
+use Carp qw(croak);
+use English qw(-no_match_vars $OS_ERROR);
 use Encode qw(encode_utf8 decode_utf8);
 require DBD::PO::Locale::PO;
 require Locale::TextDomain::OO;
@@ -59,6 +61,10 @@ for my $entry ( @{$array_ref} ) {
         array_ref  => $array_ref,
     },
 );
+
+# all unicode chars encode to UTF-8
+binmode STDOUT, ':encoding(utf-8)'
+    or croak "Binmode STDOUT\n$OS_ERROR";
 
 # run all translations
 () = print map {"$_\n"}

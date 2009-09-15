@@ -21,6 +21,7 @@ Locale::TextDomain->import( $text_domain, qw(./LocaleData) );
 # bind output_filter
 bind_textdomain_filter($text_domain, \&decode_utf8);
 
+# all unicode chars encode to UTF-8
 binmode STDOUT, ':encoding(utf-8)'
     or croak "Binmode STDOUT\n$OS_ERROR";
 

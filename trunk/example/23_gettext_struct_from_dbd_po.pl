@@ -25,9 +25,6 @@ my $loc = Locale::TextDomain::OO->new(
 # here fallback to 'de'
 my $file_path = $loc->get_file_path($text_domain, '.po');
 
-#binmode STDOUT, ':encoding(utf-8)'
-#    or croak "Binmode STDOUT\n$OS_ERROR";
-
 # connect
 my $dbh = DBI->connect(
     'DBI:PO:'
