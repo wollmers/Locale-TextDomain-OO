@@ -15,9 +15,9 @@ plan(tests => 5);
 
 my @data = (
     {
-        test   => 'de',
+        test   => '21_gettext_mo',
         path   => 'example',
-        script => '-I../lib -T 11_gettext_mo.pl',
+        script => '-I../lib -T 21_gettext_mo.pl',
         result => <<'EOT',
 Das ist ein Text.
 Steffen programmiert Perl.
@@ -34,9 +34,9 @@ gute Regale
 EOT
     },
     {
-        test   => 'de',
+        test   => '22_gettext_struct_from_locale_po',
         path   => 'example',
-        script => '-I../lib -T 12_gettext_struct_from_locale_po.pl',
+        script => '-I../lib -T 22_gettext_struct_from_locale_po.pl',
         result => <<'EOT',
 Das ist ein Text.
 Steffen programmiert Perl.
@@ -53,9 +53,9 @@ gute Regale
 EOT
     },
     {
-        test   => 'de',
+        test   => '23_gettext_struct_from_dbd_po',
         path   => 'example',
-        script => '-I../lib -T 13_gettext_struct_from_dbd_po.pl',
+        script => '-I../lib -T 23_gettext_struct_from_dbd_po.pl',
         result => <<'EOT',
 Das ist ein Text.
 Steffen programmiert Perl.
@@ -72,9 +72,9 @@ gute Regale
 EOT
     },
     {
-        test   => 'de',
+        test   => '24_maketext_mo',
         path   => 'example',
-        script => '-I../lib -T 14_maketext_mo.pl',
+        script => '-I../lib -T 24_maketext_mo.pl',
         result => <<'EOT',
 Das ist ein Text.
 Steffen programmiert Perl.
@@ -90,9 +90,9 @@ Sehr geehrter Herr Winkler
 EOT
     },
     {
-        test   => 'de',
+        test   => '25_maketext_mo_style_gettext',
         path   => 'example',
-        script => '-I../lib -T 15_maketext_mo_style_gettext.pl',
+        script => '-I../lib -T 25_maketext_mo_style_gettext.pl',
         result => <<'EOT',
 Das ist ein Text.
 Steffen programmiert Perl.
