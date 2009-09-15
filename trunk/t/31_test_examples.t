@@ -17,7 +17,7 @@ my @data = (
     {
         test   => 'de',
         path   => 'example',
-        script => '-I../lib -T 01_gettext_mo.pl',
+        script => '-I../lib -T 11_gettext_mo.pl',
         result => <<'EOT',
 Das ist ein Text.
 Steffen programmiert Perl.
@@ -36,7 +36,7 @@ EOT
     {
         test   => 'de',
         path   => 'example',
-        script => '-I../lib -T 02_gettext_struct_from_locale_po.pl',
+        script => '-I../lib -T 12_gettext_struct_from_locale_po.pl',
         result => <<'EOT',
 Das ist ein Text.
 Steffen programmiert Perl.
@@ -55,7 +55,7 @@ EOT
     {
         test   => 'de',
         path   => 'example',
-        script => '-I../lib -T 03_gettext_struct_from_dbd_po.pl',
+        script => '-I../lib -T 13_gettext_struct_from_dbd_po.pl',
         result => <<'EOT',
 Das ist ein Text.
 Steffen programmiert Perl.
@@ -74,7 +74,7 @@ EOT
     {
         test   => 'de',
         path   => 'example',
-        script => '-I../lib -T 04_maketext_mo.pl',
+        script => '-I../lib -T 14_maketext_mo.pl',
         result => <<'EOT',
 Das ist ein Text.
 Steffen programmiert Perl.
@@ -92,7 +92,7 @@ EOT
     {
         test   => 'de',
         path   => 'example',
-        script => '-I../lib -T 05_maketext_mo_style_gettext.pl',
+        script => '-I../lib -T 15_maketext_mo_style_gettext.pl',
         result => <<'EOT',
 Das ist ein Text.
 Steffen programmiert Perl.
