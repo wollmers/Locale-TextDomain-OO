@@ -33,7 +33,6 @@ eq_or_diff(
     'Das ist ein Text.',
     '__',
 );
-
 eq_or_diff(
     $loc->__(
         '§ book',

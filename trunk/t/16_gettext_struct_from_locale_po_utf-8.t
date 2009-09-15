@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use utf8;
 
-use Test::More tests => 4 + 1;
+use Test::More tests => 5 + 1;
 use Test::NoWarnings;
 use Test::Exception;
 use Test::Differences;
@@ -17,7 +17,7 @@ BEGIN {
 }
 
 local $ENV{LANGUAGE} = 'ru';
-my $text_domain      = 'test_maketext_style_gettext';
+my $text_domain      = 'test';
 
 my ($loc, %struct);
 lives_ok(
@@ -26,8 +26,8 @@ lives_ok(
             gettext_object => Locale::Messages::OO::Struct->new(\%struct),
             text_domain    => $text_domain,
             search_dirs    => [qw(./t/LocaleData)],
-            input_filter   => \&decode_utf8,
-            filter         => \&encode_utf8,
+            input_filter   => \&encode_utf8,
+            filter         => \&decode_utf8,
         );
     },
     'create extended object',
@@ -79,6 +79,7 @@ eq_or_diff(
     'книга',
     '__',
 );
+
 eq_or_diff(
     $loc->__(
         '§ book',

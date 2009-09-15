@@ -4,14 +4,13 @@ use strict;
 use warnings;
 use utf8;
 
-use Test::More tests => 4 + 1;
+use Test::More tests => 5 + 1;
 use Test::NoWarnings;
 use Test::Exception;
 use Test::Differences;
 use Carp qw(croak);
 require DBI;
 require DBD::PO; DBD::PO->init(qw(:plural));
-use Encode qw(decode_utf8);
 
 BEGIN {
     require_ok('Locale::TextDomain::OO');
@@ -19,7 +18,7 @@ BEGIN {
 }
 
 local $ENV{LANGUAGE} = 'ru';
-my $text_domain      = 'test_maketext_style_gettext';
+my $text_domain      = 'test';
 
 my ($loc, %struct);
 lives_ok(
@@ -28,11 +27,6 @@ lives_ok(
             gettext_object => Locale::Messages::OO::Struct->new(\%struct),
             text_domain    => $text_domain,
             search_dirs    => [qw(./t/LocaleData)],
-            filter         => sub {
-                my $string = shift;
-                return decode_utf8($string);
-            },
-
         );
     },
     'create extended object',
@@ -101,6 +95,7 @@ eq_or_diff(
     'книга',
     '__',
 );
+
 eq_or_diff(
     $loc->__(
         '§ book',
