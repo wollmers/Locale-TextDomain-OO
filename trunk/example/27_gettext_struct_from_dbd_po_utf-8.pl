@@ -82,12 +82,35 @@ binmode STDOUT, ':encoding(utf-8)'
     or croak "Binmode STDOUT\n$OS_ERROR";
 
 # run all translations
-() = print map{"$_\n"}
+() = print map {"$_\n"}
     $loc->__(
         'book',
     ),
     $loc->__(
         '§ book',
+    ),
+    $loc->__n(
+        '§§ book',
+        '§§ books',
+        0,
+    ),
+    $loc->__n(
+        '§§ book',
+        '§§ books',
+        1,
+    ),
+    $loc->__n(
+        '§§ book',
+        '§§ books',
+        2,
+    ),
+    $loc->__p(
+        'c',
+        'c book',
+    ),
+    $loc->__p(
+        'c§',
+        'c§ book',
     );
 
 # $Id$
@@ -98,3 +121,8 @@ Output:
 
 книга
 § книга
+§§ книг
+§§ книга
+§§ книги
+c книга
+c§ книга

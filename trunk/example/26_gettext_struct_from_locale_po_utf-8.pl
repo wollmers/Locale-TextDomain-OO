@@ -73,6 +73,29 @@ binmode STDOUT, ':encoding(utf-8)'
     ),
     $loc->__(
         '§ book',
+    ),
+    $loc->__n(
+        '§§ book',
+        '§§ books',
+        0,
+    ),
+    $loc->__n(
+        '§§ book',
+        '§§ books',
+        1,
+    ),
+    $loc->__n(
+        '§§ book',
+        '§§ books',
+        2,
+    ),
+    $loc->__p(
+        'c',
+        'c book',
+    ),
+    $loc->__p(
+        'c§',
+        'c§ book',
     );
 
 # $Id$
@@ -83,3 +106,8 @@ Output:
 
 книга
 § книга
+§§ книг
+§§ книга
+§§ книги
+c книга
+c§ книга

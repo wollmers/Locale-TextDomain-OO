@@ -1,4 +1,4 @@
-#!perl -T
+﻿#!perl -T
 
 use strict;
 use warnings;
@@ -32,6 +32,29 @@ binmode STDOUT, ':encoding(utf-8)'
     ),
     __(
         encode_utf8('§ book'),
+    ),
+    __n(
+        encode_utf8('§§ book'),
+        encode_utf8('§§ books'),
+        0,
+    ),
+    __n(
+        encode_utf8('§§ book'),
+        encode_utf8('§§ books'),
+        1,
+    ),
+    __n(
+        encode_utf8('§§ book'),
+        encode_utf8('§§ books'),
+        2,
+    ),
+    __p(
+        'c',
+        'c book',
+    ),
+    __p(
+        encode_utf8('c§'),
+        encode_utf8('c§ book'),
     );
 
 # $Id$
@@ -42,3 +65,8 @@ Output:
 
 книга
 § книга
+§§ книг
+§§ книга
+§§ книги
+c книга
+c§ книга
