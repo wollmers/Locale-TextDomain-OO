@@ -19,7 +19,7 @@ my $text_domain      = 'test';
 my $loc = Locale::TextDomain::OO->new(
     gettext_object => Locale::Messages::OO::Struct->new(\my %struct),
     text_domain    => $text_domain,
-    search_dirs    => [qw(./t/LocaleData)],
+    search_dirs    => [qw(./LocaleData)],
 );
 
 # find the database for the expected language

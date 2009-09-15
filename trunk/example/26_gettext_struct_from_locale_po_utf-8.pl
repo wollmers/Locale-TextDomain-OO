@@ -19,7 +19,7 @@ my $text_domain      = 'test';
 my $loc = Locale::TextDomain::OO->new(
     gettext_object => Locale::Messages::OO::Struct->new(\my %struct),
     text_domain    => $text_domain,
-    search_dirs    => [qw(./t/LocaleData)],
+    search_dirs    => [qw(./LocaleData)],
     input_filter   => \&encode_utf8,
     filter         => \&decode_utf8,
 );
