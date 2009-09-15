@@ -4,33 +4,22 @@ use strict;
 use warnings;
 use utf8;
 
-use Test::More tests => 5 + 1;
-use Test::NoWarnings;
-use Test::Exception;
-use Test::Differences;
+our $VERSION = 0;
+
 use Encode qw(encode_utf8 decode_utf8);
 require DBD::PO::Locale::PO;
-
-BEGIN {
-    require_ok('Locale::TextDomain::OO');
-    require_ok('Locale::Messages::OO::Struct');
-}
+require Locale::TextDomain::OO;
+require Locale::Messages::OO::Struct;
 
 local $ENV{LANGUAGE} = 'ru';
 my $text_domain      = 'test';
 
-my ($loc, %struct);
-lives_ok(
-    sub {
-        $loc = Locale::TextDomain::OO->new(
-            gettext_object => Locale::Messages::OO::Struct->new(\%struct),
-            text_domain    => $text_domain,
-            search_dirs    => [qw(./t/LocaleData)],
-            input_filter   => \&encode_utf8,
-            filter         => \&decode_utf8,
-        );
-    },
-    'create extended object',
+my $loc = Locale::TextDomain::OO->new(
+    gettext_object => Locale::Messages::OO::Struct->new(\my %struct),
+    text_domain    => $text_domain,
+    search_dirs    => [qw(./t/LocaleData)],
+    input_filter   => \&encode_utf8,
+    filter         => \&decode_utf8,
 );
 
 # find the database for the expected language
@@ -72,18 +61,19 @@ for my $entry ( @{$array_ref} ) {
 );
 
 # run all translations
-eq_or_diff(
+() = print map {"$_\n"}
     $loc->__(
         'book',
     ),
-    'книга',
-    '__',
-);
-
-eq_or_diff(
     $loc->__(
         '§ book',
-    ),
-    '§ книга',
-    '__ umlaut',
-);
+    );
+
+# $Id$
+
+__END__
+
+Output:
+
+книга
+§ книга

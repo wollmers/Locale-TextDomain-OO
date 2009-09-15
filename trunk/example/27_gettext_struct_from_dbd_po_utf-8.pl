@@ -4,32 +4,21 @@ use strict;
 use warnings;
 use utf8;
 
-use Test::More tests => 5 + 1;
-use Test::NoWarnings;
-use Test::Exception;
-use Test::Differences;
+our $VERSION = 0;
+
 use Carp qw(croak);
 require DBI;
 require DBD::PO; DBD::PO->init(qw(:plural));
-
-BEGIN {
-    require_ok('Locale::TextDomain::OO');
-    require_ok('Locale::Messages::OO::Struct');
-}
+require Locale::TextDomain::OO;
+require Locale::Messages::OO::Struct;
 
 local $ENV{LANGUAGE} = 'ru';
 my $text_domain      = 'test';
 
-my ($loc, %struct);
-lives_ok(
-    sub {
-        $loc = Locale::TextDomain::OO->new(
-            gettext_object => Locale::Messages::OO::Struct->new(\%struct),
-            text_domain    => $text_domain,
-            search_dirs    => [qw(./t/LocaleData)],
-        );
-    },
-    'create extended object',
+my $loc = Locale::TextDomain::OO->new(
+    gettext_object => Locale::Messages::OO::Struct->new(\my %struct),
+    text_domain    => $text_domain,
+    search_dirs    => [qw(./t/LocaleData)],
 );
 
 # find the database for the expected language
@@ -88,18 +77,19 @@ $dbh->disconnect();
 );
 
 # run all translations
-eq_or_diff(
+() = print map{"$_\n"}
     $loc->__(
         'book',
     ),
-    'книга',
-    '__',
-);
-
-eq_or_diff(
     $loc->__(
         '§ book',
-    ),
-    '§ книга',
-    '__ umlaut',
-);
+    );
+
+# $Id$
+
+__END__
+
+Output:
+
+книга
+§ книга
