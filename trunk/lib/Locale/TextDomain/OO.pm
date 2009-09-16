@@ -223,7 +223,7 @@ sub get_nplurals {
     my $code = <<"EOC";
         my \$n = 0;
         my (\$nplurals, \$plural);
-        $plural_forms
+        $plural_forms;
         \$nplurals;
 EOC
     my $nplurals = Safe->new()->reval($code)
