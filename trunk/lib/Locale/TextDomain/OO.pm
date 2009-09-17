@@ -564,7 +564,7 @@ Run the examples of this distribution.
 
       Application calls     Application calls     Application calls
       TextDomain methods    TextDomain methods     method maketext
-          (the goal)       and Maketext methods    (the beginning)
+          (the goal)       and Maketext methods     (the begin)
               |              (the changeover)            |
               |                      |                   |
               |                      v                   v
