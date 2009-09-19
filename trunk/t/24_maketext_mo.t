@@ -23,6 +23,7 @@ lives_ok(
             search_dirs => [qw(./t/LocaleData/)],
         );
     },
+    'create maketext object',
 );
 
 # run all translations

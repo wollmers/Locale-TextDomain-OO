@@ -562,24 +562,34 @@ Run the examples of this distribution.
 
 =head2 Overview
 
-      Application calls     Application calls     Application calls
-      TextDomain methods    TextDomain methods     method maketext
-          (the goal)       and Maketext methods     (the begin)
-              |              (the changeover)            |
-              |                      |                   |
-              |                      v                   v
-              |            .----------------------------------.
-              |            |          Interface like          |
-              |            |     Locale::Maketext::Simple     |
-              |            |               and (!)            |
-              |            |      Locale::TextDomain::OO      |
-              |            |----------------------------------|
-              |            | Locale::TextDomain::OO::Maketext |
-              |            `----------------------------------'
+      Application calls     Application calls       Application calls
+       TextDomain subs   .-- TextDomain subs         method maketext
+          (the goal)     | and Maketext methods -.   (the beginning)
+              |          |   (the changeover)    |          |
+              |          |                       |          '-----------.
+              |          |                       '------------------.   |
+              |          v                                          |   |
+              |   .---------------------------------------------.   |   |
+              |   |             functional interface            |   |   |
+              |   |---------------------------------------------|   |   |
+              |   | Locale::TextDomain::OO::FunctionalInterface |   |   |
+              |   |---------------------------------------------|   |   |
+              |   |                 calls methods               |   |   |
+              |   `---------------------------------------------'   |   |
+              |                          |                          |   |
+              |                          v                          v   v
+              |            .------------------------------------------------.
+              |            |               OO interface like                |
+              |            |            Locale::Maketext::Simple            |
+              |            |                      and (!)                   |
+              |            |             Locale::TextDomain::OO             |
+              |            |------------------------------------------------|
+              |            |        Locale::TextDomain::OO::Maketext        |
+              |            `------------------------------------------------'
               |                |
               v                v
           .------------------------.
-          |     Interface like     |
+          |     interface like     |
           |   Locale::TextDomain   |
           |------------------------|
           | Locale::TextDomain::OO |
@@ -593,7 +603,7 @@ Run the examples of this distribution.
            |                               |
            |                               v
            |                     .-------------------.
-           |                     |    Datastruct     |
+           |                     |    data struct    |
            |                     |-------------------|
            |                     |  |                |
            |                     |  +--[text domain] |
