@@ -12,6 +12,7 @@ use Encode qw(encode_utf8 decode_utf8);
 require DBD::PO::Locale::PO;
 require Locale::TextDomain::OO;
 require Locale::Messages::OO::Struct;
+use Locale::TextDomain::OO::FunctionalInterface qw(bind_object);
 
 local $ENV{LANGUAGE} = 'ru';
 my $text_domain      = 'test';
@@ -66,34 +67,37 @@ for my $entry ( @{$array_ref} ) {
 binmode STDOUT, ':encoding(utf-8)'
     or croak "Binmode STDOUT\n$OS_ERROR";
 
+# allow functions to call object methods
+bind_object($loc);
+
 # run all translations
 () = print map {"$_\n"}
-    $loc->__(
+    __(
         'book',
     ),
-    $loc->__(
+    __(
         '§ book',
     ),
-    $loc->__n(
+    __n(
         '§§ book',
         '§§ books',
         0,
     ),
-    $loc->__n(
+    __n(
         '§§ book',
         '§§ books',
         1,
     ),
-    $loc->__n(
+    __n(
         '§§ book',
         '§§ books',
         2,
     ),
-    $loc->__p(
+    __p(
         'c',
         'c book',
     ),
-    $loc->__p(
+    __p(
         'c§',
         'c§ book',
     );

@@ -8,6 +8,7 @@ our $VERSION = 0;
 require DBD::PO::Locale::PO;
 require Locale::TextDomain::OO;
 require Locale::Messages::OO::Struct;
+use Locale::TextDomain::OO::FunctionalInterface qw(bind_object);
 
 local $ENV{LANGUAGE} = 'de_DE';
 my $text_domain      = 'example';
@@ -57,67 +58,70 @@ for my $entry ( @{$array_ref} ) {
     },
 );
 
+# allow functions to call object methods
+bind_object($loc);
+
 # run all translations
 () = print map {"$_\n"}
-    $loc->__(
+    __(
         'This is a text.',
     ),
-    $loc->__x(
+    __x(
         '{name} is programming {language}.',
         name     => 'Steffen',
         language => 'Perl',
     ),
-    $loc->__n(
+    __n(
         'Singular',
         'Plural',
         1,
     ),
-    $loc->__n(
+    __n(
         'Singular',
         'Plural',
         2,
     ),
-    $loc->__nx(
+    __nx(
         '{num} shelf',
         '{num} shelves',
         1,
         num => 1,
     ),
-    $loc->__nx(
+    __nx(
         '{num} shelf',
         '{num} shelves',
         2,
         num => 2,
     ),
-    $loc->__p(
+    __p(
         'maskulin',
         'Dear',
     ),
-    $loc->__px(
+    __px(
         'maskulin',
         'Dear {name}',
         name => 'Winkler',
     ),
-    $loc->__np(
+    __np(
         'better',
         'shelf',
         'shelves',
         1,
     ),
-    $loc->__np(
+    __np(
         'better',
         'shelf',
         'shelves',
         2,
     ),
-    $loc->__npx(
+    __npx(
         'better',
         '{num} shelf',
         '{num} shelves',
         1,
         num => 1,
     ),
-    $loc->__npx(
+    __npx(
         'better',
         '{num} shelf',
         '{num} shelves',
