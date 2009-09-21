@@ -23,6 +23,8 @@ DEPENDENCIES
 
 This module requires these other modules and libraries:
 
+    version
+    parent
     Safe
     Perl6::Export::Attrs
     I18N::LangTags
