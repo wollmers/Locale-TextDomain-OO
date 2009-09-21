@@ -12,6 +12,7 @@ Module::Build->new(
     requires          => {
         perl                   => 5.006,
         version                => 0,
+        parent                 => 0,
         'Perl6::Export::Attrs' => 0,
         'I18N::LangTags'       => 0,
         Safe                   => 0,
