@@ -7,14 +7,14 @@ our $VERSION = 0;
 
 require DBD::PO::Locale::PO;
 require Locale::TextDomain::OO;
-require Locale::Messages::OO::Struct;
+require Locale::TextDomain::OO::MessagesStruct;
 use Locale::TextDomain::OO::FunctionalInterface qw(bind_object);
 
 local $ENV{LANGUAGE} = 'de_DE';
 my $text_domain      = 'example';
 
 my $loc = Locale::TextDomain::OO->new(
-    gettext_object => Locale::Messages::OO::Struct->new(\my %struct),
+    gettext_object => Locale::TextDomain::OO::MessagesStruct->new(\my %struct),
     text_domain    => $text_domain,
     search_dirs    => [qw(./LocaleData/)],
 );

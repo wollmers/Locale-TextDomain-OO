@@ -1,4 +1,4 @@
-package Locale::Messages::OO::Struct;
+package Locale::TextDomain::OO::MessagesStruct;
 
 use strict;
 use warnings;
@@ -137,7 +137,7 @@ __END__
 
 =head1 NAME
 
-Locale::Messages::OO::Struct - Perl Interface extension to use gettext and not mo-files
+Locale::TextDomain::OO::MessagesStruct - Perl Interface extension to use gettext and not mo-files
 
 $Id$
 
@@ -154,8 +154,8 @@ Maybe such data were read from a database.
 
 =head1 SYNOPSIS
 
-    require Locale::Text::Domain::OO;
-    require Locale::Messages::OO::Struct;
+    require Locale::TextDomain::OO;
+    require Locale::TextDomain::OO::MessagesStruct;
 
 =head1 SUBROUTINES/METHODS
 
@@ -165,7 +165,7 @@ Maybe such data were read from a database.
 
     my $loc = Locale::TextDomain::OO->new(
        ...
-       gettext_object => Locale::Messages::OO::Struct->new(\my %struct),
+       gettext_object => Locale::TextDomain::OO::MessagesStruct->new(\my %struct),
        ...
     );
 

@@ -11,14 +11,14 @@ use English qw(-no_match_vars $OS_ERROR);
 use Encode qw(encode_utf8 decode_utf8);
 require DBD::PO::Locale::PO;
 require Locale::TextDomain::OO;
-require Locale::Messages::OO::Struct;
+require Locale::TextDomain::OO::MessagesStruct;
 use Locale::TextDomain::OO::FunctionalInterface qw(bind_object);
 
 local $ENV{LANGUAGE} = 'ru';
 my $text_domain      = 'test';
 
 my $loc = Locale::TextDomain::OO->new(
-    gettext_object => Locale::Messages::OO::Struct->new(\my %struct),
+    gettext_object => Locale::TextDomain::OO::MessagesStruct->new(\my %struct),
     text_domain    => $text_domain,
     search_dirs    => [qw(./LocaleData)],
     input_filter   => \&encode_utf8,

@@ -20,7 +20,7 @@ This is the explanation which file shows what.
     This example uses the German ISO-8859-1 example.mo file.
 
 22_gettext_struct_from_locale_po.pl
-    This example shows, how to use Locale::Messages::OO::Struct to use data not from mo files (here po files).
+    This example shows, how to use Locale::TextDomain::OO::MessagesStruct to use data not from mo files (here po files).
     The IO layers are not set, so a char is equal a byte.
     This example uses the German ISO-8859-1 example.po file.
 

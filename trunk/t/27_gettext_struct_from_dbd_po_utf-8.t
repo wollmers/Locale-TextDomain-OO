@@ -14,7 +14,7 @@ require DBD::PO; DBD::PO->init(qw(:plural));
 
 BEGIN {
     require_ok('Locale::TextDomain::OO');
-    require_ok('Locale::Messages::OO::Struct');
+    require_ok('Locale::TextDomain::OO::MessagesStruct');
 }
 
 local $ENV{LANGUAGE} = 'ru';
@@ -24,7 +24,7 @@ my ($loc, %struct);
 lives_ok(
     sub {
         $loc = Locale::TextDomain::OO->new(
-            gettext_object => Locale::Messages::OO::Struct->new(\%struct),
+            gettext_object => Locale::TextDomain::OO::MessagesStruct->new(\%struct),
             text_domain    => $text_domain,
             search_dirs    => [qw(./t/LocaleData)],
         );
