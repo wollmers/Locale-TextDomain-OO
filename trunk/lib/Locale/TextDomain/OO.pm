@@ -430,7 +430,7 @@ BEGIN {
     # Dummy methods for string marking.
     my $dummy = sub {
         my (undef, @more) = @_;
-        return join q{,}, map {defined $_ ? $_ : 'undef'} @more;
+        return @more;
     };
     *N__    = $dummy;
     *N__x   = $dummy;

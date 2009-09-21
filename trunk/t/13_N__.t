@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 11 + 1;
+use Test::More tests => 10 + 1;
 use Test::NoWarnings;
 use Test::Exception;
 use Test::Differences;
@@ -22,13 +22,6 @@ lives_ok(
 
 eq_or_diff(
     $loc->N__(
-        undef,
-    ),
-    'undef',
-    'N__',
-);
-eq_or_diff(
-    $loc->N__(
         'This is a text.',
     ),
     'This is a text.',
@@ -36,74 +29,98 @@ eq_or_diff(
 );
 
 eq_or_diff(
-    $loc->N__x(
+    [ $loc->N__x(
         '{name} is programming {language}.',
         name     => 'Steffen',
         language => 'Perl',
-    ),
-    '{name} is programming {language}.,name,Steffen,language,Perl',
+    ) ],
+    [
+    	'{name} is programming {language}.',
+    	'name',
+    	'Steffen',
+    	'language',
+    	'Perl',
+    ],
     'N__x',
 );
 
 eq_or_diff(
-    $loc->N__n(
+    [ $loc->N__n(
         'Singular',
         'Plural',
         1,
-    ),
-    'Singular,Plural,1',
+    ) ],
+    [ qw(Singular Plural 1) ],
     'N__n',
 );
 
 eq_or_diff(
-    $loc->N__nx(
+    [ $loc->N__nx(
         '{num} shelf',
         '{num} shelves',
         1,
         num => 1,
-    ),
-    '{num} shelf,{num} shelves,1,num,1',
+    ) ],
+    [
+        '{num} shelf',
+        '{num} shelves',
+        1,
+        'num',
+        1,
+    ],
     'N__nx',
 );
 
 eq_or_diff(
-    $loc->N__p(
+    [ $loc->N__p(
         'maskulin',
         'Dear',
-    ),
-    'maskulin,Dear',
+    ) ],
+    [ qw(maskulin Dear) ],
     'N__p',
 );
 
 eq_or_diff(
-    $loc->N__px(
+    [ $loc->N__px(
         'maskulin',
         'Dear {name}',
         name => 'Winkler',
-    ),
-    'maskulin,Dear {name},name,Winkler',
+    ) ],
+    [
+        'maskulin',
+        'Dear {name}',
+        'name',
+        'Winkler',
+    ],
     'N__px',
 );
 
 eq_or_diff(
-    $loc->N__np(
+    [ $loc->N__np(
         'better',
         'shelf',
         'shelves',
         1,
-    ),
-    'better,shelf,shelves,1',
+    ) ],
+    [ qw(better shelf shelves 1) ],
     'N__np',
 );
 
 eq_or_diff(
-    $loc->N__npx(
+    [ $loc->N__npx(
         'better',
         '{num} shelf',
         '{num} shelves',
         1,
         num => 1,
-    ),
-    'better,{num} shelf,{num} shelves,1,num,1',
+    ) ],
+    [
+        'better',
+        '{num} shelf',
+        '{num} shelves',
+        1,
+        'num',
+        1,
+    ],
     'N__npx',
 );
