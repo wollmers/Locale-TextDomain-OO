@@ -3,7 +3,7 @@ package Locale::TextDomain::OO::Maketext;
 use strict;
 use warnings;
 
-our $VERSION = '0.01';
+use version; our $VERSION = qv('0.01');
 
 use parent qw(Locale::TextDomain::OO);
 use Carp qw(croak);

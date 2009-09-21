@@ -3,7 +3,7 @@ package Locale::TextDomain::OO::FunctionalInterface;
 use strict;
 use warnings;
 
-our $VERSION = '0.01';
+use version; our $VERSION = qv('0.01');
 
 use Perl6::Export::Attrs;
 
