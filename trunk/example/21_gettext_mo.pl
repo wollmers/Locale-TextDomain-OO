@@ -13,8 +13,8 @@ my $text_domain      = 'example';
 
 bind_object(
     Locale::TextDomain::OO->new(
-        text_domain     => $text_domain,
-        search_dirs     => [qw(./LocaleData/)],
+        text_domain => $text_domain,
+        search_dirs => [qw(./LocaleData/)],
     ),
 );
 
