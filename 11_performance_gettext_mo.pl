@@ -5,88 +5,86 @@ use warnings;
 
 our $VERSION = 0;
 
-use Carp qw(croak);
-use English qw(-no_match_vars $OS_ERROR $EVAL_ERROR);
 require Locale::TextDomain::OO;
+use Locale::TextDomain::OO::FunctionalInterface qw(bind_object);
 
 local $ENV{LANGUAGE} = 'de_DE';
-my $text_domain      = 'example_01';
+my $text_domain      = 'example';
 
-my $loc = Locale::TextDomain::OO->new(
-    text_domain     => $text_domain,
-    search_dirs     => [qw(./LocaleData/)],
+bind_object(
+    Locale::TextDomain::OO->new(
+        text_domain => $text_domain,
+        search_dirs => [qw(./LocaleData/)],
+    ),
 );
-
-binmode STDOUT, ':encoding(utf-8)'
-    or croak "Binmode STDOUT\n$OS_ERROR";
 
 # run all translations
 () = 
-    $loc->__(
+    __(
         'This is a text.',
     ),
-    $loc->__x(
+    __x(
         '{name} is programming {language}.',
         name     => 'Steffen',
         language => 'Perl',
     ),
-    $loc->__n(
+    __n(
         'Singular',
         'Plural',
         1,
     ),
-    $loc->__n(
+    __n(
         'Singular',
         'Plural',
         2,
     ),
-    $loc->__nx(
+    __nx(
         '{num} shelf',
         '{num} shelves',
         1,
         num => 1,
     ),
-    $loc->__nx(
+    __nx(
         '{num} shelf',
         '{num} shelves',
         2,
         num => 2,
     ),
-    $loc->__p(
+    __p(
         'maskulin',
         'Dear',
     ),
-    $loc->__px(
+    __px(
         'maskulin',
         'Dear {name}',
         name => 'Winkler',
     ),
-    $loc->__np(
+    __np(
         'better',
         'shelf',
         'shelves',
         1,
     ),
-    $loc->__np(
+    __np(
         'better',
         'shelf',
         'shelves',
         2,
     ),
-    $loc->__npx(
+    __npx(
         'better',
         '{num} shelf',
         '{num} shelves',
         1,
         num => 1,
     ),
-    $loc->__npx(
+    __npx(
         'better',
         '{num} shelf',
         '{num} shelves',
         2,
         num => 2,
-    ) for (0 .. 1000);
+    ) for (1 .. 1000);
 
 # $Id: 01_gettext_mo.pl 15 2009-08-30 11:13:33Z steffenw $
 
