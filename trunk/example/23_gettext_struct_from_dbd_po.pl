@@ -10,14 +10,14 @@ use English qw(-no_match_vars $OS_ERROR);
 require DBI;
 require DBD::PO; DBD::PO->init(qw(:plural));
 require Locale::TextDomain::OO;
-require Locale::Messages::OO::Struct;
+require Locale::TextDomain::OO::MessagesStruct;
 use Locale::TextDomain::OO::FunctionalInterface qw(bind_object);
 
 local $ENV{LANGUAGE} = 'de_DE';
 my $text_domain      = 'example';
 
 my $loc = Locale::TextDomain::OO->new(
-    gettext_object => Locale::Messages::OO::Struct->new(\my %struct),
+    gettext_object => Locale::TextDomain::OO::MessagesStruct->new(\my %struct),
     text_domain    => $text_domain,
     search_dirs    => [qw(./LocaleData/)],
 );
