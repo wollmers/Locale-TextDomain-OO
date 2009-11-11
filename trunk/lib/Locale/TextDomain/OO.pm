@@ -37,6 +37,13 @@ sub new {
         : $self->_get_default_search_dirs()
     );
 
+    # Set code to detect the language.
+    $self->_set_language_detect(
+        ref $init{langage_detect} eq 'CODE'
+        delete $init{langage_detect}
+        $self->_get_language_detect_default();
+    );
+
     # The text domain is a non empty string.
     # The default text domain is the package name of the caller.
     $self->_set_text_domain(
@@ -131,6 +138,30 @@ sub _set_search_dirs {
     return $self;
 }
 
+sub _set_language_detect {
+    my ($self, $code) = @_;
+
+    $self->{language_detect} = $code;
+
+    return $self;
+}
+
+sub _get_language_detect {
+    my $self = shift;
+
+    return $self->{language_detect};
+}
+
+sub _get_language_detect_default {
+    my $self = shift;
+
+    return sub {
+        my @languages_want = I18N::LangTags::Detect::detect();
+        my @languages_all  = implicate_supers(@languages_want);
+        return @languages_all, panic_languages(@languages_all);
+    }
+}
+
 sub _get_text_domain {
     my $self = shift;
 
@@ -140,9 +171,7 @@ sub _get_text_domain {
 sub get_file_path {
     my ($self, $text_domain, $suffix) = @_;
 
-    my @languages_want = I18N::LangTags::Detect::detect();
-    my @languages_all  = implicate_supers(@languages_want);
-    push @languages_all, panic_languages(@languages_all);
+    my @languages_all = $self->_get_language_detect()->();
     my @search_dirs = map {
         abs_path $_;
     } @{ $self->_get_search_dirs() };
@@ -637,50 +666,79 @@ Run the examples of this distribution.
 
 =head2 method new
 
-The text domain is __PACKAGE__.
+=head3 optinal parameter text_domain
 
-    my $loc = Locale::TextDoamin::OO->new();
-
-or
+Set the default text domian __PACKAGE__.
 
     my $loc = Locale::TextDoamin::OO->new(
-        text_domain => __PACKAGE__,
         ...
     );
 
-Note the text domain.
+Set the text domain.
 
     my $loc = Locale::TextDoamin::OO->new(
-        text_domain => 'my-package',
+        ...
+        text_domain => 'exapmle',
         ...
     );
 
-Note the search dirs.
+=head3 optional parameter search_dirs
+
+Set the search dirs.
 
     my $loc = Locale::TextDoamin::OO->new(
-        local_dirs => \@local_dirs,
+        ...
+        search_dirs => \@local_dirs,
         ...
     );
+
+The default for search_dirs is:
+
+    my @locale_dirs = map {
+        -d "$_/LocaleData"
+        ? "$_/LocaleData"
+        : ();
+    } (
+        @INC,
+        qw(/usr/share/locale /usr/local/share/locale),
+    );
+
+=head3 optional parameter gettext_package or alternative gettext_object
 
 Note, that the default of gettest_package is L<Locale::Messages>.
-This package have to implement the subroutines
+This package has to implement the subroutines
 'dgettext', 'dngettext', 'dpgettext', 'dnpgettext'
 and can implement the subroutine 'bindtextdomain'.
 
     my $loc = Locale::TextDoamin::OO->new(
-        gettext_package => 'Locale::Messages::AnyObject',
-        text_domain     => 'example',
-        local_dirs      => \@local_dirs,
+        gettext_package => 'Package::With::Subroutines',
+        ...
     );
 
-Or the package have to implement the methods
+Or alternative the package which has to implement the methods
 'dgettext', 'dngettext', 'dpgettext', 'dnpgettext'.
 
     my $loc = Locale::TextDoamin::OO->new(
         gettext_object => Locale::TextDomain::OO::MessagesStruct->new(\my %struct),
-        text_domain     => 'example',
-        local_dirs      => \@local_dirs,
+        ...
     );
+
+=head3 optional parameter language_detect
+
+Describe as code, how to detect the language.
+This example code describes the default.
+
+    my $loc = Locale::TextDoamin::OO->new(
+        ...
+        language_detect => sub {
+           my @languages_want = I18N::LangTags::Detect::detect();
+           my @languages_all  = implicate_supers(@languages_want);
+           return @languages_all, panic_languages(@languages_all);
+        },
+        ...
+    );
+
+Read L<I18N::LangTags>, panic_languages for more informations.
 
 =head2 method get_file_path
 
@@ -697,7 +755,6 @@ If possible, extract this informations automaticly from the database.
 
 Than the method get_file_path checks the wanted languages
 and matches the existing langauges.
-Read L<I18N::LangTags>, panic_languages for more informations.
 
     my ($dir, $language) = $loc->get_file_path($text_domain, $file_suffix);
 
