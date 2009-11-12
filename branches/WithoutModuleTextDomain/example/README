@@ -1,0 +1,56 @@
+Locale-Text-Domain-OO folder example
+====================================
+
+This is the explanation which file shows what.
+
+01_locale_textdomian_utf-8.pl
+    This example does not use Locale::Text-Domain::OO.
+    It shows how to use the Perl Unicode internal representation as chars.
+    Locale::Messages and Locale::TextDomain only transporting UTF-8 bytes, not Unicode chars.
+    All this recodes running like from_to (Encode).
+    The filter (output filter) allows to change the output of Locale::Messages using decode_utf8 (Encode).
+    But there is no input filter if the msgstr, msgstr_plural or msgctxt contains Unicode chars.
+    For this reason I wrapped the function encode_utf8 (Encode) around.
+    But this is poor.
+    This example uses the Russian UTF-8 mo file.
+
+21_gettext_mo.pl
+    This example shows, how to use Locale::Text-Domain::OO.
+    The IO layers are not set, so a char is equal a byte.
+    This example uses the German ISO-8859-1 example.mo file.
+
+22_gettext_struct_from_locale_po.pl
+    This example shows, how to use Locale::TextDomain::OO::MessagesStruct to use data not from mo files (here po files).
+    The IO layers are not set, so a char is equal a byte.
+    This example uses the German ISO-8859-1 example.po file.
+
+23_gettext_struct_from_dbd_po.pl
+    This example is similar to the example before.
+    The difference is, that DBD::PO is a SQL database interface for po files.
+    So you can see, how to bind any database interface as data source.
+    The IO layers are not set, so a char is equal to a bytes.
+    This example uses the German ISO-8859-1 example.po file.
+
+24_maketext_mo.pl
+    This example shows, how to use Locale::TextDomain::Maketext to use mo files with maketext placeholders.
+    This is useful if you want to port from Locale::Maketext to Locale::TextDomain.
+    This allows placeholders like Locale::Maketext: [_1], [quant,_1,...], [*,_1,...]
+    and the placeholders of Locale::TextDomain too.
+    The IO layers are not set, so a char is equal to a bytes.
+    This example uses the German ISO-8859-1 example_maketext.po file.
+
+25_maketext_mo_style_gettext.pl
+    This example is similar to the example before.
+    The placeholders are switched to gettext style: %1, %quant(%1,...), %*(%1,...)
+    The IO layers are not set, so a char is equal to a bytes.
+    This example uses the German ISO-8859-1 example_maketext_style_getext.po file.
+
+26_gettext_struct_from_locale_po_utf-8.pl
+    This example is similar to "22_gettext_struct_from_locale_po.pl".
+    Look for the difference between both and realize, what is to do for Unicode.
+    This example uses the Russian UTF-8 example.po file.
+
+27_gettext_struct_from_dbd_po_utf-8.pl
+    This example is similar to "23_gettext_struct_from_dbd_po.pl".
+    Look for the difference between both and realize, what is to do for Unicode.
+    This example uses the Russian UTF-8 example.po file.
