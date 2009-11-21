@@ -12,6 +12,20 @@ use I18N::LangTags::Detect;
 use I18N::LangTags qw(implicate_supers panic_languages);
 require Safe;
 
+# Try to load the C version first.
+my $is_xs = eval <<'EO_CODE'; ## no critic (StringyEval)
+    require Locale::gettext_xs;
+    my $version = Locale::gettext_xs::__gettext_xs_version();
+    $version >= '1.20'
+        or croak "gettext_xs_version $version is to old.";
+    $is_xs = 1;
+    $package = 'gettext_xs';
+    1; # eval result
+EO_CODE
+if (! $is_xs) {
+    require Locale::gettext_pp;
+}
+
 sub new {
     my ($class, %init) = @_;
 
@@ -27,7 +41,9 @@ sub new {
     : $self->_set_gettext_package(
         defined $init{gettext_package}
         ? delete $init{gettext_package}
-        : 'Locale::Messages'
+        : $is_xs
+        ? 'Locale::gettext_xs'
+        : 'Locale::gettext_pp'
     );
 
     # Search dirs are given or use the defaults
