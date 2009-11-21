@@ -39,9 +39,9 @@ sub new {
 
     # Set code to detect the language.
     $self->_set_language_detect(
-        ref $init{langage_detect} eq 'CODE'
-        delete $init{langage_detect}
-        $self->_get_language_detect_default();
+        ref $init{language_detect} eq 'CODE'
+        ? delete $init{language_detect}
+        : $self->_get_language_detect_default()
     );
 
     # The text domain is a non empty string.
