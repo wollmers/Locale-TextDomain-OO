@@ -12,14 +12,14 @@ BEGIN {
     require_ok('Locale::TextDomain::OO');
 }
 
-local $ENV{LANGUAGE} = 'de_DE';
-my $text_domain      = 'test';
+my $text_domain = 'test';
 
 my $loc;
 throws_ok(
     sub {
         $loc = Locale::TextDomain::OO->new(
-            xxx => 'xxx',
+            language => 'de_DE',
+            xxx      => 'xxx',
         );
     },
     qr{\A \QUnknown parameter: xxx}xms,

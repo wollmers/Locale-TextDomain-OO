@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 2 + 1;
+use Test::More tests => 3 + 1;
 use Test::NoWarnings;
 use Test::Exception;
 use Test::Differences;
@@ -18,6 +18,7 @@ my $loc;
 lives_ok(
     sub {
         $loc = Locale::TextDomain::OO->new(
+            language        => 'de',
             text_domain     => $text_domain,
             search_dirs     => [qw(./t/LocaleData)],
             language_detect => sub {

@@ -13,8 +13,7 @@ BEGIN {
     use_ok('Locale::TextDomain::OO::FunctionalInterface');
 }
 
-local $ENV{LANGUAGE} = 'de_DE';
-my $text_domain      = 'test_maketext';
+my $text_domain = 'test_maketext';
 
 {
     my $loc;
@@ -22,6 +21,7 @@ my $text_domain      = 'test_maketext';
     lives_ok(
         sub {
             $loc = Locale::TextDomain::OO::Maketext->new(
+                language    => 'de_DE',
                 text_domain => $text_domain,
                 search_dirs => [qw(./t/LocaleData/)],
             );
