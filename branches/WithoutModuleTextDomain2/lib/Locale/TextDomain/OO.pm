@@ -53,11 +53,16 @@ sub new {
         : $self->_get_default_search_dirs()
     );
 
+    # Language
+    defined $init{language}
+    ? $self->_set_language( delete $init{language} )
+    : $self->_get_default_language();
+
     # Set code to detect the language.
     $self->_set_language_detect(
         ref $init{language_detect} eq 'CODE'
         ? delete $init{language_detect}
-        : $self->_get_language_detect_default()
+        : $self->_get_default_language_detect()
     );
 
     # The text domain is a non empty string.
@@ -111,18 +116,32 @@ sub _get_sub {
     return $self->{sub}->{$name};
 }
 
-sub _get_object {
-    my $self = shift;
-
-    return $self->{object};
-}
-
 sub _set_object {
     my ($self, $object) = @_;
 
     $self->{object} = $object;
 
     return $self;
+}
+
+sub _get_object {
+    my $self = shift;
+
+    return $self->{object};
+}
+
+sub _set_search_dirs {
+    my ($self, $search_dirs) = @_;
+
+    $self->{search_dirs} = $search_dirs;
+
+    return $self;
+}
+
+sub _get_search_dirs {
+    my $self = shift;
+
+    return $self->{search_dirs};
 }
 
 sub _get_default_search_dirs {
@@ -140,18 +159,27 @@ sub _get_default_search_dirs {
     ];
 }
 
-sub _get_search_dirs {
-    my $self = shift;
+sub _set_language {
+    my ($self, $language) = @_;
 
-    return $self->{search_dirs};
-}
-
-sub _set_search_dirs {
-    my ($self, $search_dirs) = @_;
-
-    $self->{search_dirs} = $search_dirs;
+    $self->{language} = $language;
 
     return $self;
+}
+
+sub _get_language {
+    my $self = shift;
+
+    return $self->{language};
+}
+
+sub _get_default_language {
+    my $self = shift;
+
+    return
+        defined $ENV{LANGUAGE}
+        ? $ENV{LANGUAGE}
+        : 'en';
 }
 
 sub _set_language_detect {
@@ -168,7 +196,7 @@ sub _get_language_detect {
     return $self->{language_detect};
 }
 
-sub _get_language_detect_default {
+sub _get_default_language_detect {
     my $self = shift;
 
     return sub {
@@ -176,12 +204,6 @@ sub _get_language_detect_default {
         my @languages_all  = implicate_supers(@languages_want);
         return @languages_all, panic_languages(@languages_all);
     }
-}
-
-sub _get_text_domain {
-    my $self = shift;
-
-    return $self->{text_domain};
 }
 
 sub get_file_path {
@@ -217,10 +239,17 @@ sub _set_text_domain {
     defined $dir
         or return $self;
 
+    $self->_set_language($language);
     local $ENV{LANGUAGE} = $language;
     $self->_get_sub('bindtextdomain')->($text_domain => $dir);
 
     return $self;
+}
+
+sub _get_text_domain {
+    my $self = shift;
+
+    return $self->{text_domain};
 }
 
 sub _set_input_filter {
@@ -346,6 +375,8 @@ sub __x {
 
     $self->_run_input_filter(\$msgid);
 
+    local $ENV{LANGUAGE} = $self->_get_language();
+
     my $object = $self->_get_object();
     my $translation
         = $object
@@ -373,6 +404,8 @@ sub __nx {
     my ($self, $msgid, $msgid_plural, $count, %args) = @_;
 
     $self->_run_input_filter(\$msgid, \$msgid_plural);
+
+    local $ENV{LANGUAGE} = $self->_get_language();
 
     my $object = $self->_get_object();
     my $translation
@@ -406,6 +439,8 @@ sub __px {
 
     $self->_run_input_filter(\$msgctxt, \$msgid);
 
+    local $ENV{LANGUAGE} = $self->_get_language();
+
     my $object = $self->_get_object();
     my $translation
         = $object
@@ -435,6 +470,8 @@ sub __npx { ## no critic (ManyArgs)
     my ($self, $msgctxt, $msgid, $msgid_plural, $count, %args) = @_;
 
     $self->_run_input_filter(\$msgctxt, \$msgid, \$msgid_plural);
+
+    local $ENV{LANGUAGE} = $self->_get_language();
 
     my $object = $self->_get_object();
     my $translation
