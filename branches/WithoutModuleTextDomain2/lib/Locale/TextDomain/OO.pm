@@ -31,6 +31,11 @@ sub new {
 
     my $self = bless {}, $class;
 
+    # Language
+    defined $init{language}
+    ? $self->_set_language( delete $init{language} )
+    : $self->_get_default_language();
+
     # Set an object that implements gettext ...
     (
         defined $init{gettext_object}
@@ -52,11 +57,6 @@ sub new {
         ? delete $init{search_dirs}
         : $self->_get_default_search_dirs()
     );
-
-    # Language
-    defined $init{language}
-    ? $self->_set_language( delete $init{language} )
-    : $self->_get_default_language();
 
     # Set code to detect the language.
     $self->_set_language_detect(
@@ -91,11 +91,37 @@ sub new {
     return $self;
 }
 
+sub _set_language {
+    my ($self, $language) = @_;
+
+    $self->{language} = $language;
+
+    return $self;
+}
+
+sub _get_language {
+    my $self = shift;
+
+    return $self->{language};
+}
+
+sub _get_default_language {
+    my $self = shift;
+
+    return
+        defined $ENV{LANGUAGE}
+        ? $ENV{LANGUAGE}
+        : 'en';
+}
+
 sub _set_gettext_package {
     my ($self, $gettext_package) = @_;
 
     my $code = "require $gettext_package";
-    () = eval $code; ## no critic (StringyEval)
+    {
+        local $ENV{LANGUAGE} = $self->_get_language();
+        () = eval $code; ## no critic (StringyEval)
+    }
     $EVAL_ERROR
         and croak "$code\n$EVAL_ERROR";
     $self->{sub} = {
@@ -159,29 +185,6 @@ sub _get_default_search_dirs {
     ];
 }
 
-sub _set_language {
-    my ($self, $language) = @_;
-
-    $self->{language} = $language;
-
-    return $self;
-}
-
-sub _get_language {
-    my $self = shift;
-
-    return $self->{language};
-}
-
-sub _get_default_language {
-    my $self = shift;
-
-    return
-        defined $ENV{LANGUAGE}
-        ? $ENV{LANGUAGE}
-        : 'en';
-}
-
 sub _set_language_detect {
     my ($self, $code) = @_;
 
@@ -239,9 +242,11 @@ sub _set_text_domain {
     defined $dir
         or return $self;
 
-    $self->_set_language($language);
-    local $ENV{LANGUAGE} = $language;
-    $self->_get_sub('bindtextdomain')->($text_domain => $dir);
+#    $self->_set_language($language);
+    {
+#        local $ENV{LANGUAGE} = $language;
+        $self->_get_sub('bindtextdomain')->($text_domain => $dir);
+    }
 
     return $self;
 }
@@ -375,8 +380,6 @@ sub __x {
 
     $self->_run_input_filter(\$msgid);
 
-    local $ENV{LANGUAGE} = $self->_get_language();
-
     my $object = $self->_get_object();
     my $translation
         = $object
@@ -384,10 +387,13 @@ sub __x {
             $self->_get_text_domain(),
             $msgid,
         )
-        : $self->_get_sub('dgettext')->(
-            $self->_get_text_domain(),
-            $msgid,
-        );
+        : do {
+            local $ENV{LANGUAGE} = $self->_get_language();
+            $self->_get_sub('dgettext')->(
+                $self->_get_text_domain(),
+                $msgid,
+            );
+        };
 
     $self->_run_output_filter(\$translation);
 
@@ -405,8 +411,6 @@ sub __nx {
 
     $self->_run_input_filter(\$msgid, \$msgid_plural);
 
-    local $ENV{LANGUAGE} = $self->_get_language();
-
     my $object = $self->_get_object();
     my $translation
         = $object
@@ -416,12 +420,15 @@ sub __nx {
             $msgid_plural,
             $count,
         )
-        : $self->_get_sub('dngettext')->(
-            $self->_get_text_domain(),
-            $msgid,
-            $msgid_plural,
-            $count,
-        );
+        : do {
+            local $ENV{LANGUAGE} = $self->_get_language();
+            $self->_get_sub('dngettext')->(
+                $self->_get_text_domain(),
+                $msgid,
+                $msgid_plural,
+                $count,
+            );
+        };
 
     $self->_run_output_filter(\$translation);
 
@@ -449,11 +456,14 @@ sub __px {
             $msgctxt,
             $msgid,
         )
-        : $self->_get_sub('dpgettext')->(
-            $self->_get_text_domain(),
-            $msgctxt,
-            $msgid,
-        );
+        : do {
+            local $ENV{LANGUAGE} = $self->_get_language();
+            $self->_get_sub('dpgettext')->(
+                $self->_get_text_domain(),
+                $msgctxt,
+                $msgid,
+            );
+        };
 
     $self->_run_output_filter(\$translation);
 
@@ -471,8 +481,6 @@ sub __npx { ## no critic (ManyArgs)
 
     $self->_run_input_filter(\$msgctxt, \$msgid, \$msgid_plural);
 
-    local $ENV{LANGUAGE} = $self->_get_language();
-
     my $object = $self->_get_object();
     my $translation
         = $object
@@ -483,13 +491,16 @@ sub __npx { ## no critic (ManyArgs)
             $msgid_plural,
             $count,
         )
-        : $self->_get_sub('dnpgettext')->(
-            $self->_get_text_domain(),
-            $msgctxt,
-            $msgid,
-            $msgid_plural,
-            $count,
-        );
+        : do {
+            local $ENV{LANGUAGE} = $self->_get_language();
+            $self->_get_sub('dnpgettext')->(
+                $self->_get_text_domain(),
+                $msgctxt,
+                $msgid,
+                $msgid_plural,
+                $count,
+            );
+        };
 
     $self->_run_output_filter(\$translation);
 
