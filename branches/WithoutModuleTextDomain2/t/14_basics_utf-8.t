@@ -14,18 +14,14 @@ BEGIN {
     require_ok('Locale::TextDomain::OO');
 }
 
-my $text_domain = 'test';
-
 my $loc;
 lives_ok(
     sub {
         $loc = Locale::TextDomain::OO->new(
             language     => 'ru',
-            text_domain  => $text_domain,
+            text_domain  => 'test',
             search_dirs  => [qw(./t/LocaleData)],
-            # input filter
             input_filter => \&encode_utf8,
-            # output filter
             filter       => \&decode_utf8,
         );
     },

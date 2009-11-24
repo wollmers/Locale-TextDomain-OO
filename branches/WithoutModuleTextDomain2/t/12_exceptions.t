@@ -12,14 +12,11 @@ BEGIN {
     require_ok('Locale::TextDomain::OO');
 }
 
-my $text_domain = 'test';
-
 my $loc;
 throws_ok(
     sub {
         $loc = Locale::TextDomain::OO->new(
-            language => 'de_DE',
-            xxx      => 'xxx',
+            xxx => 'xxx',
         );
     },
     qr{\A \QUnknown parameter: xxx}xms,
@@ -39,7 +36,7 @@ throws_ok(
 lives_ok(
     sub {
         $loc = Locale::TextDomain::OO->new(
-            text_domain => $text_domain,
+            text_domain => 'test',
             search_dirs => [qw(./t/LocaleData)],
         );
     },

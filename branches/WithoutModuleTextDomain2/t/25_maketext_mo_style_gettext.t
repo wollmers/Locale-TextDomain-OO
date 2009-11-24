@@ -12,14 +12,12 @@ BEGIN {
     require_ok('Locale::TextDomain::OO::Maketext');
 }
 
-my $text_domain = 'test_maketext_style_gettext';
-
 my $loc;
 lives_ok(
     sub {
         $loc = Locale::TextDomain::OO::Maketext->new(
             language    => 'de_DE',
-            text_domain => $text_domain,
+            text_domain => 'test_maketext_style_gettext',
             search_dirs => [qw(./t/LocaleData/)],
             style       => 'gettext',
         );
