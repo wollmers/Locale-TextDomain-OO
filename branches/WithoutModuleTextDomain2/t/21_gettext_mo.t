@@ -12,7 +12,7 @@ BEGIN {
     require_ok('Locale::TextDomain::OO');
 }
 
-local $ENV{LANGAUGE} = 'de_DE';
+local $ENV{LANGUAGE} = 'de_DE';
 
 my $loc;
 lives_ok(

@@ -13,7 +13,7 @@ BEGIN {
     use_ok('Locale::TextDomain::OO::FunctionalInterface');
 }
 
-local $ENV{LANGAUGE} = 'de_DE';
+local $ENV{LANGUAGE} = 'de_DE';
 
 {
     my $loc;
