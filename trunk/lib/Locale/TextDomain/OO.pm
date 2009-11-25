@@ -17,6 +17,28 @@ sub new {
 
     my $self = bless {}, $class;
 
+    # Set code to detect the language.
+    $self->_set_language_detect(
+        ref $init{language_detect} eq 'CODE'
+        ? delete $init{language_detect}
+        : $self->_get_default_language_detect()
+    );
+
+    # Search dirs are given or use the defaults
+    $self->_set_search_dirs(
+        ( ref $init{search_dirs} eq 'ARRAY' )
+        ? delete $init{search_dirs}
+        : $self->_get_default_search_dirs()
+    );
+
+    # The text domain is a non empty string.
+    # The default text domain is the package name of the caller.
+    $self->_set_text_domain(
+        ( defined $init{text_domain} && length $init{text_domain} )
+        ? delete $init{text_domain}
+        : caller
+    );
+
     # Set an object that implements gettext ...
     (
         defined $init{gettext_object}
@@ -27,29 +49,7 @@ sub new {
     : $self->_set_gettext_package(
         defined $init{gettext_package}
         ? delete $init{gettext_package}
-        : 'Locale::Messages'
-    );
-
-    # Search dirs are given or use the defaults
-    $self->_set_search_dirs(
-        ( ref $init{search_dirs} eq 'ARRAY' )
-        ? delete $init{search_dirs}
-        : $self->_get_default_search_dirs()
-    );
-
-    # Set code to detect the language.
-    $self->_set_language_detect(
-        ref $init{language_detect} eq 'CODE'
-        ? delete $init{language_detect}
-        : $self->_get_language_detect_default()
-    );
-
-    # The text domain is a non empty string.
-    # The default text domain is the package name of the caller.
-    $self->_set_text_domain(
-        ( defined $init{text_domain} && length $init{text_domain} )
-        ? delete $init{text_domain}
-        : caller
+        : ()
     );
 
     # input filter
@@ -62,6 +62,7 @@ sub new {
         $self->_set_output_filter( delete $init{filter} );
     }
 
+    # error
     my $keys = join ', ', keys %init;
     if ($keys) {
         croak "Unknown parameter: $keys";
@@ -70,44 +71,46 @@ sub new {
     return $self;
 }
 
-sub _set_gettext_package {
-    my ($self, $gettext_package) = @_;
+my $create_method = sub {
+    my ($name, $get_prefix, $set_prefix) = @_;
 
-    my $code = "require $gettext_package";
-    () = eval $code; ## no critic (StringyEval)
-    $EVAL_ERROR
-        and croak "$code\n$EVAL_ERROR";
-    $self->{sub} = {
-        map { ## no critic (ComplexMappings)
-            my $code_ref = $gettext_package->can($_);
-            $code_ref
-            ? ( $_ => $code_ref )
-            : ();
-        } qw(bindtextdomain dgettext dngettext dpgettext dnpgettext)
-    };
+    if ($get_prefix) {
+        no strict qw(refs);       ## no critic (NoStrict)
+        no warnings qw(redefine); ## no critic (NoWarnings)
+        *{"${get_prefix}_$name"} = sub {
+            return shift->{$name};
+        };
+    }
+    if ($set_prefix) {
+        no strict qw(refs);       ## no critic (NoStrict)
+        no warnings qw(redefine); ## no critic (NoWarnings)
+        *{"${set_prefix}_$name"} = sub {
+            my ($self, $value) = @_;
+            $self->{$name} = $value;
+            return $self;
+        };
+    }
 
-    return $self;
-}
+    return;
+};
 
-sub _get_sub {
-    my ($self, $name) = @_;
+# language detect
 
-    return $self->{sub}->{$name};
-}
+$create_method->(qw(language_detect _get _set));
 
-sub _get_object {
+sub _get_default_language_detect {
     my $self = shift;
 
-    return $self->{object};
+    return sub {
+        my @languages_want = I18N::LangTags::Detect::detect();
+        my @languages_all  = implicate_supers(@languages_want);
+        return @languages_all, panic_languages(@languages_all);
+    }
 }
 
-sub _set_object {
-    my ($self, $object) = @_;
+# search dirs
 
-    $self->{object} = $object;
-
-    return $self;
-}
+$create_method->(qw(search_dirs _get _set));
 
 sub _get_default_search_dirs {
     my $self = shift;
@@ -124,49 +127,7 @@ sub _get_default_search_dirs {
     ];
 }
 
-sub _get_search_dirs {
-    my $self = shift;
-
-    return $self->{search_dirs};
-}
-
-sub _set_search_dirs {
-    my ($self, $search_dirs) = @_;
-
-    $self->{search_dirs} = $search_dirs;
-
-    return $self;
-}
-
-sub _set_language_detect {
-    my ($self, $code) = @_;
-
-    $self->{language_detect} = $code;
-
-    return $self;
-}
-
-sub _get_language_detect {
-    my $self = shift;
-
-    return $self->{language_detect};
-}
-
-sub _get_language_detect_default {
-    my $self = shift;
-
-    return sub {
-        my @languages_want = I18N::LangTags::Detect::detect();
-        my @languages_all  = implicate_supers(@languages_want);
-        return @languages_all, panic_languages(@languages_all);
-    }
-}
-
-sub _get_text_domain {
-    my $self = shift;
-
-    return $self->{text_domain};
-}
+# text domain
 
 sub get_file_path {
     my ($self, $text_domain, $suffix) = @_;
@@ -190,50 +151,87 @@ sub get_file_path {
     return;
 }
 
+$create_method->(qw(current_dir _get _set));
+$create_method->(qw(text_domain _get));
+
 sub _set_text_domain {
     my ($self, $text_domain) = @_;
 
     $self->{text_domain} = $text_domain;
-    $self->_get_sub('bindtextdomain')
-        or return $self;
 
-    my ($dir, $language) = $self->get_file_path($text_domain, '.mo');
+    my ($dir, $language) = $self->get_file_path(
+        $text_domain,
+        ( $self->_get_sub('bindtextdomain') ? '.mo' : '.po' ),
+    );
     defined $dir
         or return $self;
 
-    local $ENV{LANGUAGE} = $language;
-    $self->_get_sub('bindtextdomain')->($text_domain => $dir);
+    $self->_set_current_dir($dir);
 
     return $self;
 }
 
-sub _set_input_filter {
-    my ($self, $filter) = @_;
-
-    $self->{input_filter} = $filter;
-
-    return $self;
-}
-
-sub _get_input_filter {
+sub _bind_text_domain {
     my $self = shift;
 
-    return $self->{input_filter};
-}
-
-sub _set_output_filter {
-    my ($self, $filter) = @_;
-
-    $self->{output_filter} = $filter;
+    $self->_get_sub('bindtextdomain')
+        or return $self;
+    $self->_get_sub('bindtextdomain')->(
+        $self->_get_text_domain(),
+        $self->_get_current_dir(),
+    );
 
     return $self;
 }
 
-sub _get_output_filter {
-    my $self = shift;
+# implementation package
 
-    return $self->{output_filter};
+sub _set_gettext_package {
+    my ($self, $gettext_package) = @_;
+
+    if ( ! $gettext_package ) {
+        # Try to load the C version first.
+        my $is_xs = eval <<'EO_CODE'; ## no critic (StringyEval)
+            require Locale::gettext_xs;
+            my $version = Locale::gettext_xs::__gettext_xs_version();
+            $version >= '1.20'
+                or croak "gettext_xs_version $version is to old.";
+            $is_xs = 1;
+            1; # eval result
+EO_CODE
+        if (! $is_xs) {
+            return $self->_set_gettext_package('Locale::gettext_pp');
+        }
+    }
+    my $code = "require $gettext_package";
+    () = eval $code; ## no critic (StringyEval)
+    $EVAL_ERROR
+        and croak "$code\n$EVAL_ERROR";
+    $self->{sub} = {
+        map { ## no critic (ComplexMappings)
+            my $code_ref = $gettext_package->can($_);
+            $code_ref
+            ? ( $_ => $code_ref )
+            : ();
+        } qw(bindtextdomain dgettext dngettext dpgettext dnpgettext)
+    };
+    $self->_bind_text_domain();
+
+    return $self;
 }
+
+sub _get_sub {
+    my ($self, $name) = @_;
+
+    return $self->{sub}->{$name};
+}
+
+$create_method->(qw(object _get _set));
+
+# for translation
+
+$create_method->(qw(input_filter  _get _set));
+$create_method->(qw(output_filter _get _set));
 
 my $perlify_plural_forms = sub {
     my $plural_forms_ref = shift;
