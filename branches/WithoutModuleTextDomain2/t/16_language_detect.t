@@ -12,11 +12,12 @@ BEGIN {
     require_ok('Locale::TextDomain::OO');
 }
 
+local $ENV{LANGUAGE} = 'de';
+
 my $loc;
 lives_ok(
     sub {
         $loc = Locale::TextDomain::OO->new(
-            language        => 'de',
             text_domain     => 'test',
             search_dirs     => [qw(./t/LocaleData)],
             language_detect => sub {

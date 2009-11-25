@@ -16,14 +16,14 @@ BEGIN {
     require_ok('Locale::TextDomain::OO::MessagesStruct');
 }
 
-my $text_domain = 'test';
+local $ENV{LANGUAGE} = 'ru';
+my $text_domain      = 'test';
 
 my ($loc, %struct);
 lives_ok(
     sub {
         $loc = Locale::TextDomain::OO->new(
             gettext_object => Locale::TextDomain::OO::MessagesStruct->new(\%struct),
-            language       => 'ru',
             text_domain    => $text_domain,
             search_dirs    => [qw(./t/LocaleData)],
             input_filter   => \&encode_utf8,

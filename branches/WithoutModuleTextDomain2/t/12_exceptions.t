@@ -12,6 +12,8 @@ BEGIN {
     require_ok('Locale::TextDomain::OO');
 }
 
+local $ENV{LANGUAGE} = 'de_DE';
+
 my $loc;
 throws_ok(
     sub {

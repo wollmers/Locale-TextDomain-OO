@@ -13,13 +13,14 @@ BEGIN {
     use_ok('Locale::TextDomain::OO::FunctionalInterface');
 }
 
+local $ENV{LANGAUGE} = 'de_DE';
+
 {
     my $loc;
 
     lives_ok(
         sub {
             $loc = Locale::TextDomain::OO->new(
-                language    => 'de_DE',
                 text_domain => 'test',
                 search_dirs => [qw(./t/LocaleData)],
             );
