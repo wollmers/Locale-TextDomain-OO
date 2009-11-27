@@ -12,65 +12,6 @@ use I18N::LangTags::Detect;
 use I18N::LangTags qw(implicate_supers panic_languages);
 require Safe;
 
-sub new {
-    my ($class, %init) = @_;
-
-    my $self = bless {}, $class;
-
-    # Set code to detect the language.
-    $self->_set_language_detect(
-        ref $init{language_detect} eq 'CODE'
-        ? delete $init{language_detect}
-        : $self->_get_default_language_detect()
-    );
-
-    # Search dirs are given or use the defaults
-    $self->_set_search_dirs(
-        ( ref $init{search_dirs} eq 'ARRAY' )
-        ? delete $init{search_dirs}
-        : $self->_get_default_search_dirs()
-    );
-
-    # The text domain is a non empty string.
-    # The default text domain is the package name of the caller.
-    $self->_set_text_domain(
-        ( defined $init{text_domain} && length $init{text_domain} )
-        ? delete $init{text_domain}
-        : caller
-    );
-
-    # Set an object that implements gettext ...
-    (
-        defined $init{gettext_object}
-        && $init{gettext_object}->can('dngettext')
-    )
-    ? $self->_set_object(delete $init{gettext_object})
-    # ... or the implementation class of gettext.
-    : $self->_set_gettext_package(
-        defined $init{gettext_package}
-        ? delete $init{gettext_package}
-        : ()
-    );
-
-    # input filter
-    if ( defined $init{input_filter} ) {
-        $self->_set_input_filter( delete $init{input_filter} );
-    }
-
-    # output filter
-    if ( defined $init{filter} ) {
-        $self->_set_output_filter( delete $init{filter} );
-    }
-
-    # error
-    my $keys = join ', ', keys %init;
-    if ($keys) {
-        croak "Unknown parameter: $keys";
-    }
-
-    return $self;
-}
-
 my $create_method = sub {
     my ($name, $get_prefix, $set_prefix) = @_;
 
@@ -94,92 +35,63 @@ my $create_method = sub {
     return;
 };
 
-# language detect
+$create_method->(qw(object _get _set));
 
-$create_method->(qw(language_detect _get _set));
+sub new {
+    my ($class, %init) = @_;
 
-sub _get_default_language_detect {
-    my $self = shift;
+    my $self = bless {}, $class;
 
-    return sub {
-        my @languages_want = I18N::LangTags::Detect::detect();
-        my @languages_all  = implicate_supers(@languages_want);
-        return @languages_all, panic_languages(@languages_all);
-    }
-}
+    # Set an object or package that implements gettext ...
+    (
+        defined $init{gettext_object}
+        && $init{gettext_object}->can('dngettext')
+    )
+    ? $self->_set_object(delete $init{gettext_object})
+    # ... or the implementation class of gettext.
+    : $self->_set_gettext_package(
+        defined $init{gettext_package}
+        ? delete $init{gettext_package}
+        : ()
+    );
 
-# search dirs
+    # Search dirs are given or use the defaults
+    $self->_set_search_dirs(
+        ( ref $init{search_dirs} eq 'ARRAY' )
+        ? delete $init{search_dirs}
+        : $self->_get_default_search_dirs()
+    );
 
-$create_method->(qw(search_dirs _get _set));
+    # Set code to detect the language.
+    $self->_set_language_detect(
+        ref $init{language_detect} eq 'CODE'
+        ? delete $init{language_detect}
+        : $self->_get_default_language_detect()
+    );
 
-sub _get_default_search_dirs {
-    my $self = shift;
+    # The text domain is a non empty string.
+    # The default text domain is the package name of the caller.
+    $self->_set_text_domain(
+        ( defined $init{text_domain} && length $init{text_domain} )
+        ? delete $init{text_domain}
+        : caller
+    );
 
-    return [
-        map {
-            -d "$_/LocaleData"
-            ? "$_/LocaleData"
-            : ();
-        } (
-            @INC,
-            qw(/usr/share/locale /usr/local/share/locale),
-        )
-    ];
-}
-
-# text domain
-
-sub get_file_path {
-    my ($self, $text_domain, $suffix) = @_;
-
-    my @languages_all = $self->_get_language_detect()->();
-    my @search_dirs = map {
-        abs_path $_;
-    } @{ $self->_get_search_dirs() };
-    for my $language (@languages_all) {
-        for my $dir (@search_dirs) {
-            my $file = "$dir/$language/LC_MESSAGES/$text_domain$suffix";
-            if (-f $file || -l $file) {
-                return
-                    wantarray
-                    ? ($dir, $language, 'LC_MESSAGES')
-                    : "$dir/$language/LC_MESSAGES";
-            }
-        }
+    # input filter
+    if ( defined $init{input_filter} ) {
+        $self->_set_input_filter( delete $init{input_filter} );
     }
 
-    return;
-}
+    # output filter
+    if ( defined $init{filter} ) {
+        $self->_set_output_filter( delete $init{filter} );
+    }
 
-$create_method->(qw(current_dir _get _set));
-$create_method->(qw(text_domain _get));
-
-sub _set_text_domain {
-    my ($self, $text_domain) = @_;
-
-    $self->{text_domain} = $text_domain;
-
-    my ($dir, $language) = $self->get_file_path(
-        $text_domain,
-        ( $self->_get_sub('bindtextdomain') ? '.mo' : '.po' ),
-    );
-    defined $dir
-        or return $self;
-
-    $self->_set_current_dir($dir);
-
-    return $self;
-}
-
-sub _bind_text_domain {
-    my $self = shift;
-
-    $self->_get_sub('bindtextdomain')
-        or return $self;
-    $self->_get_sub('bindtextdomain')->(
-        $self->_get_text_domain(),
-        $self->_get_current_dir(),
-    );
+    # error
+    my $keys = join ', ', keys %init;
+    if ($keys) {
+        croak "Unknown parameter: $keys";
+    }
 
     return $self;
 }
@@ -215,7 +127,6 @@ EO_CODE
             : ();
         } qw(bindtextdomain dgettext dngettext dpgettext dnpgettext)
     };
-    $self->_bind_text_domain();
 
     return $self;
 }
@@ -226,7 +137,78 @@ sub _get_sub {
     return $self->{sub}->{$name};
 }
 
-$create_method->(qw(object _get _set));
+# search dirs
+
+$create_method->(qw(search_dirs _get _set));
+
+sub _get_default_search_dirs {
+    my $self = shift;
+
+    return [
+        map {
+            -d "$_/LocaleData"
+            ? "$_/LocaleData"
+            : ();
+        } (
+            @INC,
+            qw(/usr/share/locale /usr/local/share/locale),
+        )
+    ];
+}
+
+# language detect
+
+$create_method->(qw(language_detect _get _set));
+
+sub _get_default_language_detect {
+    my $self = shift;
+
+    return sub {
+        my @languages_want = I18N::LangTags::Detect::detect();
+        my @languages_all  = implicate_supers(@languages_want);
+        return @languages_all, panic_languages(@languages_all);
+    }
+}
+
+# text domain
+
+$create_method->(qw(text_domain _get));
+
+sub get_file_path {
+    my ($self, $text_domain, $suffix) = @_;
+
+    my @languages_all = $self->_get_language_detect()->();
+    my @search_dirs = map {
+        abs_path $_;
+    } @{ $self->_get_search_dirs() };
+    for my $language (@languages_all) {
+        for my $dir (@search_dirs) {
+            my $file = "$dir/$language/LC_MESSAGES/$text_domain$suffix";
+            if (-f $file || -l $file) {
+                return
+                    wantarray
+                    ? ($dir, $language, 'LC_MESSAGES')
+                    : "$dir/$language/LC_MESSAGES";
+            }
+        }
+    }
+
+    return;
+}
+
+sub _set_text_domain {
+    my ($self, $text_domain) = @_;
+
+    $self->{text_domain} = $text_domain;
+    $self->_get_sub('bindtextdomain')
+        or return $self;
+    my ($dir, $language) = $self->get_file_path($text_domain, '.mo');
+    defined $dir
+        or return $self;
+    $self->_get_sub('bindtextdomain')->($text_domain => $dir);
+
+    return $self;
+}
 
 # for translation
 
@@ -740,7 +722,7 @@ Read L<I18N::LangTags>, panic_languages for more informations.
 
 =head2 method get_file_path
 
-    my $file_suffix = '.foo';
+    my $file_suffix = '.mo';
     my $file_path   = $loc->get_file_path($text_domain, $file_suffix);
 
 If a file based database system not exists,
