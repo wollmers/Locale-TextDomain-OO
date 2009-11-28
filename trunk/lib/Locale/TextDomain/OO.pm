@@ -66,15 +66,16 @@ sub new {
     $self->_set_language_detect(
         ref $init{language_detect} eq 'CODE'
         ? delete $init{language_detect}
-        : $self->_get_default_language_detect()
+        : $self->get_default_language_detect()
     );
 
     # The text domain is a non empty string.
     # The default text domain is the package name of the caller.
+    my $caller_level = delete $init{caller_level} || 1;
     $self->_set_text_domain(
         ( defined $init{text_domain} && length $init{text_domain} )
         ? delete $init{text_domain}
-        : caller
+        : caller $caller_level
     );
 
     # input filter
@@ -103,17 +104,13 @@ sub _set_gettext_package {
 
     if ( ! $gettext_package ) {
         # Try to load the C version first.
-        my $is_xs = eval <<'EO_CODE'; ## no critic (StringyEval)
-            require Locale::gettext_xs;
-            my $version = Locale::gettext_xs::__gettext_xs_version();
-            $version >= '1.20'
-                or croak "gettext_xs_version $version is to old.";
-            $is_xs = 1;
-            1; # eval result
-EO_CODE
-        if (! $is_xs) {
-            return $self->_set_gettext_package('Locale::gettext_pp');
-        }
+        my $code = 'require Locale::gettext_xs';
+        () = eval $code; ## no critic (StringyEval)
+        $EVAL_ERROR
+            and return $self->_set_gettext_package('Locale::gettext_pp');
+        my $version = Locale::gettext_xs::__gettext_xs_version(); ## no critic (PrivateSubs)
+        $version >= 1.20 ## no critic (MagicNumbers)
+            or croak "gettext_xs_version $version is to old.";
     }
     my $code = "require $gettext_package";
     () = eval $code; ## no critic (StringyEval)
@@ -160,13 +157,12 @@ sub _get_default_search_dirs {
 
 $create_method->(qw(language_detect _get _set));
 
-sub _get_default_language_detect {
-    my $self = shift;
-
+sub get_default_language_detect {
     return sub {
         my @languages_want = I18N::LangTags::Detect::detect();
         my @languages_all  = implicate_supers(@languages_want);
-        return @languages_all, panic_languages(@languages_all);
+        push @languages_all, panic_languages(@languages_all);
+        return wantarray ? @languages_all : join q{:}, @languages_all;
     }
 }
 
@@ -473,8 +469,16 @@ This module provides a high-level interface to Perl message translation.
 
 =head2 Why a new module?
 
-This module is nearly the same like L<Locale::TextDomain>.
-But this module has an object oriented interface.
+This module is very similar to L<Locale::TextDomain>.
+
+The most important problem of Locale::TextDomain is the functional interface
+and consequently the use of the caller to figure out the text domain.
+That is why is not possible
+to wrap Locale:TextDomain functions into a new package.
+
+Locale::TextDomain::OO has a flexible object oriented interface.
+
+=head2 Why to write a wrapper?
 
 Locale::TextDomain depends on L<Locale::Messages>
 and Locale::Messages depends on gettext mo-files.
@@ -486,8 +490,22 @@ and the project is not a new project,
 how to bind a database or anything else
 to the Locale::TextDomain API?
 
-It runs - now!
-Do not follow the dead end of L<Locale::Maketext>.
+Now it is possible to change the source of data.
+
+=head2 Why to inherit?
+
+In case of change a project from
+L<Locale::Maketext> or L<Locale::Maketext::Simple>
+use an extended API Locale::TextDomain::OO::Maketext.
+
+=head2 Why bind late to a more simple functional interface?
+
+Locale::TextDomain::OO::FunctionalInterface is a wrapper
+to have functions like Locale::TextDomain for the application interface
+and all the benefit from the binded object too.
+
+=head2 Do not follow the dead end of Locale::Maketext!
+
 What is the problem of?
 
 =over
@@ -504,14 +522,26 @@ He is not an omniscient translator.
 'quant' inside a phrase is the end of the automatic translation
 because quant is an 'or'-construct.
 
+    begin of phrase [quant,_1,singular,plural,zero] end of phrase
+
 =item *
 
 The plural form is allowed after a number, followed by a whitespace,
+
+    1 book
+    2 books
+
 but not before a number.
+
+    It is 1 book.
+    These are 2 books.
 
 =item *
 
 There is no plural form without a nummber in the phrase.
+
+    I like this book.
+    I like these books.
 
 =item *
 
@@ -525,7 +555,7 @@ But there are a lot of modules around Locale::Maketext.
 
 =back
 
-This is the reason for a new module to have:
+This is the reason for another module to have:
 
 =over
 
@@ -540,7 +570,7 @@ Named placeholders.
 
 =item *
 
-L<Locale::TextDomain::OO> can bind gettext subroutines
+Locale::TextDomain::OO can bind gettext subroutines
 or gettext methods.
 
 An example for binding subroutines is the default Locale::Messages.
@@ -551,7 +581,7 @@ An example for object binding is L<Locale::TextDomain::OO::MessagesStruct>.
 
 =head2 What is the difference?
 
-As default this module calls the subroutines of module Locale::Messages.
+As default this module calls the subroutines like module Locale::Messages.
 
 This behaviour is changeable.
 Choose a functional or object oriented module.
@@ -567,17 +597,17 @@ for fast access.
 Read the documentation of L<Locale::TextDoamin>
 to learn more about the translation subroutines.
 
-Run the examples of this distribution.
+Run the examples of this distribution (folder example).
 
 =head2 Overview
 
-      Application calls     Application calls       Application calls
-       TextDomain subs   .-- TextDomain subs         method maketext
-          (the goal)     | and Maketext methods -.   (the beginning)
-              |          |   (the changeover)    |          |
-              |          |                       |          '-----------.
-              |          |                       '------------------.   |
-              |          v                                          |   |
+      Application calls           Application calls         Application calls
+       TextDomain subs     .------ TextDomain subs           method maketext
+          (the goal)       |     and Maketext methods -.     (the beginning)
+              |            |       (the changeover)    |                |
+              |            |                           |                |
+              |            |                           '------------.   |
+              |            v                                        |   |
               |   .---------------------------------------------.   |   |
               |   |             functional interface            |   |   |
               |   |---------------------------------------------|   |   |
@@ -595,20 +625,20 @@ Run the examples of this distribution.
               |            |------------------------------------------------|
               |            |        Locale::TextDomain::OO::Maketext        |
               |            `------------------------------------------------'
-              |                |
-              v                v
-          .------------------------.
-          |     interface like     |
-          |   Locale::TextDomain   |
-          |------------------------|
-          | Locale::TextDomain::OO |
-          `------------------------'
-              |                |
-              v                v
- .------------------.    .----------------------------------------.
- | Locale::Messages |    | Locale::TextDomain::OO::MessagesStruct |
- |  (the default)   |    |            (a possibility)             |
- `------------------'    `----------------------------------------'
+              |                    |
+              v                    v
+          .----------------------------.
+          |       interface like       |
+          |     Locale::TextDomain     |
+          |----------------------------|
+          |   Locale::TextDomain::OO   |
+          `----------------------------'
+              |                    |
+              v                    v
+ .-------------------------.   .----------------------------------------.
+ | Locale::gettext_(xs|pp) |   | Locale::TextDomain::OO::MessagesStruct |
+ |      (the default)      |   |            (a possibility)             |
+ `-------------------------'   `----------------------------------------'
            |                                  |
            |                                  v
            |                        .-------------------.
@@ -685,7 +715,8 @@ The default for search_dirs is:
 
 =head3 optional parameter gettext_package or alternative gettext_object
 
-Note, that the default of gettest_package is L<Locale::Messages>.
+Note, that the default of gettest_package is
+L<Locale::gettext_xs> or L<Locale::gettext_pp>.
 This package has to implement the subroutines
 'dgettext', 'dngettext', 'dpgettext', 'dnpgettext'
 and can implement the subroutine 'bindtextdomain'.
@@ -706,7 +737,7 @@ Or alternative the package which has to implement the methods
 =head3 optional parameter language_detect
 
 Describe as code, how to detect the language.
-This example code describes the default.
+This example code describes the default in list context.
 
     my $loc = Locale::TextDoamin::OO->new(
         ...
@@ -719,6 +750,28 @@ This example code describes the default.
     );
 
 Read L<I18N::LangTags>, panic_languages for more informations.
+
+=head2 method get_default_language_detect
+
+This method returns a code reference.
+Run this code reference to find the needed language
+from the environment and all the fallbacks.
+
+=head3 get the code reference
+
+    my $code_ref = Locale::TextDomain::OO->get_default_language_detect();
+
+or
+
+    my $code_ref = $loc->get_default_language_detect();
+
+=head3 run the code in list context
+
+    @langauges = $code_ref->();
+
+or in scalar context typical for
+
+    local $ENV{LANGUAGE} = $code_ref->(); # result joined by :
 
 =head2 method get_file_path
 
@@ -887,10 +940,6 @@ This is the idea of the N-Methods.
 
     $loc->N__('...');
 
-or
-
-    Locale::Text::Domain::OO->N__('...');
-
 =head1 EXAMPLE
 
 Inside of this Distribution is a directory named example.
@@ -902,11 +951,21 @@ Error message in case of unknown parameters.
 
  Unknown parameter: ...
 
+Error message during load of the implementation package.
+
+ Can't locate ...
+
+Error message during load of the default implementation package.
+
+ gettext_xs_version ... is to old.
+
 Error message at calculation plural forms.
 
  Plural-Forms are not defined
 
  Code of Plural-Forms ... is not safe, ...
+
+ Code ... is not safe, ...
 
 =head1 CONFIGURATION AND ENVIRONMENT
 
@@ -925,6 +984,12 @@ L<I18N::LangTags::Detect>
 L<I18N::LangTags>
 
 Safe
+
+=head2 dynamic require
+
+L<Locale::gettext_xs>
+
+L<Locale::gettext_pp>
 
 =head1 INCOMPATIBILITIES
 

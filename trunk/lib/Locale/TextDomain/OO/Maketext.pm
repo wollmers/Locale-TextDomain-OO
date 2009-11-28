@@ -13,7 +13,10 @@ sub new {
 
     my $is_style = exists $init{style};
     my $style    = delete $init{style};
-    my $self     = $class->SUPER::new(%init);
+    my $self     = $class->SUPER::new(
+        caller_level => 2,
+        %init,
+    );
     if ($is_style) {
         $self->_set_style($style);
     }
