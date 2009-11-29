@@ -5,11 +5,12 @@ use warnings;
 
 use version; our $VERSION = qv('0.01');
 
+use Carp qw(croak);
 use Perl6::Export::Attrs;
 
-my @methods = qw(
+my %method_name = map { $_ => undef } qw(
     __
-    __x {
+    __x
     __n
     __nx
     __p
@@ -29,15 +30,22 @@ my @methods = qw(
 );
 
 sub bind_object :Export(:DEFAULT) {
-    my $object = shift;
+    my ($object, @methods) = shift;
+
+    if (! @methods) {
+        @methods = grep { $object->can($_) } keys %method_name;
+    }
 
     my $caller = caller;
 
-    METHOD:
     for my $method (@methods) {
+        defined $method
+            or croak 'An undefined value is not a method name';
+        exists $method_name{$method}
+            or croak qq{Method "$method" is not a translation method};
         $object->can($method)
-            or next METHOD;
-        no strict qw(refs); ## no critic (NoStrict)
+            or croak qq{Object has no method named "$method"};
+        no strict qw(refs);       ## no critic (NoStrict)
         no warnings qw(redefine); ## no critic (NoWarnings)
         *{"$caller\::$method"} = sub {
             return $object->$method(@_);
@@ -80,12 +88,18 @@ or
 =head2 sub bind_object
 
     $loc = Locale::TextDomain::OO->new(...);
-    bind_object($loc);
 
 or
 
     $loc = Locale::TextDomain::OO::Maketext->new(...);
-    bind_object($loc);
+
+and
+
+    bind_object($loc); # import all possible methods
+
+or
+
+    bind_object($loc, qw(__ __x ...)); # import only the given methods
 
 =head2 Translating subs
 
@@ -109,13 +123,25 @@ Run this *.pl files.
 
 =head1 DIAGNOSTICS
 
-none
+Subroutine bind_object can not bind an undef as method name.
+
+ An undefined value is not a method name
+
+Subroutine bind_object only can bind translating subroutines.
+
+ Method "..." is not a translation method
+
+Subroutine bind_object can not bind a non existing object method.
+
+ Object has no method named "..."
 
 =head1 CONFIGURATION AND ENVIRONMENT
 
 none
 
 =head1 DEPENDENCIES
+
+Carp
 
 L<Perl6::Export::Attrs>
 

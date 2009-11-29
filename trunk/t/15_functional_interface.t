@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 12 + 1;
+use Test::More tests => 15 + 1;
 use Test::NoWarnings;
 use Test::Exception;
 use Test::Differences;
@@ -34,6 +34,28 @@ my $text_domain      = 'test';
             bind_object($loc);
         },
         'bind object',
+    );
+
+    lives_ok(
+        sub {
+            bind_object($loc, qw(__));
+        },
+        'bind object method __',
+    );
+
+    throws_ok(
+        sub {
+            bind_object($loc, undef);
+        },
+        qr{\A \QAn undefined value is not a method name}xms,
+    );
+
+    throws_ok(
+        sub {
+            bind_object($loc, qw(__x __y));
+        },
+        qr{\A \QMethod "__y" is not a translation method}xms,
+        'bind object method __x and __y',
     );
 }
 
