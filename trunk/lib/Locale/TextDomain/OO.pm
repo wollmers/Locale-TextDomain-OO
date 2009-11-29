@@ -159,9 +159,18 @@ $create_method->(qw(language_detect _get _set));
 
 sub get_default_language_detect {
     return sub {
+        my @languages_got = @_;
+
+        if (@languages_got) {
+            if (@languages_got == 1 && defined $languages_got[0]) {
+                @languages_got = split m{:}xms, $languages_got[0];
+            }
+            local $ENV{LANGUAGE} = join q{:}, @languages_got;
+        }
         my @languages_want = I18N::LangTags::Detect::detect();
         my @languages_all  = implicate_supers(@languages_want);
         push @languages_all, panic_languages(@languages_all);
+
         return wantarray ? @languages_all : join q{:}, @languages_all;
     }
 }
