@@ -30,7 +30,7 @@ my %method_name = map { $_ => undef } qw(
 );
 
 sub bind_object :Export(:DEFAULT) {
-    my ($object, @methods) = shift;
+    my ($object, @methods) = @_;
 
     if (! @methods) {
         @methods = grep { $object->can($_) } keys %method_name;
