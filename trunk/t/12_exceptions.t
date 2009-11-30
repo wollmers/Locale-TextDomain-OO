@@ -12,8 +12,11 @@ BEGIN {
     require_ok('Locale::TextDomain::OO');
 }
 
-local $ENV{LANGUAGE} = 'de_DE';
-my $text_domain      = 'test';
+local $ENV{LANGUAGE}
+    = Locale::TextDomain::OO
+    ->get_default_language_detect()
+    ->('de_DE');
+my $text_domain = 'test';
 
 my $loc;
 throws_ok(

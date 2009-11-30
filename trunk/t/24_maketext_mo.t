@@ -12,8 +12,11 @@ BEGIN {
     require_ok('Locale::TextDomain::OO::Maketext');
 }
 
-local $ENV{LANGUAGE} = 'de_DE';
-my $text_domain      = 'test_maketext';
+local $ENV{LANGUAGE}
+    = Locale::TextDomain::OO::Maketext
+    ->get_default_language_detect()
+    ->('de_DE');
+my $text_domain = 'test_maketext';
 
 my $loc;
 lives_ok(
