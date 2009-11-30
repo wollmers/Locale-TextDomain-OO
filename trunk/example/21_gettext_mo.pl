@@ -8,8 +8,11 @@ our $VERSION = 0;
 require Locale::TextDomain::OO;
 use Locale::TextDomain::OO::FunctionalInterface qw(bind_object);
 
-local $ENV{LANGUAGE} = 'de_DE';
-my $text_domain      = 'example';
+local $ENV{LANGUAGE}
+    = Locale::TextDomain::OO
+    ->get_default_language_detect()
+    ->('de_DE');
+my $text_domain = 'example';
 
 bind_object(
     Locale::TextDomain::OO->new(

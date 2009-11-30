@@ -7,8 +7,11 @@ our $VERSION = 0;
 
 require Locale::TextDomain::OO::Maketext;
 
-local $ENV{LANGUAGE} = 'de_DE';
-my $text_domain      = 'example_maketext';
+local $ENV{LANGUAGE}
+    = Locale::TextDomain::OO::Maketext
+    ->get_default_language_detect()
+    ->('de_DE');
+my $text_domain = 'example_maketext';
 
 my $loc = Locale::TextDomain::OO::Maketext->new(
     text_domain => $text_domain,
