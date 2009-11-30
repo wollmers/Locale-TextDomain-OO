@@ -26,6 +26,7 @@
 \#$
 \b\.#
 \.bak$
+\.tmp$
 
 # Avoid Devel::Cover files.
 \bcover_db\b
