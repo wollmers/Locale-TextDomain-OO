@@ -8,8 +8,11 @@ our $VERSION = 0;
 require Locale::TextDomain::OO;
 use Locale::TextDomain::OO::FunctionalInterface qw(bind_object);
 
-local $ENV{LANGUAGE} = 'de_DE';
-my $text_domain      = 'example';
+local $ENV{LANGUAGE}
+    = Locale::TextDomain::OO
+    ->get_default_language_detect()
+    ->('de_DE');
+my $text_domain = 'example';
 
 bind_object(
     Locale::TextDomain::OO->new(
@@ -19,7 +22,7 @@ bind_object(
 );
 
 # run all translations
-() = 
+() =
     __(
         'This is a text.',
     ),
@@ -84,7 +87,7 @@ bind_object(
         '{num} shelves',
         2,
         num => 2,
-    ) for (1 .. 1000);
+    ) for (1 .. 1_000);
 
 # $Id: 01_gettext_mo.pl 15 2009-08-30 11:13:33Z steffenw $
 

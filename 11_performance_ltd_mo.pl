@@ -10,7 +10,7 @@ require Locale::TextDomain;
 local $ENV{LANGUAGE} = 'de_DE';
 my $text_domain      = 'example';
 
-Locale::TextDomain::->import( $text_domain => qw(./LocaleData/) );
+Locale::TextDomain->import( $text_domain => qw(./LocaleData/) );
 
 # run all translations
 () =
@@ -78,7 +78,7 @@ Locale::TextDomain::->import( $text_domain => qw(./LocaleData/) );
         '{num} shelves',
         2,
         num => 2,
-    ) for (1 .. 1000);
+    ) for (1 .. 1_000);
 
 # $Id: 01_gettext_mo.pl 15 2009-08-30 11:13:33Z steffenw $
 

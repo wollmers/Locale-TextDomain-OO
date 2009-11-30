@@ -10,8 +10,11 @@ require Locale::TextDomain::OO;
 require Locale::TextDomain::OO::MessagesStruct;
 use Locale::TextDomain::OO::FunctionalInterface qw(bind_object);
 
-local $ENV{LANGUAGE} = 'de_DE';
-my $text_domain      = 'example';
+local $ENV{LANGUAGE}
+    = Locale::TextDomain::OO
+    ->get_default_language_detect()
+    ->('de_DE');
+my $text_domain = 'example';
 
 my $loc = Locale::TextDomain::OO->new(
     gettext_object => Locale::TextDomain::OO::MessagesStruct->new(\my %struct),
@@ -127,7 +130,7 @@ bind_object($loc);
         '{num} shelves',
         2,
         num => 2,
-    ) for (1 .. 1000);
+    ) for (1 .. 1_000);
 
 # $Id: 02_gettext_struct_from_locale_po.pl 13 2009-08-30 06:47:34Z steffenw $
 
