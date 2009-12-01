@@ -4,11 +4,11 @@ use strict;
 use warnings;
 use utf8;
 
-use Test::More tests => 4 + 1;
+use Test::More tests => 3 + 1;
 use Test::NoWarnings;
 use Test::Exception;
 use Test::Differences;
-use Encode qw(encode_utf8 decode_utf8);
+use Encode qw(encode decode);
 
 BEGIN {
     require_ok('Locale::TextDomain::OO');
@@ -19,6 +19,7 @@ local $ENV{LANGUAGE}
     ->get_default_language_detect()
     ->('de');
 my $text_domain = 'cp1252';
+my $encoding    = 'cp1252';
 
 my $loc;
 lives_ok(
@@ -27,9 +28,9 @@ lives_ok(
             text_domain  => $text_domain,
             search_dirs  => [qw(./t/LocaleData)],
             # input filter
-            input_filter => \&encode_utf8,
+            input_filter => sub { encode($encoding, shift) },
             # output filter
-            filter       => \&decode_utf8,
+            filter       => sub { decode($encoding, shift) },
         );
     },
     'create default object',
