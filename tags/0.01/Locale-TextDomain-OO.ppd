@@ -1,0 +1,13 @@
+<SOFTPKG NAME="Locale-TextDomain-OO" VERSION="0,01,0,0">
+    <TITLE>Locale-TextDomain-OO</TITLE>
+    <ABSTRACT>Locale::TextDomain::OO - Perl OO Interface to Uniforum Message Translation</ABSTRACT>
+    <AUTHOR>Steffen Winkler &lt;steffenw at cpan.org&gt;</AUTHOR>
+    <IMPLEMENTATION>
+        <DEPENDENCY NAME="Perl6-Export-Attrs" VERSION="0,0,0,0" />
+        <DEPENDENCY NAME="parent" VERSION="0,0,0,0" />
+        <DEPENDENCY NAME="version" VERSION="0,0,0,0" />
+        <DEPENDENCY NAME="I18N-LangTags" VERSION="0,0,0,0" />
+        <DEPENDENCY NAME="Safe" VERSION="0,0,0,0" />
+        <CODEBASE HREF="PPM-Locale-TextDomain-OO-0.01.tar.gz" />
+    </IMPLEMENTATION>
+</SOFTPKG>
