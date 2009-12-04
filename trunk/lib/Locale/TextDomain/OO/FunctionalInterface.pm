@@ -61,7 +61,7 @@ __END__
 
 =head1 NAME
 
-Locale::TextDomain::OO::FunctionalInterface - call object methods as funktion
+Locale::TextDomain::OO::FunctionalInterface - Call object methods as function
 
 $Id$
 
