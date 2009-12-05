@@ -3,7 +3,7 @@ package Locale::TextDomain::OO::FunctionalInterface;
 use strict;
 use warnings;
 
-use version; our $VERSION = qv('0.01');
+use version; our $VERSION = qv('0.02');
 
 use Carp qw(croak);
 use Perl6::Export::Attrs;
@@ -69,7 +69,7 @@ $HeadURL$
 
 =head1 VERSION
 
-0.01
+0.02
 
 =head1 DESCRIPTION
 
@@ -85,7 +85,7 @@ or
 
 =head1 SUBROUTINES/METHODS
 
-=head2 sub bind_object
+=head2 subroutine bind_object
 
     $loc = Locale::TextDomain::OO->new(...);
 
@@ -100,21 +100,6 @@ and
 or
 
     bind_object($loc, qw(__ __x ...)); # import only the given methods
-
-=head2 Translating subs
-
-=head3 maketext
-
-    print maketext(
-        'Hello World!',
-    );
-
-=head3 maketext_p (allows the context)
-
-    print maketext_p (
-        'time',
-        'to',
-    );
 
 =head1 EXAMPLE
 

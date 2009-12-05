@@ -3,7 +3,7 @@ package Locale::TextDomain::OO;
 use strict;
 use warnings;
 
-our $VERSION = '0.01';
+our $VERSION = '0.02';
 
 use Carp qw(croak);
 use Cwd qw(abs_path);
@@ -474,7 +474,7 @@ $HeadURL$
 
 =head1 VERSION
 
-0.01
+0.02
 
 =head1 DESCRIPTION
 
@@ -487,7 +487,7 @@ This module is very similar to L<Locale::TextDomain>.
 The most important problem of Locale::TextDomain is the functional interface
 and consequently the use of the caller to figure out the text domain.
 That is why is not possible
-to wrap Locale:TextDomain functions into a new package.
+to wrap Locale::TextDomain functions into a new package.
 
 Locale::TextDomain::OO has a flexible object oriented interface.
 
@@ -539,12 +539,14 @@ because quant is an 'or'-construct.
 
 =item *
 
-The plural form is allowed after a number, followed by a whitespace,
+The plural form is allowed after a number,
+followed by a whitespace,
+not a non-breaking whitespace.
 
     1 book
     2 books
 
-but not before a number.
+A plural form can not be before a number.
 
     It is 1 book.
     These are 2 books.
@@ -561,6 +563,10 @@ There is no plural form without a nummber in the phrase.
 Placeholders are numbered serially.
 It is difficult to translate this,
 because the sense of the phrase could be lost.
+
+    [_1] is a [_2] in [_3].
+
+    Erlangen is a town in Bavaria.
 
 =item *
 
@@ -586,7 +592,8 @@ Named placeholders.
 Locale::TextDomain::OO can bind gettext subroutines
 or gettext methods.
 
-An example for binding subroutines is the default Locale::Messages.
+An example for binding subroutines is the default
+L<Locale::gettext_xs> or L<Locale::gettext_pp>.
 
 An example for object binding is L<Locale::TextDomain::OO::MessagesStruct>.
 
@@ -689,7 +696,7 @@ Run the examples of this distribution (folder example).
 
 =head2 method new
 
-=head3 optinal parameter text_domain
+=head3 optional parameter text_domain
 
 Set the default text domian __PACKAGE__.
 
@@ -839,7 +846,7 @@ or
 
 =head2 Translating methods
 
-How to bild the method name?
+How to build the method name?
 
 Use __ and append this with 'n', 'p' and/or 'x' in alphabetic order.
 
@@ -946,7 +953,7 @@ Use N__ and append this with 'n', 'p' and/or 'x' in alphabetic order.
 
 =head3 N__, N__x, N__n, N__nx, N__p, N__px, N__np, N__npx
 
-The extractor is looking for C<__('...'>
+The extractor looks for C<__('...'>
 and has no problem with C<$loc->N__('...')>.
 
 This is the idea of the N-Methods.
