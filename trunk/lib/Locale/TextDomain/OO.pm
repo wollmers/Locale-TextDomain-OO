@@ -963,7 +963,8 @@ This is the idea of the N-Methods.
 =head1 EXAMPLE
 
 Inside of this Distribution is a directory named example.
-Run this *.pl files.
+Read the file README there.
+Then run the *.pl files.
 
 =head1 DIAGNOSTICS
 
