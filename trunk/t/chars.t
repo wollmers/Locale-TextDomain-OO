@@ -44,7 +44,7 @@ find(
     $PATH,
 );
 
-plan ( tests => 5 * scalar @list );
+plan( tests => 5 * scalar @list );
 
 for my $file_name (sort @list) {
     my @lines;
