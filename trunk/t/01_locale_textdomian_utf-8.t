@@ -4,16 +4,22 @@ use strict;
 use warnings;
 use utf8;
 
-use Test::More tests => 6 + 1;
-use Test::NoWarnings;
+use Test::More;
 use Test::Exception;
 use Test::Differences;
 use Encode qw(encode_utf8 decode_utf8);
 
 BEGIN {
-    require_ok('Locale::TextDomain');
-    use_ok('Locale::Messages', qw(bind_textdomain_filter));
+    if ( $ENV{TEST_AUTHOR} ) {
+        plan tests => 7 + 1;
+        use_ok('Test::NoWarnings');
+        require_ok('Locale::TextDomain');
+        use_ok('Locale::Messages', qw(bind_textdomain_filter));
+    }
 }
+
+$ENV{TEST_AUTHOR}
+    or plan skip_all => 'Author test. Set $ENV{TEST_AUTHOR} to a true value to run.';
 
 local $ENV{LANGUAGE} = 'ru';
 my $text_domain      = 'test';
