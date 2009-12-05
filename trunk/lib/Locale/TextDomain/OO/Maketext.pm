@@ -3,7 +3,7 @@ package Locale::TextDomain::OO::Maketext;
 use strict;
 use warnings;
 
-use version; our $VERSION = qv('0.01');
+use version; our $VERSION = qv('0.02');
 
 use parent qw(Locale::TextDomain::OO);
 use Carp qw(croak);
@@ -206,13 +206,13 @@ $HeadURL$
 
 =head1 VERSION
 
-0.01
+0.02
 
 =head1 DESCRIPTION
 
 This module provides a maketext interface like L<Locale::Maketext::Simple>
 for L<Locale::TextDomain:OO>
-to move projects from Locale::Maketext to Locale::TextDomain.
+to port projects from Locale::Maketext.
 
 =head1 SYNOPSIS
 

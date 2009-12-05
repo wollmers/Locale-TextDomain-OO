@@ -74,6 +74,7 @@ $HeadURL$
 =head1 DESCRIPTION
 
 This module wraps the object and allows to call a method as function.
+Then the translating subroutines are compatible to module Locale::TextDomain.
 
 =head1 SYNOPSIS
 
