@@ -210,7 +210,7 @@ Maybe such data were read from a database.
 
 =head1 EXAMPLE
 
-Inside of this Distribution is a directory named example.
+Inside of this distribution is a directory named example.
 Run this *.pl files.
 
 =head1 DIAGNOSTICS

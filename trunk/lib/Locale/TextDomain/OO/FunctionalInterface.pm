@@ -61,7 +61,7 @@ __END__
 
 =head1 NAME
 
-Locale::TextDomain::OO::FunctionalInterface - Call object methods as function
+Locale::TextDomain::OO::FunctionalInterface - Call object methods as functions
 
 $Id$
 
@@ -73,8 +73,9 @@ $HeadURL$
 
 =head1 DESCRIPTION
 
-This module wraps the object and allows to call a method as function.
-Then the translating subroutines are compatible to module Locale::TextDomain.
+This module wraps the object and allows to call a method as a function.
+Then the interface of the translating subroutines
+is compatible to module Locale::TextDomain.
 
 =head1 SYNOPSIS
 
@@ -104,7 +105,7 @@ or
 
 =head1 EXAMPLE
 
-Inside of this Distribution is a directory named example.
+Inside of this distribution is a directory named example.
 Run this *.pl files.
 
 =head1 DIAGNOSTICS

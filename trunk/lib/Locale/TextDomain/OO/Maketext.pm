@@ -198,7 +198,7 @@ __END__
 
 =head1 NAME
 
-Locale::TextDomain::OO::Maketext - A maketext interface for Message Translation
+Locale::TextDomain::OO::Maketext - An additional maketext interface for Message Translation
 
 $Id$
 
@@ -210,7 +210,7 @@ $HeadURL$
 
 =head1 DESCRIPTION
 
-This module provides a maketext interface like L<Locale::Maketext::Simple>
+This module provides an additional maketext interface like L<Locale::Maketext::Simple>
 for L<Locale::TextDomain:OO>
 to port projects from Locale::Maketext.
 
@@ -232,7 +232,7 @@ There is an extra parameter 'style'.
         ...
     );
 
-Style 'gettext' allows use gettext like data.
+Style 'gettext' allows to use gettext like data.
 
  %1
  %quant(%1,singular,plural)
@@ -248,7 +248,7 @@ instead of
 
 =head3 maketext
 
-This method includes expnad like 'quant', '*'.
+This method includes the expansion as 'quant' or '*'.
 This method ignores zero plural forms.
 
     print $loc->maketext(
@@ -294,7 +294,7 @@ This method ignores zero plural forms.
 
 =head1 EXAMPLE
 
-Inside of this Distribution is a directory named example.
+Inside of this distribution is a directory named example.
 Run this *.pl files.
 
 =head1 DIAGNOSTICS
