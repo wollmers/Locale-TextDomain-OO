@@ -938,7 +938,7 @@ because it is the same like method __nx.
 
 =head2 Methods to mark the translation for extraction only
 
-How to bild the method name?
+How to build the method name?
 
 Use N__ and append this with 'n', 'p' and/or 'x' in alphabetic order.
 
