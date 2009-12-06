@@ -553,7 +553,7 @@ A plural form can not be before a number.
 
 =item *
 
-There is no plural form without a nummber in the phrase.
+There is no plural form without a number in the phrase.
 
     I like this book.
     I like these books.
@@ -561,7 +561,7 @@ There is no plural form without a nummber in the phrase.
 =item *
 
 Placeholders are numbered serially.
-It is difficult to translate this,
+It is difficult to translate this
 because the sense of the phrase could be lost.
 
     [_1] is a [_2] in [_3].
@@ -722,7 +722,7 @@ Set the search dirs.
         ...
     );
 
-The default for search_dirs is:
+The default for the search_dirs is:
 
     my @locale_dirs = map {
         -d "$_/LocaleData"
