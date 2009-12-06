@@ -494,11 +494,11 @@ Locale::TextDomain::OO has a flexible object oriented interface.
 =head2 Why to write a wrapper?
 
 Locale::TextDomain depends on L<Locale::Messages>
-and Locale::Messages depends on gettext mo-files.
+and Locale::Messages depends on gettext mo files.
 This is a very good idea to do this.
 It is a standard.
 
-But if the data are not saved in mo-files
+But if the data are not saved in mo files
 and the project is not a new project,
 how to bind a database or anything else
 to the Locale::TextDomain API?
@@ -680,7 +680,7 @@ Run the examples of this distribution (folder example).
            |                   ^                      |
            v                   |                 _____|_____
     .----------.         .----------.           /_ _ _ _ _ _\
-    | mo-files |-.       | po-files |-.         |           |
+    | mo files |-.       | po files |-.         |           |
     `----------' |       `----------' |         | Database  |
       `----------'         `----------'         `-----------'
            ^                   ^                      ^
@@ -820,13 +820,13 @@ How many plurals has the translation?
 This is one-time interesting to read the translation data.
 
     $nplurals = $self->get_nplurals(
-        'nplurals=2; plural=n != 1;' # look at po-/mo-file header
+        'nplurals=2; plural=n != 1;' # look at the po/mo file header
     );
 
 or
 
     $nplurals = Locale::Text::Domain::OO->get_nplurals(
-        'nplurals=2; plural=n != 1;' # look at po-/mo-file header
+        'nplurals=2; plural=n != 1;' # look at the po/mo file header
     );
 
 =head2 object or class method get_function_ref_plural
@@ -835,13 +835,13 @@ Which plural form sould be used?
 The code runs during every plural tranlation.
 
     $code_ref = $self->get_function_ref_plural(
-        'nplurals=2; plural=n != 1;' # look at po-/mo-file header
+        'nplurals=2; plural=n != 1;' # look at the po/mo file header
     );
 
 or
 
     $code_ref = Locale::Text::Domain::OO->get_function_ref_plural(
-        'nplurals=2; plural=n != 1;' # look at po-/mo-file header
+        'nplurals=2; plural=n != 1;' # look at the po/mo file header
     );
 
 =head2 Translating methods
@@ -953,8 +953,8 @@ Use N__ and append this with 'n', 'p' and/or 'x' in alphabetic order.
 
 =head3 N__, N__x, N__n, N__nx, N__p, N__px, N__np, N__npx
 
-The extractor looks for C<__('...'>
-and has no problem with C<$loc->N__('...')>.
+The extractor looks for C<__('...')>
+and has no problem with C<<$loc->N__('...')>>.
 
 This is the idea of the N-Methods.
 

@@ -137,7 +137,7 @@ __END__
 
 =head1 NAME
 
-Locale::TextDomain::OO::MessagesStruct - Perl Interface extension to use gettext and not mo-files
+Locale::TextDomain::OO::MessagesStruct - Perl Interface extension to use gettext and not mo files
 
 $Id$
 
@@ -173,7 +173,7 @@ Maybe such data were read from a database.
     my %struct = (
         $text_domain => {
             plural_ref = $loc->get_function_ref_plural(
-                # The next line is like Plural-Forms at the po/mo-file.
+                # The next line is like Plural-Forms at the po/mo file.
                 '$nplurals=2; $plural=$n != 1;'
             ),
             array_ref => [

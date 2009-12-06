@@ -49,7 +49,7 @@ my $dbh = DBI->connect(
 ) or croak DBI->errstr();
 $dbh->{po_tables}->{$text_domain} = {file => "$text_domain.po"};
 
-# Read the header of po-file and extract the 'Plural-Forms'.
+# Read the header of the po file and extract the 'Plural-Forms'.
 my $plural_forms = $dbh->func(
     {
         table => $text_domain,
@@ -69,7 +69,7 @@ my $sth = $dbh->prepare(<<"EO_SQL");
     WHERE msgid <> ''
 EO_SQL
 
-# read all entrys of the full po-file
+# read all entrys of the full po file
 $sth->execute();
 my @array;
 while ( my $hashref = $sth->fetchrow_hashref() ) {
