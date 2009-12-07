@@ -103,16 +103,16 @@ sub _set_gettext_package {
     my ($self, $gettext_package) = @_;
 
     if ( ! $gettext_package ) {
-        # Try to load the C version first.
-        my $code = <<'EOC';
-            require Locale::gettext_xs';
+        # Try to load the XS version first.
+        my $version_ok = eval <<'EOC';  ## no critic (StringyEval)
+            require 'Locale::gettext_xs';
             Locale::gettext_xs::__gettext_xs_version() >= 1.20;
 EOC
-        my $version_ok = eval $code; ## no critic (StringyEval)
         $EVAL_ERROR
             and return $self->_set_gettext_package('Locale::gettext_pp');
         $version_ok
             or croak 'gettext_xs_version is older than 1.20.';
+        $gettext_package = 'Locale::gettext_xs';
     }
     my $code = "require $gettext_package";
     () = eval $code; ## no critic (StringyEval)
