@@ -104,13 +104,15 @@ sub _set_gettext_package {
 
     if ( ! $gettext_package ) {
         # Try to load the C version first.
-        my $code = 'require Locale::gettext_xs';
-        () = eval $code; ## no critic (StringyEval)
+        my $code = <<'EOC';
+            require Locale::gettext_xs';
+            Locale::gettext_xs::__gettext_xs_version() >= 1.20;
+EOC
+        my $version_ok = eval $code; ## no critic (StringyEval)
         $EVAL_ERROR
             and return $self->_set_gettext_package('Locale::gettext_pp');
-        my $version = Locale::gettext_xs::__gettext_xs_version(); ## no critic (PrivateSubs)
-        $version >= 1.20 ## no critic (MagicNumbers)
-            or croak "gettext_xs_version $version is to old.";
+        $version_ok
+            or croak 'gettext_xs_version is older than 1.20.';
     }
     my $code = "require $gettext_package";
     () = eval $code; ## no critic (StringyEval)
