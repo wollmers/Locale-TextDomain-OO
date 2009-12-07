@@ -1,5 +1,10 @@
 Revision history for Perl extension Locale::Text::Domain:OO.
 
+0.03  Mon Dec  7 22:30:00 2009
+- add forgotten language at test 22
+- add forgotten xs package name at OO.pm
+- some POD
+
 0.02  Sat Dec  5 22:00:00 2009
 - bugfix: dependency errors at Build.PL
 - better module POD
