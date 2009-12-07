@@ -3,7 +3,7 @@ package Locale::TextDomain::OO::FunctionalInterface;
 use strict;
 use warnings;
 
-use version; our $VERSION = qv('0.02');
+use version; our $VERSION = qv('0.03');
 
 use Carp qw(croak);
 use Perl6::Export::Attrs;
@@ -69,7 +69,7 @@ $HeadURL$
 
 =head1 VERSION
 
-0.02
+0.03
 
 =head1 DESCRIPTION
 

@@ -3,7 +3,7 @@ package Locale::TextDomain::OO::MessagesStruct;
 use strict;
 use warnings;
 
-use version; our $VERSION = qv('0.01');
+use version; our $VERSION = qv('0.03');
 
 use Carp qw(croak);
 
@@ -145,7 +145,7 @@ $HeadURL$
 
 =head1 VERSION
 
-0.01
+0.03
 
 =head1 DESCRIPTION
 
