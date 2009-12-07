@@ -3,7 +3,7 @@ use warnings;
 
 use Module::Build;
 
-my $is_ppm = eval "require ActivePerl::PPM::Package";
+my $is_ppm = eval 'require ActivePerl::PPM::Package';
 
 Module::Build->new(
     module_name       => 'Locale::TextDomain::OO',
