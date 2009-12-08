@@ -36,29 +36,30 @@ my $text_domain = 'test';
         sub {
             tie_object($loc);
         },
-        'bind object',
+        'tie object',
     );
 
     lives_ok(
         sub {
             tie_object($loc, qw(%__ $__));
         },
-        'bind object method __',
+        'tie object method __ to %__ and $__',
     );
 
     throws_ok(
         sub {
-            bind_object($loc, undef);
+            tie_object($loc, undef);
         },
         qr{\A \QAn undefined value is not a variable name}xms,
+        'tie object method with an undefined method name',
     );
 
     throws_ok(
         sub {
-            bind_object($loc, qw(__x __y));
+            tie_object($loc, qw(%__x %__y));
         },
         qr{\A \QMethod "__y" is not a translation method}xms,
-        'bind object method __x and __y',
+        'tie object method __x, __y to %__x, %__y',
     );
 }
 
