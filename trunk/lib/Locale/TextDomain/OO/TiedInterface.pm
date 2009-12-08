@@ -1,4 +1,4 @@
-package Locale::TextDomain::OO::Tied;
+package Locale::TextDomain::OO::TiedInterface;
 
 use strict;
 use warnings;
@@ -31,34 +31,46 @@ my %method_name = map { $_ => undef } qw(
 );
 
 sub tie_object :Export(:DEFAULT) {
-    my ($object, @methods) = @_;
+    my ($object, @variables) = @_;
 
-    if (! @methods) {
-        @methods = grep { $object->can($_) } keys %method_name;
+    if (! @variables) {
+        @variables = map {
+            $object->can($_)
+            ? (
+                q{$} . $_,
+                q{%} . $_,
+            )
+            : ()
+        } keys %method_name;
     }
 
     my $caller = caller;
 
-    for my $method (@methods) {
-        defined $method
-            or croak 'An undefined value is not a method name';
+    for my $variable (@variables) {
+        defined $variable
+            or croak 'An undefined value is not a variable name';
+        my ($is_ref) = (my $method = $variable) =~ s{\A (?: (\$) | % )}{}xms;
         exists $method_name{$method}
             or croak qq{Method "$method" is not a translation method};
         $object->can($method)
             or croak qq{Object has no method named "$method"};
-        tie
-            my %hash,
-            'Tie::Sub',
-            ( index $method, 'N' == 0 )
+        no strict qw(refs);       ## no critic (NoStrict)
+        no warnings qw(redefine); ## no critic (NoWarnings)
+        my $sub
+            = ( index $method, 'N' ) == 0
             ? sub {
                 return [ $object->$method(@_) ];
             }
             : sub {
                 return $object->$method(@_);
             };
-        no strict qw(refs);       ## no critic (NoStrict)
-        no warnings qw(redefine); ## no critic (NoWarnings)
-        *{"$caller\::$method"} = \%hash;
+        if ($is_ref) {
+            tie my %hash, 'Tie::Sub', $sub; ## no critic (Ties)
+            ${"$caller\::$method"} = \%hash;
+        }
+        else {
+            tie %{"$caller\::$method"}, 'Tie::Sub', $sub; ## no critic (Ties)
+        }
     }
 
     return;
@@ -70,7 +82,7 @@ __END__
 
 =head1 NAME
 
-Locale::TextDomain::Tied - Call object methods as tied hash
+Locale::TextDomain::OO::TiedInterface - Call object methods as tied hash
 
 $Id$
 
@@ -86,11 +98,11 @@ This module wraps the object into a tied hash and allows to call a method as fet
 
 =head1 SYNOPSIS
 
-    use Locale::TextDomain::OO::FunctionalInterface;
+    use Locale::TextDomain::OO::TiedInterface;
 
 or
 
-    use Locale::TextDomain::OO::FunctionalInterface qw(bind_object);
+    use Locale::TextDomain::OO::TiedInterface qw(tie_object);
 
 =head1 SUBROUTINES/METHODS
 
@@ -108,7 +120,11 @@ and
 
 or
 
-    tie_object($loc, qw(__ __x ...)); # import only the given methods
+    tie_object($loc, qw(%__ %__x ...)); # import only the given hashs
+
+or
+
+    tie_object($loc, qw($__ $__x ...)); # import only the given hash references
 
 =head1 EXAMPLE
 
@@ -117,15 +133,15 @@ Run this *.pl files.
 
 =head1 DIAGNOSTICS
 
-Subroutine bind_object can not bind an undef as method name.
+Subroutine tie_object can not bind an undef as variable name.
 
- An undefined value is not a method name
+ An undefined value is not a variable name
 
-Subroutine bind_object only can bind translating subroutines.
+Subroutine tie_object only can bind translating methods.
 
  Method "..." is not a translation method
 
-Subroutine bind_object can not bind a non existing object method.
+Subroutine tie_object can not bind a non existing object method.
 
  Object has no method named "..."
 
