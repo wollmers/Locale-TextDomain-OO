@@ -10,17 +10,43 @@ use Carp qw(croak);
 require DBI;
 require DBD::PO; DBD::PO->init( qw(:plural) );
 
-# simplified extracting rules because q{...} is not allowed
-my $text_rule = q{( (?: \\\\ \\\\ | \\\\ ' | [^'] )+ )};
+my $context_rule
+= my $text_rule
+= my $singular_rule
+= my $plural_rule
+= [
+    [
+        qr{'}xms,
+        qr{( (?: \\\\ \\\\ | \\\\ ' | [^'] )+ )}xms,
+        qr{'}xms,
+    ],
+];
+my $komma_rule = qr{,}xms;
 my @rules = (
-    # text
-    qr{\$ __ ( x          )? \{ \[? \s* '$text_rule'}xmso,
-    # text plural
-    qr{\$ __ ( n | nx     )? \{ \[  \s* '$text_rule' , \s* '$text_rule'}xmso,
-    # text context
-    qr{\$ __ ( px?        )? \{ \[  \s* '$text_rule' , \s* '$text_rule'}xmso,
-    # text context plural
-    qr{\$ __ ( np | npx   )? \{ \[  \s* '$text_rule' , \s* '$text_rule' , \s* '$text_rule'}xmso,
+    [
+        qr{__ (x?) \(}xms,
+        $text_rule,
+    ],
+    [
+        qr{__ (nx?) \(}xms,
+        $singular_rule,
+        $komma_rule,
+        $plural_rule,
+    ],
+    [
+        qr{__ (px?) \(}xms,
+        $context_rule,
+        $komma_rule,
+        $text_rule,
+    ],
+    [
+        qr{__ (npx?) \(}xms,
+        $context_rule,
+        $komma_rule,
+        $singular_rule,
+        $komma_rule,
+        $plural_rule,
+    ],
 );
 
 sub new {
@@ -49,7 +75,7 @@ my $line_number = 1;
 my @lines = split m{\n}xms, $text;
 LINE:
 for my $line (@lines) {
-    $line =~ m{__ ( n? p? x? }xms
+    $line =~ $start_rule
         or next LINE;
     my $text = join "\n", @lines[($line_number - 1) .. $#lines];
     my $has_matched = ();
@@ -144,7 +170,7 @@ EO_SQL
 # write entrys
 for my $entry (@pot_data) {
     $sth_select->execute(
-    	@{$entry}{ qw(msgctxt msgid msgid_plural) },
+            @{$entry}{ qw(msgctxt msgid msgid_plural) },
     );
     my ($reference) = $sth_select->fetchrow_array();
     if ($reference && length $reference) {
