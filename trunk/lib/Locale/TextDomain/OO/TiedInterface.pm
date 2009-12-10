@@ -31,46 +31,27 @@ my %method_name = map { $_ => undef } qw(
 );
 
 sub tie_object :Export(:DEFAULT) {
-    my ($object, @variables) = @_;
+    my ($object, @attr) = @_;
 
-    if (! @variables) {
-        @variables = map {
-            $object->can($_)
-            ? (
-                q{$} . $_,
-                q{%} . $_,
-            )
-            : ()
-        } keys %method_name;
-    }
-
-    my $caller = caller;
-
-    for my $variable (@variables) {
-        defined $variable
-            or croak 'An undefined value is not a variable name';
-        my ($is_ref) = (my $method = $variable) =~ s{\A (?: (\$) | % )}{}xms;
+    while ( my ($method, $ref) = splice @attr, 0, 2 ) {
+        defined $method
+            or croak 'An undefined value is not a method name';
         exists $method_name{$method}
             or croak qq{Method "$method" is not a translation method};
         $object->can($method)
             or croak qq{Object has no method named "$method"};
         no strict qw(refs);       ## no critic (NoStrict)
         no warnings qw(redefine); ## no critic (NoWarnings)
-        my $sub
-            = ( index $method, 'N' ) == 0
+        tie ## no critic (Ties)
+            %{$ref},
+            'Tie::Sub',
+            ( index $method, 'N' ) == 0
             ? sub {
                 return [ $object->$method(@_) ];
             }
             : sub {
                 return $object->$method(@_);
             };
-        if ($is_ref) {
-            tie my %hash, 'Tie::Sub', $sub; ## no critic (Ties)
-            ${"$caller\::$method"} = \%hash;
-        }
-        else {
-            tie %{"$caller\::$method"}, 'Tie::Sub', $sub; ## no critic (Ties)
-        }
     }
 
     return;
@@ -94,7 +75,8 @@ $HeadURL$
 
 =head1 DESCRIPTION
 
-This module wraps the object into a tied hash and allows to call a method as fetch hash.
+This module wraps the object into a tied hash
+and allows to call a method as fetch hash.
 
 =head1 SYNOPSIS
 
@@ -116,15 +98,18 @@ or
 
 and
 
-    tie_object($loc); # import all possible methods
-
-or
-
-    tie_object($loc, qw(%__ %__x ...)); # import only the given hashs
-
-or
-
-    tie_object($loc, qw($__ $__x ...)); # import only the given hash references
+    tie_object(
+        $loc,
+        {
+            # tie a hash
+            __  => \my %__,
+            __x => \my %__x,
+            ...
+            # tie a hash reference
+            __  => my $__,
+            __x => my $__x,
+        },
+    );
 
 =head1 EXAMPLE
 
@@ -133,9 +118,9 @@ Run this *.pl files.
 
 =head1 DIAGNOSTICS
 
-Subroutine tie_object can not bind an undef as variable name.
+Subroutine tie_object can not bind an undef as method name.
 
- An undefined value is not a variable name
+ An undefined value is not a method name
 
 Subroutine tie_object only can bind translating methods.
 
