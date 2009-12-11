@@ -29,68 +29,44 @@ my %method_name = map { $_ => undef } qw(
     maketext_p
 );
 
-our (
-    $loc,
-    %__,
-    %__x,
-    %__n,
-    %__nx,
-    %__p,
-    %__px,
-    %__np,
-    %__npx,
-    %N__,
-    %N__x,
-    %N__n,
-    %N__nx,
-    %N__p,
-    %N__px,
-    %N__np,
-    %N__npx,
-    %maketext,
-    %maketext_p,
-    $__,
-    $__x,
-    $__n,
-    $__nx,
-    $__p,
-    $__px,
-    $__np,
-    $__npx,
-    $N__,
-    $N__x,
-    $N__n,
-    $N__nx,
-    $N__p,
-    $N__px,
-    $N__np,
-    $N__npx,
-    $maketext,
-    $maketext_p,
-);
+our $loc;
+
 sub import {
-    my @import = @_;
+    my (undef, @imports) = @_;
 
-    if (! @import) {
-        @import = qw($loc), keys %method_name;
-    }    
+    if (! @imports) {
+        @imports = (
+            qw($loc),
+            map { ("\%$_", "\$$_") } keys %method_name
+        );
+    }
 
-    my $caller = caller;
+    my $caller  = caller;
+    my $package = __PACKAGE__;
 
     IMPORT:
-    for my $import (@import) {
+    for my $import (@imports) {
+        defined $import
+            or croak 'An undefined value is not a variable name';
         if ($import eq '$loc') {
-            die 'xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx';
             no strict qw(refs);
             no warnings qw(redefine);
             *{"$caller\::loc"} = \$loc;
             next IMPORT;
         }
-        defined $import
-            or croak 'An undefined value is not a variable name';
-        my $is_ref = (my $method = $import) =~ s{\A (?: (\$) | % )}{}xms;
+        (my $method = $import) =~ s{\A (?: (\$) | % )}{}xms
+            or croak qq{"$import" is not a hash or a hash references};
+        my $is_ref = $1;
         exists $method_name{$method}
             or croak qq{Method "$method" is not a translation method};
+        {
+            no strict qw(refs);
+            no warnings qw(redefine);
+            *{"$caller\::$method"}
+                = $is_ref
+                ? \${"$package\::$method"}
+                : \%{"$package\::$method"};
+        }
         my $sub
             = ( index $method, 'N' ) == 0
             ? sub {
@@ -99,15 +75,15 @@ sub import {
             : sub {
                 return $loc->$method(@_);
             };
-        no strict qw(refs);       ## no critic (NoStrict)
-        no warnings qw(redefine); ## no critic (NoWarnings)
         if ($is_ref) {
+            no strict qw(refs);
             tie ## no critic (Ties)
                 %{ ${$method} },
                 'Tie::Sub',
                 $sub;
         }
         else {
+            no strict qw(refs);
             tie ## no critic (Ties)
                 %{$method},
                 'Tie::Sub',
