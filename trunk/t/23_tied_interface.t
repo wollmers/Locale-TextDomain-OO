@@ -10,7 +10,7 @@ use Test::Differences;
 
 BEGIN {
     require_ok('Locale::TextDomain::OO');
-    use_ok('Locale::TextDomain::OO::TiedInterface');
+    use_ok('Locale::TextDomain::OO::TiedInterface2');
 }
 
 local $ENV{LANGUAGE}
@@ -20,7 +20,6 @@ local $ENV{LANGUAGE}
 my $text_domain = 'test';
 
 # create the object
-my $loc;
 lives_ok(
     sub {
         $loc = Locale::TextDomain::OO->new(
@@ -31,50 +30,21 @@ lives_ok(
     'create default object',
 );
 
-# tie the method calls
-my (
-    %__,    $__,
-    %__x,   $__x,
-    %__n,   $__n,
-    %__nx,  $__nx,
-    %__p,   $__p,
-    %__px,  $__px,
-    %__np,  $__np,
-    %__npx, $__npx,
-);
 lives_ok(
     sub {
-        tie_object(
-            $loc,
-            __    => \%__,
-            __    => $__,
-            __x   => \%__x,
-            __x   => $__x,
-            __n   => \%__n,
-            __n   => $__n,
-            __nx  => \%__nx,
-            __nx  => $__nx,
-            __p   => \%__p,
-            __p   => $__p,
-            __px  => \%__px,
-            __px  => $__px,
-            __np  => \%__np,
-            __npx => \%__npx,
-            __npx => $__npx,
-        );
     },
     'tie all object methods',
 );
 throws_ok(
     sub {
-        tie_object($loc, undef() => undef);
+        die;
     },
     qr{\A \QAn undefined value is not a method name}xms,
     'tie object method with an undefined method name',
 );
 throws_ok(
     sub {
-        tie_object($loc, __y => undef);
+        die;
     },
     qr{\A \QMethod "__y" is not a translation method}xms,
     'tie object method __y',
@@ -248,4 +218,3 @@ eq_or_diff(
     '1 gutes Regal',
     '$__npx',
 );
-
