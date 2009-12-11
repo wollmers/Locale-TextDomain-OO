@@ -55,7 +55,7 @@ sub import {
             next IMPORT;
         }
         (my $method = $import) =~ s{\A (?: (\$) | % )}{}xms
-            or croak qq{"$import" is not a hash or a hash references};
+            or croak qq{"$import" is not a hash or a hash reference};
         my $is_ref = $1;
         exists $method_name{$method}
             or croak qq{Method "$method" is not a translation method};
@@ -117,36 +117,57 @@ and allows to call a method as fetch hash.
 
 =head1 SYNOPSIS
 
+import all
+
     use Locale::TextDomain::OO::TiedInterface;
 
-or
+or inport only the given variables, as example all
 
-    use Locale::TextDomain::OO::TiedInterface qw(tie_object);
+    use Locale::TextDomain::OO::TiedInterface qw(
+        $loc
+        %__
+        %__
+        %__x
+        %__n
+        %__nx
+        %__p
+        %__px
+        %__np
+        %__npx
+        %N__
+        %N__x
+        %N__n
+        %N__nx
+        %N__p
+        %N__px
+        %N__np
+        %N__npx
+        %maketext
+        %maketext_p
+        $__
+        $__
+        $__x
+        $__n
+        $__nx
+        $__p
+        $__px
+        $__np
+        $__npx
+        $N__
+        $N__x
+        $N__n
+        $N__nx
+        $N__p
+        $N__px
+        $N__np
+        $N__npx
+        $maketext
+        $maketext_p
+    );
 
 =head1 SUBROUTINES/METHODS
 
-=head2 subroutine tie_object
-
-    $loc = Locale::TextDomain::OO->new(...);
-
-or
-
-    $loc = Locale::TextDomain::OO::Maketext->new(...);
-
-and
-
-    tie_object(
-        $loc,
-        {
-            # tie a hash
-            __  => \my %__,
-            __x => \my %__x,
-            ...
-            # tie a hash reference
-            __  => my $__,
-            __x => my $__x,
-        },
-    );
+none
 
 =head1 EXAMPLE
 
@@ -155,17 +176,18 @@ Run this *.pl files.
 
 =head1 DIAGNOSTICS
 
-Subroutine tie_object can not bind an undef as method name.
+Can not import an undef as variable name.
 
- An undefined value is not a method name
+ An undefined value is not a variable name
 
-Subroutine tie_object only can bind translating methods.
+Cann not import an unknown variable.
+
+ "..." is not a hash or a hash reference
+
+Can not import a variable that has not a name like a translating methods.
 
  Method "..." is not a translation method
 
-Subroutine tie_object can not bind a non existing object method.
-
- Object has no method named "..."
 
 =head1 CONFIGURATION AND ENVIRONMENT
 

@@ -25,7 +25,7 @@ throws_ok(
     sub {
         Locale::TextDomain::OO::TiedInterface->import(qw(__));
     },
-    qr{\A \Q"__" is not a hash or a hash references}xms,
+    qr{\A \Q"__" is not a hash or a hash reference}xms,
     'tie object method __y',
 );
 throws_ok(

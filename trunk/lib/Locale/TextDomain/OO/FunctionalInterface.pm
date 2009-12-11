@@ -53,7 +53,7 @@ sub bind_object :Export(:DEFAULT) {
     }
 
     return;
-};
+}
 
 1;
 
