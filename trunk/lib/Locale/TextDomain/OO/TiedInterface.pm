@@ -29,7 +29,7 @@ my %method_name = map { $_ => undef } qw(
     maketext_p
 );
 
-our $loc;
+our $loc; ## no critic(PackageVars)
 
 sub import {
     my (undef, @imports) = @_;
@@ -48,9 +48,9 @@ sub import {
     for my $import (@imports) {
         defined $import
             or croak 'An undefined value is not a variable name';
-        if ($import eq '$loc') {
-            no strict qw(refs);
-            no warnings qw(redefine);
+        if ($import eq '$loc') { ## no critic (InterpolationOfMetachars)
+            no strict qw(refs);       ## no critic (NoStrict)
+            no warnings qw(redefine); ## no critic (NoWarnings)
             *{"$caller\::loc"} = \$loc;
             next IMPORT;
         }
@@ -60,15 +60,15 @@ sub import {
         exists $method_name{$method}
             or croak qq{Method "$method" is not a translation method};
         {
-            no strict qw(refs);
-            no warnings qw(redefine);
+            no strict qw(refs);       ## no critic (NoStrict)
+            no warnings qw(redefine); ## no critic (NoWarnings)
             *{"$caller\::$method"}
                 = $is_ref
                 ? \${"$package\::$method"}
                 : \%{"$package\::$method"};
         }
         my $sub
-            = ( index $method, 'N' ) == 0
+            = ( index $method, 'N', 0 ) == 0
             ? sub {
                 return [ $loc->$method(@_) ];
             }
@@ -76,14 +76,14 @@ sub import {
                 return $loc->$method(@_);
             };
         if ($is_ref) {
-            no strict qw(refs);
+            no strict qw(refs); ## no critic (NoStrict)
             tie ## no critic (Ties)
                 %{ ${$method} },
                 'Tie::Sub',
                 $sub;
         }
         else {
-            no strict qw(refs);
+            no strict qw(refs); ## no critic (NoStrict)
             tie ## no critic (Ties)
                 %{$method},
                 'Tie::Sub',

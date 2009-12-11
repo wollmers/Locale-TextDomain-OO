@@ -3,10 +3,11 @@
 use strict;
 use warnings;
 
-use Test::More tests => 24 + 1;
+use Test::More tests => 29 + 1;
 use Test::NoWarnings;
 use Test::Exception;
 use Test::Differences;
+use Test::Deep;
 
 BEGIN {
     require_ok('Locale::TextDomain::OO');
@@ -220,3 +221,31 @@ eq_or_diff(
     '1 gutes Regal',
     '$__npx',
 );
+
+eq_or_diff(
+    $N__{'text'},
+    'text',
+    '%N__ scalar',
+);
+eq_or_diff(
+    $N__{['text']},
+    'text',
+    '%N__ arrayref',
+);
+eq_or_diff(
+    $N__->{'text'},
+    'text',
+    '$N__',
+);
+
+is_deeply(
+    $N__n{['singular', 'plural', 1]},
+    [qw(singular plural 1)],
+    '%N__n',
+);
+is_deeply(
+    $N__n{['singular', 'plural', 2]},
+    [qw(singular plural 2)],
+    '$N__',
+);
+
