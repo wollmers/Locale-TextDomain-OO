@@ -10,26 +10,26 @@ use Test::Differences;
 
 BEGIN {
     require_ok('Locale::TextDomain::OO');
-    use_ok('Locale::TextDomain::OO::TiedInterface2');
+    use_ok('Locale::TextDomain::OO::TiedInterface');
 }
 
 throws_ok(
     sub {
-        Locale::TextDomain::OO::TiedInterface2->import(undef);
+        Locale::TextDomain::OO::TiedInterface->import(undef);
     },
     qr{\A \QAn undefined value is not a variable name}xms,
     'tie object method with an undefined method name',
 );
 throws_ok(
     sub {
-        Locale::TextDomain::OO::TiedInterface2->import(qw(__));
+        Locale::TextDomain::OO::TiedInterface->import(qw(__));
     },
     qr{\A \Q"__" is not a hash or a hash references}xms,
     'tie object method __y',
 );
 throws_ok(
     sub {
-        Locale::TextDomain::OO::TiedInterface2->import(qw($__y));
+        Locale::TextDomain::OO::TiedInterface->import(qw($__y));
     },
     qr{\A \QMethod "__y" is not a translation method}xms,
     'tie object method __y',
