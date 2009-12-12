@@ -15,9 +15,9 @@ plan(tests => 7);
 
 my @data = (
     {
-        test   => '21_gettext_mo',
+        test   => '11_gettext_mo',
         path   => 'example',
-        script => '-I../lib -T 21_gettext_mo.pl',
+        script => '-I../lib -T 11_gettext_mo.pl',
         result => <<'EOT',
 Das ist ein Text.
 Steffen programmiert Perl.
@@ -34,9 +34,9 @@ gute Regale
 EOT
     },
     {
-        test   => '22_gettext_struct_from_locale_po',
+        test   => '22_gettext_mo_functional_interface',
         path   => 'example',
-        script => '-I../lib -T 22_gettext_struct_from_locale_po.pl',
+        script => '-I../lib -T 22_gettext_mo_functional_interface.pl',
         result => <<'EOT',
 Das ist ein Text.
 Steffen programmiert Perl.
@@ -53,9 +53,29 @@ gute Regale
 EOT
     },
     {
-        test   => '23_gettext_struct_from_dbd_po',
+        test   => '23_gettext_mo_tied_interface',
         path   => 'example',
-        script => '-I../lib -T 23_gettext_struct_from_dbd_po.pl',
+        script => '-I../lib -T 23_gettext_mo_tied_interface.pl',
+        result => <<'EOT',
+Das ist ein Text.
+Das ist ein Text.
+Steffen programmiert Perl.
+Einzahl
+Mehrzahl
+1 Regal
+2 Regale
+Sehr geehrter Herr
+Sehr geehrter Herr Winkler
+gutes Regal
+gute Regale
+1 gutes Regal
+2 gute Regale
+EOT
+    },
+    {
+        test   => '31_gettext_struct_from_locale_po',
+        path   => 'example',
+        script => '-I../lib -T 31_gettext_struct_from_locale_po.pl',
         result => <<'EOT',
 Das ist ein Text.
 Steffen programmiert Perl.
@@ -72,9 +92,28 @@ gute Regale
 EOT
     },
     {
-        test   => '24_maketext_mo',
+        test   => '32_gettext_struct_from_dbd_po',
         path   => 'example',
-        script => '-I../lib -T 24_maketext_mo.pl',
+        script => '-I../lib -T 32_gettext_struct_from_dbd_po.pl',
+        result => <<'EOT',
+Das ist ein Text.
+Steffen programmiert Perl.
+Einzahl
+Mehrzahl
+1 Regal
+2 Regale
+Sehr geehrter Herr
+Sehr geehrter Herr Winkler
+gutes Regal
+gute Regale
+1 gutes Regal
+2 gute Regale
+EOT
+    },
+    {
+        test   => '41_maketext_mo',
+        path   => 'example',
+        script => '-I../lib -T 41_maketext_mo.pl',
         result => <<'EOT',
 Das ist ein Text.
 Steffen programmiert Perl.
@@ -90,9 +129,9 @@ Sehr geehrter Herr Winkler
 EOT
     },
     {
-        test   => '25_maketext_mo_style_gettext',
+        test   => '42_maketext_mo_style_gettext',
         path   => 'example',
-        script => '-I../lib -T 25_maketext_mo_style_gettext.pl',
+        script => '-I../lib -T 42_maketext_mo_style_gettext.pl',
         result => <<'EOT',
 Das ist ein Text.
 Steffen programmiert Perl.
@@ -105,45 +144,6 @@ Sehr geehrter Herr Winkler
 0 Regale
 1 Regal
 2 Regale
-EOT
-    },
-    {
-        test   => '31_gettext_mo_functional_interface',
-        path   => 'example',
-        script => '-I../lib -T 31_gettext_mo_functional_interface.pl',
-        result => <<'EOT',
-Das ist ein Text.
-Steffen programmiert Perl.
-Einzahl
-Mehrzahl
-1 Regal
-2 Regale
-Sehr geehrter Herr
-Sehr geehrter Herr Winkler
-gutes Regal
-gute Regale
-1 gutes Regal
-2 gute Regale
-EOT
-    },
-    {
-        test   => '32_gettext_mo_tied_interface',
-        path   => 'example',
-        script => '-I../lib -T 32_gettext_mo_tied_interface.pl',
-        result => <<'EOT',
-Das ist ein Text.
-Das ist ein Text.
-Steffen programmiert Perl.
-Einzahl
-Mehrzahl
-1 Regal
-2 Regale
-Sehr geehrter Herr
-Sehr geehrter Herr Winkler
-gutes Regal
-gute Regale
-1 gutes Regal
-2 gute Regale
 EOT
     },
 );

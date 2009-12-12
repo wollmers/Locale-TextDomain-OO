@@ -1,4 +1,4 @@
-#!perl
+﻿#!perl
 
 use strict;
 use warnings;
@@ -31,9 +31,9 @@ c§ книга
 EOT
     },
     {
-        test   => '26_gettext_struct_from_locale_po_utf-8',
+        test   => '33_gettext_struct_from_locale_po_utf-8',
         path   => 'example',
-        script => '-I../lib -T 26_gettext_struct_from_locale_po_utf-8.pl',
+        script => '-I../lib -T 33_gettext_struct_from_locale_po_utf-8.pl',
         result => <<'EOT',
 книга
 § книга
@@ -45,9 +45,9 @@ c§ книга
 EOT
     },
     {
-        test   => '27_gettext_struct_from_dbd_po_utf-8',
+        test   => '34_gettext_struct_from_dbd_po_utf-8',
         path   => 'example',
-        script => '-I../lib -T 27_gettext_struct_from_dbd_po_utf-8.pl',
+        script => '-I../lib -T 34_gettext_struct_from_dbd_po_utf-8.pl',
         result => <<'EOT',
 книга
 § книга
