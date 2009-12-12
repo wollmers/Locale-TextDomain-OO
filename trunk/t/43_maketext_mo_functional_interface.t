@@ -26,7 +26,7 @@ my $text_domain = 'test_maketext';
         sub {
             $loc = Locale::TextDomain::OO::Maketext->new(
                 text_domain => $text_domain,
-                search_dirs => [qw(./t/LocaleData/)],
+                search_dirs => [qw(./t/LocaleData)],
             );
         },
         'create maketext like object',

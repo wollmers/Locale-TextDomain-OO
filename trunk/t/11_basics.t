@@ -12,7 +12,7 @@ BEGIN {
     require_ok('Locale::TextDomain::OO');
 }
 
-local $ENV{LANGUAGE} 
+local $ENV{LANGUAGE}
     = Locale::TextDomain::OO
     ->get_default_language_detect()
     ->('de_DE');
@@ -26,9 +26,10 @@ lives_ok(
             search_dirs => [qw(./t/LocaleData)],
         );
     },
-    'create default object',
+    'create object',
 );
 
+# run all translations
 eq_or_diff(
     $loc->__(
         'This is a text.',
@@ -69,7 +70,7 @@ eq_or_diff(
         1,
     ),
     'Einzahl',
-    '__n',
+    '__n 1',
 );
 eq_or_diff(
     $loc->__n(
@@ -78,7 +79,7 @@ eq_or_diff(
         2,
     ),
     'Mehrzahl',
-    '__n',
+    '__n 2',
 );
 
 eq_or_diff(
@@ -89,7 +90,7 @@ eq_or_diff(
         num => 1,
     ),
     '1 Regal',
-    '__nx',
+    '__nx 1',
 );
 eq_or_diff(
     $loc->__nx(
@@ -99,7 +100,7 @@ eq_or_diff(
         num => 2,
     ),
     '2 Regale',
-    '__nx',
+    '__nx 2',
 );
 
 eq_or_diff(
@@ -129,7 +130,7 @@ eq_or_diff(
         1,
     ),
     'gutes Regal',
-    '__np',
+    '__np 1',
 );
 eq_or_diff(
     $loc->__np(
@@ -139,7 +140,7 @@ eq_or_diff(
         2,
     ),
     'gute Regale',
-    '__np',
+    '__np 2',
 );
 
 eq_or_diff(
@@ -151,7 +152,7 @@ eq_or_diff(
         num => 1,
     ),
     '1 gutes Regal',
-    '__npx',
+    '__npx 1',
 );
 eq_or_diff(
     $loc->__npx(
@@ -162,5 +163,5 @@ eq_or_diff(
         num => 2,
     ),
     '2 gute Regale',
-    '__npx',
+    '__npx 2',
 );

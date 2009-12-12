@@ -25,7 +25,7 @@ lives_ok(
         $loc = Locale::TextDomain::OO->new(
             gettext_object => Locale::TextDomain::OO::MessagesStruct->new(\%struct),
             text_domain    => $text_domain,
-            search_dirs    => [qw(./t/LocaleData/)],
+            search_dirs    => [qw(./t/LocaleData)],
         );
     },
     'create extended object',
