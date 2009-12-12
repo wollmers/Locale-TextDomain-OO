@@ -11,7 +11,7 @@ $ENV{TEST_EXAMPLE} or plan(
     skip_all => 'Set $ENV{TEST_EXAMPLE} to run this test.'
 );
 
-plan(tests => 5);
+plan(tests => 7);
 
 my @data = (
     {
@@ -105,6 +105,45 @@ Sehr geehrter Herr Winkler
 0 Regale
 1 Regal
 2 Regale
+EOT
+    },
+    {
+        test   => '31_gettext_mo_functional_interface',
+        path   => 'example',
+        script => '-I../lib -T 31_gettext_mo_functional_interface.pl',
+        result => <<'EOT',
+Das ist ein Text.
+Steffen programmiert Perl.
+Einzahl
+Mehrzahl
+1 Regal
+2 Regale
+Sehr geehrter Herr
+Sehr geehrter Herr Winkler
+gutes Regal
+gute Regale
+1 gutes Regal
+2 gute Regale
+EOT
+    },
+    {
+        test   => '32_gettext_mo_tied_interface',
+        path   => 'example',
+        script => '-I../lib -T 32_gettext_mo_tied_interface.pl',
+        result => <<'EOT',
+Das ist ein Text.
+Das ist ein Text.
+Steffen programmiert Perl.
+Einzahl
+Mehrzahl
+1 Regal
+2 Regale
+Sehr geehrter Herr
+Sehr geehrter Herr Winkler
+gutes Regal
+gute Regale
+1 gutes Regal
+2 gute Regale
 EOT
     },
 );

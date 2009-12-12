@@ -6,7 +6,6 @@ use warnings;
 our $VERSION = 0;
 
 require Locale::TextDomain::OO;
-use Locale::TextDomain::OO::FunctionalInterface qw(bind_object);
 
 local $ENV{LANGUAGE}
     = Locale::TextDomain::OO
@@ -14,74 +13,72 @@ local $ENV{LANGUAGE}
     ->('de_DE');
 my $text_domain = 'example';
 
-bind_object(
-    Locale::TextDomain::OO->new(
-        text_domain => $text_domain,
-        search_dirs => [qw(./LocaleData/)],
-    ),
+my $loc = Locale::TextDomain::OO->new(
+    text_domain => $text_domain,
+    search_dirs => [qw(./LocaleData/)],
 );
 
 # run all translations
 () = print map {"$_\n"}
-    __(
+    $loc->__(
         'This is a text.',
     ),
-    __x(
+    $loc->__x(
         '{name} is programming {language}.',
         name     => 'Steffen',
         language => 'Perl',
     ),
-    __n(
+    $loc->__n(
         'Singular',
         'Plural',
         1,
     ),
-    __n(
+    $loc->__n(
         'Singular',
         'Plural',
         2,
     ),
-    __nx(
+    $loc->__nx(
         '{num} shelf',
         '{num} shelves',
         1,
         num => 1,
     ),
-    __nx(
+    $loc->__nx(
         '{num} shelf',
         '{num} shelves',
         2,
         num => 2,
     ),
-    __p(
+    $loc->__p(
         'maskulin',
         'Dear',
     ),
-    __px(
+    $loc->__px(
         'maskulin',
         'Dear {name}',
         name => 'Winkler',
     ),
-    __np(
+    $loc->__np(
         'better',
         'shelf',
         'shelves',
         1,
     ),
-    __np(
+    $loc->__np(
         'better',
         'shelf',
         'shelves',
         2,
     ),
-    __npx(
+    $loc->__npx(
         'better',
         '{num} shelf',
         '{num} shelves',
         1,
         num => 1,
     ),
-    __npx(
+    $loc->__npx(
         'better',
         '{num} shelf',
         '{num} shelves',
