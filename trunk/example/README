@@ -33,7 +33,7 @@ applications have not stored the internationalization data in mo files.
         http://rt.cpan.org/Public/Bug/Display.html?id=49758
     This example uses the Russian UTF-8 mo file.
 
-21_gettext_mo.pl
+11_gettext_mo.pl
     This example shows, how to use the module Locale::Text-Domain::OO.
     Unicode is not used. Then a char is equal to a byte.
     This example uses the German ISO-8859-1 example.mo file.
@@ -44,7 +44,44 @@ applications have not stored the internationalization data in mo files.
     This is only to detect the language using module I18N::LangTags including
     super and panic languages and not to use the Locale::Messages defaults.
 
-22_gettext_struct_from_locale_po.pl
+22_gettext_mo_functional_interface
+    This is nearly the same like "11_gettext_mo.pl".
+    The subroutine bind_object of module
+    Locale::TextDomain::OO::FunctionalInterface is only to have a functional
+    interface like module Locale::TextDomain.
+    The you call
+        __(...)
+    and not
+        $loc->__(...)
+    and the same for
+        __x(...)
+    and so on.
+    If it makes no sense, do not use this interface and do not bind the object
+    to this interface and use the object directly.
+
+23_gettext_mo_tied_interface
+    This is nearly the same like "11_gettext_mo.pl".
+    The imported variable $loc you need to write back (bind) the object.
+    Locale::TextDomain::OO::TiedInterface exists to have a tied interface like
+    module Locale::TextDomain.
+    Safe the object into the imported variable $loc.
+    Call the methods as fetch hash or fetch hash reference.
+        $__{[...]}
+    or
+        $__->{[...]}
+    and not
+        $loc->__(...)
+    and the same for
+        $__x{[...]}
+    or
+        $__x->{[...]}
+    and so on.
+    Reduce the import list and write down the needed imports. Mostly you do
+    not need all.
+    If it makes no sense, do not use this interface and do not write back
+    (bind) the object to this interface and use the object directly.
+
+31_gettext_struct_from_locale_po.pl
     This example shows, how to use module Locale::TextDomain::OO::MessagesStruct
     to use data which are not from mo files (here po files).
     Unicode is not used. Then a char is equal to a byte.
@@ -57,7 +94,7 @@ applications have not stored the internationalization data in mo files.
     In the header of every po or mo file is a formula ($plural_forms).
     This code runs this formula.
 
-23_gettext_struct_from_dbd_po.pl
+32_gettext_struct_from_dbd_po.pl
     This example is similar to the example before. The difference is, that
     DBD::PO is a SQL database interface for po files. The performance is lower
     than the example before. But the example shows, how to use DBI, not more.
@@ -65,7 +102,17 @@ applications have not stored the internationalization data in mo files.
     Unicode is not used. Then a char is equal to a byte.
     This example uses the German ISO-8859-1 example.po file.
 
-24_maketext_mo.pl
+33_gettext_struct_from_locale_po_utf-8.pl
+    This example is similar to "31_gettext_struct_from_locale_po.pl".
+    Look for the difference between both and realize, what is to do for Unicode.
+    This example uses the Russian UTF-8 example.po file.
+
+34_gettext_struct_from_dbd_po_utf-8.pl
+    This example is similar to "32_gettext_struct_from_dbd_po.pl".
+    Look for the difference between both and realize, what is to do for Unicode.
+    This example uses the Russian UTF-8 example.po file.
+
+41_maketext_mo.pl
     This example shows, how to use module Locale::TextDomain::Maketext
     to use mo files with maketext placeholders. This is useful if you want to
     port from Locale::Maketext to Locale::TextDomain. This allows placeholders
@@ -75,55 +122,9 @@ applications have not stored the internationalization data in mo files.
     Unicode is not used. Then a char is equal to a byte.
     This example uses the German ISO-8859-1 example_maketext.po file.
 
-25_maketext_mo_style_gettext.pl
+42_maketext_mo_style_gettext.pl
     This example is similar to the example before. The placeholders are
     switched to gettext style:
         %1, %quant(%1,...), %*(%1,...)
     Unicode is not used. Then a char is equal to a byte.
     This example uses the German ISO-8859-1 example_maketext_style_getext.po file.
-
-26_gettext_struct_from_locale_po_utf-8.pl
-    This example is similar to "22_gettext_struct_from_locale_po.pl".
-    Look for the difference between both and realize, what is to do for Unicode.
-    This example uses the Russian UTF-8 example.po file.
-
-27_gettext_struct_from_dbd_po_utf-8.pl
-    This example is similar to "23_gettext_struct_from_dbd_po.pl".
-    Look for the difference between both and realize, what is to do for Unicode.
-    This example uses the Russian UTF-8 example.po file.
-
-31_gettext_mo_functional_interface
-    This is nearly the same like "21_gettext_mo.pl".
-    The subroutine bind_object of module
-    Locale::TextDomain::OO::FunctionalInterface is only to have a functional
-    interface like module Locale::TextDomain.
-    The you call
-        __(...)
-    and not
-        $loc->__(...)
-    and the same for
-        __x(...)
-    and so on.
-    If it makes no sense, use the object directly and do not bind.
-
-32_gettext_mo_tied_interface
-    This is nearly the same like "21_gettext_mo.pl".
-    The imported variable $loc ist to write back the object;
-    Locale::TextDomain::OO::TiedInterface is only to have a tied interface 
-    like module Locale::TextDomain.
-    Safe the object into the imported vraiable $loc;
-    Call the methods as fetch hash or fetch hash reference.
-        $__{[...]}
-    or
-        $__->{[...]}
-    and not
-        $loc->__(...)
-    and the same for
-        $__x{[...]}
-    or
-        $__x->{[...]}
-    and so on.
-    Reduce the import list and write down the needed import. Mostly you do
-    not need all.
-    If tie makes no sense, use the object directly and do not bind the 
-    object to variable $loc.
