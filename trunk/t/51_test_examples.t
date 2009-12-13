@@ -11,7 +11,7 @@ $ENV{TEST_EXAMPLE} or plan(
     skip_all => 'Set $ENV{TEST_EXAMPLE} to run this test.'
 );
 
-plan(tests => 7);
+plan(tests => 8);
 
 my @data = (
     {
@@ -31,6 +31,50 @@ gutes Regal
 gute Regale
 1 gutes Regal
 2 gute Regale
+EOT
+    },
+    {
+        test   => '14_N__',
+        path   => 'example',
+        script => '-I../lib -T 14_N__.pl',
+        result => <<'EOT',
+This is a text.
+
+{name} is programming {language}.
+name
+Steffen
+language
+Perl
+
+Singular
+Plural
+1
+
+{num} shelf
+{num} shelves
+1
+num
+1
+
+maskulin
+Dear
+
+maskulin
+Dear {name}
+name
+Winkler
+
+better
+shelf
+shelves
+1
+
+better
+{num} shelf
+{num} shelves
+1
+num
+1
 EOT
     },
     {

@@ -1,4 +1,4 @@
-#!perl -T
+﻿#!perl -T
 
 use strict;
 use warnings;
@@ -13,7 +13,7 @@ require Locale::TextDomain;
 use Locale::Messages qw(bind_textdomain_filter);
 
 local $ENV{LANGUAGE} = 'ru';
-my $text_domain      = 'test';
+my $text_domain      = 'example';
 
 # bind text domain
 Locale::TextDomain->import( $text_domain, qw(./LocaleData) );

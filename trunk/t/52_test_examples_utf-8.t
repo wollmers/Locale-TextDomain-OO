@@ -13,7 +13,7 @@ $ENV{TEST_EXAMPLE} or plan(
     skip_all => 'Set $ENV{TEST_EXAMPLE} to run this test.'
 );
 
-plan(tests => 3);
+plan(tests => 5);
 
 my @data = (
     {
@@ -28,6 +28,23 @@ my @data = (
 §§ книги
 c книга
 c§ книга
+EOT
+    },
+    {
+        text   => '12_gettext_mo_utf-8',
+        path   => 'example',
+        script => '-I../lib -T 12_gettext_mo_utf-8.pl',
+        result => <<'EOT',
+книга
+§ книга
+EOT
+    },
+    {
+        text   => '13_gettext_mo_cp1252',
+        path   => 'example',
+        script => '-I../lib -T 13_gettext_mo_cp1252.pl',
+        result => <<'EOT',
+Das sind deutsche Umlaute: ä ö ü ß Ä Ö Ü.
 EOT
     },
     {

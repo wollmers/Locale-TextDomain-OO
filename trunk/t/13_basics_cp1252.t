@@ -1,4 +1,4 @@
-#!perl
+﻿#!perl
 
 use strict;
 use warnings;
@@ -40,6 +40,6 @@ eq_or_diff(
     $loc->__(
         'This are German umlauts: ä ö ü ß Ä Ö Ü.',
     ),
-    'Das sind detsche Umlaute: ä ö ü ß Ä Ö Ü.',
+    'Das sind deutsche Umlaute: ä ö ü ß Ä Ö Ü.',
     '__'
 );

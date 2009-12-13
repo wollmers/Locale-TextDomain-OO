@@ -1,4 +1,4 @@
-#!perl -T
+﻿#!perl -T
 
 use strict;
 use warnings;
@@ -15,7 +15,7 @@ require Locale::TextDomain::OO::MessagesStruct;
 use Locale::TextDomain::OO::FunctionalInterface qw(bind_object);
 
 local $ENV{LANGUAGE} = 'ru';
-my $text_domain      = 'test';
+my $text_domain      = 'example';
 
 my $loc = Locale::TextDomain::OO->new(
     gettext_object => Locale::TextDomain::OO::MessagesStruct->new(\my %struct),
