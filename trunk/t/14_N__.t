@@ -35,11 +35,11 @@ eq_or_diff(
         language => 'Perl',
     ) ],
     [
-    	'{name} is programming {language}.',
-    	'name',
-    	'Steffen',
-    	'language',
-    	'Perl',
+        '{name} is programming {language}.',
+        'name',
+        'Steffen',
+        'language',
+        'Perl',
     ],
     'N__x',
 );
