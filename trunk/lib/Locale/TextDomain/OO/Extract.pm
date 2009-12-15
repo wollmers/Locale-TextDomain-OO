@@ -62,7 +62,7 @@ sub new {
     $self->_set_pot_dir(
         defined $init{pot_dir}
         ? delete $init{pot_dir}
-        : '.'
+        : q{.}
     );
 
     return $self;
