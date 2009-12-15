@@ -104,7 +104,7 @@ for my $line (@lines) {
         };
     }
     if ($has_matched) {
-        @lines[($line_number - 1) .. $#lines] = split "\n", $text;
+        @lines[($line_number - 1) .. $#lines] = split m{\n}xms, $text;
     }
     ++$line_number;
 }
@@ -194,4 +194,10 @@ for ($sth_select, $sth_insert, $sth_update) {
 }
 $dbh->disconnect();
 
+1;
+
+__END__
+
 # $Id$
+
+
