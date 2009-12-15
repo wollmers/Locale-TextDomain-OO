@@ -44,6 +44,40 @@ applications have not stored the internationalization data in mo files.
     This is only to detect the language using module I18N::LangTags including
     super and panic languages and not to use the Locale::Messages defaults.
 
+12_gettext_mo_utf-8.pl
+    This example is similar to "01_locale_textdomian_utf-8.pl" but the module
+    Locale::Text-Domain::OO is used. It shows, how to use Unicode, the
+    internal representations as chars. The filter (output filter) allows to
+    change the output of module Locale::Messages:OO using subroutine
+    decode_utf8 (Encode). The input_filter allows to change the input to
+    module Locale::Messages:OO using subroutine encode_utf8 (Encode).
+    "binmode" is to change the output Layer of STDOUT. Than every output will
+    be changed from unicode to UTF-8. Use an UTF-8 console or modify that
+    encoding to be equal to your console.
+    This example uses the Russian UTF-8 mo file.
+
+13_gettext_mo_cp1252.pl
+    This example is similar to "12_gettext_mo_utf-8.pl". It shows, how to use
+    Unicode and a not UTF-8 mo file. Here it is cp1252. The filter
+    (output filter) allows to change the output of module Locale::Messages:OO
+    using subroutine decode (Encode). This filter changes the encoding from
+    cp1252 to unicode. The input_filter allows to change the input to module
+    Locale::Messages:OO using subroutine encode (Encode). This filter changes
+    the encoding from unicode to cp1252.
+    This example uses the German cp1252 mo file.
+
+14_N__.pl
+    This example shows how to use all the N__... methods. But this is not
+    normal because the N__... methods are normaly mixed with all the others.
+    Non translation means: "Allow the extractor to find that phrases early but
+    run the translation later". The N__... methods mapping the prases and some
+    constant parameters to any variables. This variables are used later to do
+    any complex things. In that late way the extractor would not be able to
+    extract.
+    This example is similar to "11_gettext_mo.pl".
+    Unicode is not used. Then a char is equal to a byte.
+    This example uses the German ISO-8859-1 example.mo file.
+
 22_gettext_mo_functional_interface
     This is nearly the same like "11_gettext_mo.pl".
     The subroutine bind_object of module
