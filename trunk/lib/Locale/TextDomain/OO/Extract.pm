@@ -1,5 +1,4 @@
 package Locale::TextDomain::OO::Extract;
-use warnings;
 
 use strict;
 use warnings;
@@ -7,6 +6,7 @@ use warnings;
 use version; our $VERSION = qv('0.04');
 
 use Carp qw(croak);
+use Storable qw(dclone);
 require DBI;
 require DBD::PO; DBD::PO->init( qw(:plural) );
 
@@ -15,14 +15,13 @@ my $context_rule
 = my $singular_rule
 = my $plural_rule
 = [
-    [
-        qr{'}xms,
-        qr{( (?: \\\\ \\\\ | \\\\ ' | [^'] )+ )}xms,
-        qr{'}xms,
-    ],
+    qr{'}xms,
+    qr{( (?: \\\\ \\\\ | \\\\ ' | [^'] )+ )}xms,
+    qr{'}xms,
 ];
 my $komma_rule = qr{,}xms;
-my @rules = (
+my $start_rule = qr{__}xms;
+my $rules = [
     [
         qr{__ (x?) \(}xms,
         $text_rule,
@@ -47,7 +46,7 @@ my @rules = (
         $komma_rule,
         $plural_rule,
     ],
-);
+];
 
 sub new {
     my ($class, %init) = @_;
@@ -75,14 +74,30 @@ my $line_number = 1;
 my @lines = split m{\n}xms, $text;
 LINE:
 for my $line (@lines) {
-    $line =~ $start_rule
+    $line =~ s{$start_rule}{\0}xms
         or next LINE;
     my $text = join "\n", @lines[($line_number - 1) .. $#lines];
-    my $has_matched = ();
+    my $parent_rules = dclone $rules;
+    my (@parameters, @parent_rules);
     RULE:
-    for my $rule (@rules) {
-        my @result = $text =~ $rule
-            or next RULE;
+    while { my $rule = shift @{$parent_rules} ) {
+        if ( ref $rule eq 'ARRAY' ) {
+            push @parent_rules, $parent_rules;
+            $parent_rules = $rule;
+            next RULE;
+        }
+        my @result = s{$rule}{\0}xms;
+        if (@result) {
+            push @parameters, @result;
+        }
+        else {
+            $parent_rules = pop @parent_rules;
+        }
+    }
+}
+
+__END__
+
         # found
         $has_matched ||= $text =~ s{$rule}{}xms; # delete found string
         my $format = shift @result || q{};
@@ -199,5 +214,4 @@ $dbh->disconnect();
 __END__
 
 # $Id$
-
 
