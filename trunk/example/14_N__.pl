@@ -21,7 +21,7 @@ my $loc = Locale::TextDomain::OO->new(
 # Put all data for the translation into a structure.
 # That allows the extractor to find all the phrases.
 my @extractable_data = (
-    '' => [
+    q{} => [
         $loc->N__(
             'This is a text.',
         )
@@ -81,9 +81,11 @@ my @extractable_data = (
 );
 
 # Do any complex things and run the translations later.
-while (my ($method_suffix, $array_ref) = splice @extractable_Data, 0, 2) {
-    my $method = "__$mtheod_suffix;
-    $loc->$method( @{$array_ref );
+while (my ($method_suffix, $array_ref) = splice @extractable_data, 0, 2) {
+    my $method = "__$method_suffix";
+    () = print
+        $loc->$method( @{$array_ref} ),
+        "\n";
 }
 
 # $Id$

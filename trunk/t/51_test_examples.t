@@ -38,43 +38,14 @@ EOT
         path   => 'example',
         script => '-I../lib -T 14_N__.pl',
         result => <<'EOT',
-This is a text.
-
-{name} is programming {language}.
-name
-Steffen
-language
-Perl
-
-Singular
-Plural
-1
-
-{num} shelf
-{num} shelves
-1
-num
-1
-
-maskulin
-Dear
-
-maskulin
-Dear {name}
-name
-Winkler
-
-better
-shelf
-shelves
-1
-
-better
-{num} shelf
-{num} shelves
-1
-num
-1
+Das ist ein Text.
+Steffen programmiert Perl.
+Einzahl
+1 Regal
+Sehr geehrter Herr
+Sehr geehrter Herr Winkler
+gutes Regal
+1 gutes Regal
 EOT
     },
     {
