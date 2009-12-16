@@ -24,7 +24,7 @@ my $context_rule
     qr{'}xms,
 ];
 my $komma_rule = qr{,}xms;
-my $perl_start_rule = qr{__}xms;
+my $perl_start_rule = qr{__ n?p?x? \(}xms;
 my $perl_rules = [
     [
         qr{__ (x?) \(}xms,
@@ -63,7 +63,7 @@ sub new {
         : q{.}
     );
     $self->_set_preprocess(
-        ( defined $init{preprocess} && ref $init{preprocess} eq 'CODE')
+        ( defined $init{preprocess} && ref $init{preprocess} eq 'CODE' )
         ? delete $init{preprocess}
         : $perl_remove_pod
     );
@@ -84,14 +84,14 @@ sub new {
 for my $name ( qw(pot_dir preprocess start_rule rules) ) {
     no strict qw(refs);       ## no critic (NoStrict)
     no warnings qw(redefine); ## no critic (NoWarnings)
-    *{"_set$name"} = sub {
+    *{"_set_$name"} = sub {
         my ($self, $data) = @_;
 
         $self->{$name} = $data;
 
         return $self;
     };
-    *{"_get$name"} = sub {
+    *{"_get_$name"} = sub {
         return shift->{$name};
     };
 }
