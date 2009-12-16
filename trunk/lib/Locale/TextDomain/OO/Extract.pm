@@ -12,6 +12,7 @@ require DBI;
 require DBD::PO; DBD::PO->init( qw(:plural) );
 
 my $perl_remove_pod = sub {
+    return;
 };
 
 my $context_rule
@@ -96,18 +97,35 @@ for my $name ( qw(pot_dir preprocess start_rule rules) ) {
     };
 }
 
-sub extract {
-    my ($self, $file) = @_;
+sub _parse_references {
+    my ($self, $content_ref) = @_;
 
-    my $file_name = $file;
-    if (! ref $file) {
-        open $file, '<', $file_name
+    my $regex = $self->_get_start_rule();
+    my @references;
+    while ( ${$content_ref} =~ m{\G$regex}go ) {
+        push @references, pos ${$content_ref};
+    }
+use Data::Dumper; die Dumper \@references;
+
+    return \@references;
+}
+
+sub extract {
+    my ($self, $file_name_or_open_handle) = @_;
+
+    my ($file_name, $file_handle);
+    if (ref $file_name_or_open_handle) {
+        $file_handle = $file_name_or_open_handle;
+    }
+    else {
+        $file_name = $file_name_or_open_handle;
+        open $file_handle, '<', $file_name
             or croak "Can not open file $file_name\n$OS_ERROR";
     }
 
     local $INPUT_RECORD_SEPARATOR = ();
-    my $content = <$file>;
-    () = close $file;
+    my $content = <$file_handle>;
+    () = close $file_handle;
 
     $self->_get_preprocess()->(\$content);
     my $references = $self->_parse_references(\$content);
@@ -266,4 +284,3 @@ $dbh->disconnect();
 __END__
 
 # $Id$
-
