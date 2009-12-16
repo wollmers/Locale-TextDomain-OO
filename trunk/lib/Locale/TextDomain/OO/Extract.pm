@@ -6,9 +6,13 @@ use warnings;
 use version; our $VERSION = qv('0.04');
 
 use Carp qw(croak);
+use English qw(-no_match_vars $OS_ERROR $INPUT_RECORD_SEPARATOR);
 use Storable qw(dclone);
 require DBI;
 require DBD::PO; DBD::PO->init( qw(:plural) );
+
+my $perl_remove_pod = sub {
+};
 
 my $context_rule
 = my $text_rule
@@ -20,8 +24,8 @@ my $context_rule
     qr{'}xms,
 ];
 my $komma_rule = qr{,}xms;
-my $start_rule = qr{__}xms;
-my $rules = [
+my $perl_start_rule = qr{__}xms;
+my $perl_rules = [
     [
         qr{__ (x?) \(}xms,
         $text_rule,
@@ -53,21 +57,69 @@ sub new {
 
     my $self = bless {}, $class;
 
-    $self->_set_source_file_name(
-        defined $init{source_file_name}
-        ? delete $init{source_file_name}
-        : croak 'input_file_name not given'
-    );
     $self->_set_pot_dir(
         defined $init{pot_dir}
         ? delete $init{pot_dir}
         : q{.}
     );
+    $self->_set_preprocess(
+        ( defined $init{preprocess} && ref $init{preprocess} eq 'CODE')
+        ? delete $init{preprocess}
+        : $perl_remove_pod
+    );
+    $self->_set_start_rule(
+        defined $init{start_rule}
+        ? delete $init{start_rule}
+        : $perl_start_rule
+    );
+    $self->_set_rules(
+        defined $init{rules}
+        ? delete $init{rules}
+        : $perl_rules
+    );
 
     return $self;
 }
 
-my @pot_data;
+for my $name ( qw(pot_dir preprocess start_rule rules) ) {
+    no strict qw(refs);       ## no critic (NoStrict)
+    no warnings qw(redefine); ## no critic (NoWarnings)
+    *{"_set$name"} = sub {
+        my ($self, $data) = @_;
+
+        $self->{$name} = $data;
+
+        return $self;
+    };
+    *{"_get$name"} = sub {
+        return shift->{$name};
+    };
+}
+
+sub extract {
+    my ($self, $file) = @_;
+
+    my $file_name = $file;
+    if (! ref $file) {
+        open $file, '<', $file_name
+            or croak "Can not open file $file_name\n$OS_ERROR";
+    }
+
+    local $INPUT_RECORD_SEPARATOR = ();
+    my $content = <$file>;
+    () = close $file;
+
+    $self->_get_preprocess()->(\$content);
+    my $references = $self->_parse_references(\$content);
+    $self->_parse_rules(\$content, $references);
+    $self->_store_pot($references);
+
+    return $self;
+}
+
+1;
+
+__END__
 
 # extract pot data
 my $line_number = 1;
