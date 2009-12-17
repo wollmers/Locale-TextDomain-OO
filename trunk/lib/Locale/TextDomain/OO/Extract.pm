@@ -82,7 +82,7 @@ sub new {
     return $self;
 }
 
-for my $name ( qw(pot_dir preprocess start_rule rules) ) {
+for my $name ( qw(pot_dir preprocess start_rule rules content_ref references_ref) ) {
     no strict qw(refs);       ## no critic (NoStrict)
     no warnings qw(redefine); ## no critic (NoWarnings)
     *{"_set_$name"} = sub {
@@ -98,16 +98,43 @@ for my $name ( qw(pot_dir preprocess start_rule rules) ) {
 }
 
 sub _parse_references {
-    my ($self, $content_ref) = @_;
+    my $self = shift;
 
     my $regex = $self->_get_start_rule();
+    my $content_ref = $self->_get_content_ref();
     my @references;
-    while ( ${$content_ref} =~ m{\G$regex}go ) {
-        push @references, pos ${$content_ref};
+    while ( ${$content_ref} =~ m{\G .*? ($regex)}xmsgc ) {
+        push @references, pos( ${$content_ref} ) - length $1;
     }
-use Data::Dumper; die Dumper \@references;
+    $self->_set_references_ref(\@references);
 
-    return \@references;
+    return $self;
+}
+
+sub _parse_rules {
+    my $self = shift;
+
+    my $content_ref = $self->_get_content_ref();
+    for my $reference ( @{ $self->_get_references_ref() } ) {
+        pos( ${$content_ref} ) = $reference;
+        my $parent_rules = dclone $self->_get_rules();
+        my (@parameters, @parent_rules);
+        RULE:
+        while ( my $rule = shift @{$parent_rules} ) {
+            if ( ref $rule eq 'ARRAY' ) {
+                push @parent_rules, $parent_rules;
+                $parent_rules = $rule;
+                next RULE;
+            }
+            my @result = m{\G $rule}xmsc;
+            if (@result) {
+                push @parameters, @result;
+            }
+            else {
+                $parent_rules = pop @parent_rules;
+            }
+        }
+    }
 }
 
 sub extract {
@@ -124,47 +151,19 @@ sub extract {
     }
 
     local $INPUT_RECORD_SEPARATOR = ();
-    my $content = <$file_handle>;
+    $self->_set_content_ref(\<$file_handle>);
     () = close $file_handle;
 
-    $self->_get_preprocess()->(\$content);
-    my $references = $self->_parse_references(\$content);
-    $self->_parse_rules(\$content, $references);
-    $self->_store_pot($references);
+    $self->_get_preprocess()->( $self->_get_content_ref() );
+    $self->_parse_references();
+    $self->_parse_rules();
+use Data::Dumper; die Dumper $self->_get_references_ref();
+    $self->_store_pot();
 
     return $self;
 }
 
 1;
-
-__END__
-
-# extract pot data
-my $line_number = 1;
-my @lines = split m{\n}xms, $text;
-LINE:
-for my $line (@lines) {
-    $line =~ s{$start_rule}{\0}xms
-        or next LINE;
-    my $text = join "\n", @lines[($line_number - 1) .. $#lines];
-    my $parent_rules = dclone $rules;
-    my (@parameters, @parent_rules);
-    RULE:
-    while { my $rule = shift @{$parent_rules} ) {
-        if ( ref $rule eq 'ARRAY' ) {
-            push @parent_rules, $parent_rules;
-            $parent_rules = $rule;
-            next RULE;
-        }
-        my @result = s{$rule}{\0}xms;
-        if (@result) {
-            push @parameters, @result;
-        }
-        else {
-            $parent_rules = pop @parent_rules;
-        }
-    }
-}
 
 __END__
 
