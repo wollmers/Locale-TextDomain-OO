@@ -7,7 +7,7 @@ use version; our $VERSION = qv('0.04');
 
 use Carp qw(croak);
 use English qw(-no_match_vars $OS_ERROR $INPUT_RECORD_SEPARATOR);
-use Storable qw(dclone);
+use Clone qw(clone);
 require DBI;
 require DBD::PO; DBD::PO->init( qw(:plural) );
 
@@ -116,8 +116,8 @@ sub _parse_rules {
 
     my $content_ref = $self->_get_content_ref();
     for my $reference ( @{ $self->_get_references_ref() } ) {
-        pos( ${$content_ref} ) = $reference;
-        my $parent_rules = dclone $self->_get_rules();
+        pos( ${$content_ref} ) = my $pos = $reference;
+        my $parent_rules = clone $self->_get_rules();
         my (@parameters, @parent_rules);
         RULE:
         while ( my $rule = shift @{$parent_rules} ) {
@@ -126,13 +126,14 @@ sub _parse_rules {
                 $parent_rules = $rule;
                 next RULE;
             }
-            my @result = m{\G $rule}xmsc;
+            my @result = ${$content_ref} =~ m{\G $rule}xms;
             if (@result) {
                 push @parameters, @result;
             }
             else {
                 $parent_rules = pop @parent_rules;
             }
+use Data::Dumper; die Dumper scalar ' __(' =~ $rule, $rule, \@parameters, substr ${$content_ref}, $pos, 20;
         }
     }
 }
