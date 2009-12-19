@@ -16,39 +16,52 @@ my $perl_remove_pod = sub {
 };
 
 my $context_rule
-= my $text_rule
-= my $singular_rule
-= my $plural_rule
-= [
-    qr{'}xms,
-    qr{( (?: \\\\ \\\\ | \\\\ ' | [^'] )+ )}xms,
-    qr{'}xms,
-];
-my $komma_rule = qr{,}xms;
-my $perl_start_rule = qr{__ n?p?x? \(}xms;
+    = my $text_rule
+    = my $singular_rule
+    = my $plural_rule
+    = [
+        qr{'}xms,
+        qr{( (?: \\\\ \\\\ | \\\\ ' | [^'] )+ )}xms,
+        qr{'}xms,
+    ];
+my $komma_rule               = qr{,}xms;
+my $optional_whitespace_rule = qr{\s*}xms;
+my $perl_start_rule          = qr{__ n?p?x? \(}xms;
 my $perl_rules = [
     [
         qr{__ (x?) \(}xms,
+        $optional_whitespace_rule,
         $text_rule,
     ],
     [
         qr{__ (nx?) \(}xms,
+        $optional_whitespace_rule,
         $singular_rule,
+        $optional_whitespace_rule,
         $komma_rule,
+        $optional_whitespace_rule,
         $plural_rule,
-    ],
+     ],
     [
         qr{__ (px?) \(}xms,
+        $optional_whitespace_rule,
         $context_rule,
+        $optional_whitespace_rule,
         $komma_rule,
+        $optional_whitespace_rule,
         $text_rule,
     ],
     [
         qr{__ (npx?) \(}xms,
+        $optional_whitespace_rule,
         $context_rule,
+        $optional_whitespace_rule,
         $komma_rule,
+        $optional_whitespace_rule,
         $singular_rule,
+        $optional_whitespace_rule,
         $komma_rule,
+        $optional_whitespace_rule,
         $plural_rule,
     ],
 ];
@@ -97,14 +110,16 @@ for my $name ( qw(pot_dir preprocess start_rule rules content_ref references_ref
     };
 }
 
-sub _parse_references {
+sub _parse_pos {
     my $self = shift;
 
     my $regex = $self->_get_start_rule();
     my $content_ref = $self->_get_content_ref();
     my @references;
     while ( ${$content_ref} =~ m{\G .*? ($regex)}xmsgc ) {
-        push @references, pos( ${$content_ref} ) - length $1;
+        push @references, {
+            start_pos => pos( ${$content_ref} ) - length $1,
+        };
     }
     $self->_set_references_ref(\@references);
 
@@ -116,26 +131,58 @@ sub _parse_rules {
 
     my $content_ref = $self->_get_content_ref();
     for my $reference ( @{ $self->_get_references_ref() } ) {
-        pos( ${$content_ref} ) = my $pos = $reference;
-        my $parent_rules = clone $self->_get_rules();
-        my (@parameters, @parent_rules);
-        RULE:
-        while ( my $rule = shift @{$parent_rules} ) {
-            if ( ref $rule eq 'ARRAY' ) {
-                push @parent_rules, $parent_rules;
-                $parent_rules = $rule;
-                next RULE;
+        my $rules = clone $self->_get_rules();
+        my $pos   = $reference->{start_pos};
+        my (@parent_rules, @parent_pos);
+        RULE: {
+            my $rule = shift @{$rules};
+            # goto parent
+            if (! $rule && @parent_rules) {
+                $rules = pop @parent_rules;
+                $pos   = pop @parent_pos;
+                redo RULE;
             }
-            my @result = ${$content_ref} =~ m{\G $rule}xms;
-            if (@result) {
-                push @parameters, @result;
+            $rule
+               or last RULE;
+            # goto child
+            if ( ref $rule eq 'ARRAY' ) {
+                push @parent_rules, $rules;
+                push @parent_pos,   $pos;
+                $rules = $rule;
+                redo RULE;
+            }
+            pos ${ $content_ref } = $pos;
+            my $has_matched
+                = my ($match, @result)
+                = ${$content_ref} =~ m{\G ($rule)}xms;
+            if ($has_matched) {
+                push @{ $reference->{parameter} }, @result;
+                $pos += length $match;
+print STDERR "\n+++ $rule";
             }
             else {
-                $parent_rules = pop @parent_rules;
+                $rules = pop @parent_rules;
+                $pos   = pop @parent_pos;
+print STDERR "\n--- $rule";
             }
-use Data::Dumper; die Dumper scalar ' __(' =~ $rule, $rule, \@parameters, substr ${$content_ref}, $pos, 20;
+            redo RULE;
         }
     }
+
+    return $self;
+}
+
+sub _calculate_reference {
+    my $self = shift;
+
+    my $content_ref = $self->_get_content_ref();
+    for my $reference ( @{ $self->_get_references_ref() } ) {
+        my $pre_match = substr ${$content_ref}, 0, $reference->{start_pos};
+        my $newline_count = $pre_match =~ tr{\n}{\n};
+        $reference->{line_number} = $newline_count + 1;
+    }
+
+    return $self;
 }
 
 sub extract {
@@ -143,7 +190,9 @@ sub extract {
 
     my ($file_name, $file_handle);
     if (ref $file_name_or_open_handle) {
-        $file_handle = $file_name_or_open_handle;
+        $file_name
+            = $file_handle
+            = $file_name_or_open_handle;
     }
     else {
         $file_name = $file_name_or_open_handle;
@@ -156,8 +205,9 @@ sub extract {
     () = close $file_handle;
 
     $self->_get_preprocess()->( $self->_get_content_ref() );
-    $self->_parse_references();
+    $self->_parse_pos();
     $self->_parse_rules();
+    $self->_calculate_reference();
 use Data::Dumper; die Dumper $self->_get_references_ref();
     $self->_store_pot();
 
