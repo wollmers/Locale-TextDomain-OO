@@ -11,8 +11,22 @@ use Clone qw(clone); # clones not recursive
 require DBI;
 require DBD::PO; DBD::PO->init( qw(:plural) );
 
-my $perl_remove_pod = sub {
+my $perl_remove_pod_ref = sub {
     return;
+};
+
+my $perl_parameter_mapping_ref = sub {
+    my $parameter = shift;
+
+    my $context_parameter = shift @{$parameter};
+
+    return {
+        msgctxt      => $context_parameter =~ m{p}xms
+                        ? $context_parameter
+                        : undef,
+        msgid        => scalar shift @{$parameter},
+        msgid_plural => scalar shift @{$parameter},
+    };
 };
 
 my $context_rule
@@ -25,7 +39,8 @@ my $context_rule
         qr{'}xms,
         'END',
     ];
-my $komma_rule = qr{,}xms;
+
+my $komma_rule               = qr{,}xms;
 my $optional_whitespace_rule = qr{\s*}xms;
 
 my $perl_start_rule = qr{__ n?p?x? \(}xms;
@@ -77,7 +92,7 @@ sub new {
     $self->_set_preprocess(
         ( defined $init{preprocess} && ref $init{preprocess} eq 'CODE' )
         ? delete $init{preprocess}
-        : $perl_remove_pod
+        : $perl_remove_pod_ref
     );
 
     # how to find such lines
@@ -101,6 +116,13 @@ sub new {
         : ()
     );
 
+    # how to map the parameters to pot file
+    $self->_set_parameter_mapping_ref(
+        defined $init{parameter_mapping_ref}
+        ? delete $init{parameter_mapping_ref}
+        : $perl_parameter_mapping_ref
+    );
+
     # where to store the pot file
     if ( defined $init{pot_dir} ) {
         $self->$self->_set_pot_dir( delete $init{pot_dir} );
@@ -121,7 +143,7 @@ sub new {
 }
 
 my @names = qw(
-    preprocess start_rule rules is_debug
+    preprocess start_rule rules is_debug parameter_mapping_ref
     pot_dir pot_charset
     content_ref references_ref
 );
@@ -146,7 +168,7 @@ sub debug {
 
     defined $message
         or return $self->debug('undef');
-    print STDERR "\n# $message";
+    print {*STDERR} "\n# $message";
 
     return $self;
 }
@@ -280,16 +302,15 @@ sub _calculate_reference {
 sub _calculate_pot_data {
     my ($self, $file_name) = @_;
 
+    my $parameter_mapping_ref = $self->_get_parameter_mapping_ref();
     for my $reference ( @{ $self->_get_references_ref() } ) {
-        my @parameter = @{ delete $reference->{parameter} };
-        $reference->{pot_data} = {
-            reference    => "$file_name:$reference->{line_number}",
-            msgctxt      => $parameter[0] =~ m{p}xms
-                            ? scalar shift @parameter
-                            : undef,
-            msgid        => scalar shift @parameter,
-            msgid_plural => scalar shift @parameter,
-        };
+        my $parameter = $parameter_mapping_ref->(
+            delete $reference->{parameter},
+        );
+        $reference->{pot_data} = {(
+            reference => "$file_name:$reference->{line_number}",
+            %{$parameter},
+        )};
     }
 
     return $self;
