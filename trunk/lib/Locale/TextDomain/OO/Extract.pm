@@ -168,7 +168,7 @@ sub debug {
 
     defined $message
         or return $self->debug('undef');
-    print {*STDERR} "\n# $message";
+    () = print {*STDERR} "\n# $message";
 
     return $self;
 }
@@ -426,7 +426,7 @@ sub extract {
     defined $file_name
         or croak 'No file name given';
     if (! ref $file_handle) {
-        open $file_handle, '<', $file_name
+        open $file_handle, '<', $file_name ## no critic (BriefOpen)
             or croak "Can not open file $file_name\n$OS_ERROR";
     }
 
