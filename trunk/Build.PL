@@ -16,6 +16,9 @@ Module::Build->new(
         version                => 0,
         parent                 => 0,
         Safe                   => 0,
+        Clone                  => 0, # for extractor only
+        DBI                    => 0, # for extractor only
+        'DBD::PO'              => 2.00,
         'Perl6::Export::Attrs' => 0,
         'I18N::LangTags'       => 0,
         'Locale::Messages'     => 1.20, # dist libintl-perl
@@ -33,8 +36,6 @@ Module::Build->new(
         'Test::NoWarnings'  => 0,
         'Test::Exception'   => 0,
         'Test::Differences' => 0,
-        'DBI'               => 0,
-        'DBD::PO'           => 2.00,
         $is_ppm
         ? (
             'Test::Simple' => 0,

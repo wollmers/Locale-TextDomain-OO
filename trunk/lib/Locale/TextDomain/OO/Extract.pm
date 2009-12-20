@@ -12,6 +12,21 @@ require DBI;
 require DBD::PO; DBD::PO->init( qw(:plural) );
 
 my $perl_remove_pod_ref = sub {
+    my $content_ref = shift;
+
+    my ($is_pod, $is_end);
+    ${$content_ref} = join "\n", map {
+        $_ eq '__END__'  ? do { $is_end = 1; q{} }
+        : $is_end        ? ()
+        : m{= (\w+)}xms  ? (
+            lc $1 eq 'cut'
+            ? do { $is_pod = 0; q{} }
+            : do { $is_pod = 1; q{} }
+        )
+        : $is_pod        ? q{}
+        : $_;
+    } split m{\r? \n \r?}xms, ${$content_ref};
+
     return;
 };
 
@@ -37,7 +52,7 @@ my $context_rule
         qr{'}xms,
         qr{( (?: \\\\ \\\\ | \\\\ ' | [^'] )+ )}xms,
         qr{'}xms,
-        'END',
+        'RETURN',
     ];
 
 my $komma_rule               = qr{,}xms;
@@ -89,9 +104,9 @@ sub new {
     my $self = bless {}, $class;
 
     # prepare the file and the encoding
-    $self->_set_preprocess(
-        ( defined $init{preprocess} && ref $init{preprocess} eq 'CODE' )
-        ? delete $init{preprocess}
+    $self->_set_preprocess_ref(
+        ( defined $init{preprocess_ref} && ref $init{preprocess_ref} eq 'CODE' )
+        ? delete $init{preprocess_ref}
         : $perl_remove_pod_ref
     );
 
@@ -143,7 +158,7 @@ sub new {
 }
 
 my @names = qw(
-    preprocess start_rule rules is_debug parameter_mapping_ref
+    preprocess_ref start_rule rules is_debug parameter_mapping_ref
     pot_dir pot_charset
     content_ref references_ref
 );
@@ -236,7 +251,7 @@ sub _parse_rules {
                 redo RULE;
             }
             # end of child, goto parent
-            elsif ( $rule eq 'END') {
+            elsif ( $rule eq 'RETURN') {
                 $rules = pop @parent_rules;
                 pop @parent_pos;
                 $self->_debug(
@@ -434,7 +449,7 @@ sub extract {
     $self->_set_content_ref(\<$file_handle>);
     () = close $file_handle;
 
-    $self->_get_preprocess()->( $self->_get_content_ref() );
+    $self->_get_preprocess_ref()->( $self->_get_content_ref() );
     $self->_parse_pos();
     $self->_parse_rules();
     $self->_cleanup();
@@ -449,4 +464,187 @@ sub extract {
 
 __END__
 
-# $Id$
+=head1 NAME
+
+Locale::TextDomain::OO::Extract - Extract internationalization data as pot file
+
+$Id$
+
+$HeadURL$
+
+=head1 VERSION
+
+0.04
+
+=head1 DESCRIPTION
+
+This module extract internationalizations data and stores this in a pot file.
+The default is to extract a pl or pm file.
+Otherwise overwrite the default rules.
+
+=head1 SYNOPSIS
+
+    use Locale::TextDomain::OO::Extract;
+
+=head1 SUBROUTINES/METHODS
+
+=head2 method new
+
+All parameters are optional.
+The defaults are to parse Perl pl or pm files.
+
+    my $extractor = Locale::TextDomain::OO::Extract->new(
+        # prepare the file and the encoding
+        preprocess_ref => sub {
+            my $content_ref = shift;
+
+            ...
+
+            return;
+        },
+
+        # how to find such lines
+        start_rule => qr{__ n?p?x? \(}xms
+
+        # how to find the parameters
+        rules => [
+            [
+                # __( 'text'
+                # __x( 'text'
+                qr{__ (x?) \(}xms,
+                qr{\s*}xms,
+                # You can reuse this reference
+                # because the last value is 'RETURN'
+                # and so this is not an alternative.
+                # It is something like a sub.
+                [
+                    qr{'}xms,
+                    qr{( (?: \\\\ \\\\ | \\\\ ' | [^'] )+ )}xms,
+                    qr{'}xms,
+                    'RETURN',
+                ],
+            ],
+            [
+                # next alternative e.g.
+                # __n( 'context' , 'text'
+                # __nx( 'context' , 'text'
+                ...
+            ],
+        ],
+
+        # debug output for other rules than perl
+        is_debug => $boolean, # to check own writen rules
+
+        # how to map the parameters to pot file
+        parameter_mapping_ref => sub {
+            my $parameter = shift;
+
+            # The chars after __ were stored to make a decision now.
+            my $context_parameter = shift @{$parameter};
+
+            return {
+                msgctxt      => $context_parameter =~ m{p}xms
+                                ? $context_parameter
+                                : undef,
+                msgid        => scalar shift @{$parameter},
+                msgid_plural => scalar shift @{$parameter},
+            };
+        },
+
+        # where to store the pot file
+        pot_dir => './',
+
+        # how to store the pot file
+        # - The meaning of undef is ISO-8859-1 but use not Perl unicode.
+        # - Set 'ISO-8859-1' to have a ISO-8859-1 pot file and use Perl unicode.
+        # - Set 'UTF-8' to have a UTF-8 pot file and use Perl unicode.
+        # And so on.
+        pot_charset => undef,
+    );
+
+=head2 method extract
+
+The default pot_dir is "./".
+
+Call
+
+    $extractor->extract('dir/filename.pl');
+
+to extract "dir/filename.pl" to have a "$pot_dir/dir/filename.pl.pot".
+
+Call
+
+    open my $file_handle, '<', 'dir/filename.pl'
+        or croak "Can no open file dir/filename.pl\n$OS_ERROR";
+    $extractor->extract('filename', $file_handle);
+
+to extract "dir/filename.pl" to have a "$pot_dir/filename.pot".
+
+=head2 method debug
+
+Switch on the debug to see on STDERR how the rules are handled.
+Inherit of this class and write your own debug method if needed.
+
+=head1 EXAMPLE
+
+Inside of this distribution is a directory named example.
+Run this *.pl files.
+
+=head1 DIAGNOSTICS
+
+Error message in case of unknown parameters at method new.
+
+ Unknown parameter: ...
+
+Undef is not a filename.
+
+ No file name given
+
+There is a problem in opening the file to extract.
+
+ Can not open file ...
+
+=head1 CONFIGURATION AND ENVIRONMENT
+
+none
+
+=head1 DEPENDENCIES
+
+Carp
+
+English
+
+Clone
+
+DBI
+
+DBD::PO
+
+=head1 INCOMPATIBILITIES
+
+not known
+
+=head1 BUGS AND LIMITATIONS
+
+none
+
+=head1 SEE ALSO
+
+L<Locale::TextDoamin::OO>
+
+=head1 AUTHOR
+
+Steffen Winkler
+
+=head1 LICENSE AND COPYRIGHT
+
+Copyright (c) 2009,
+Steffen Winkler
+C<< <steffenw at cpan.org> >>.
+All rights reserved.
+
+This module is free software;
+you can redistribute it and/or modify it
+under the same terms as Perl itself.
+
+=cut
