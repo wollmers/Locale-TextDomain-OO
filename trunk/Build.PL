@@ -18,7 +18,7 @@ Module::Build->new(
         Safe                   => 0,
         Clone                  => 0, # for extractor only
         DBI                    => 0, # for extractor only
-        'DBD::PO'              => 2.00,
+        'DBD::PO'              => 2.08,
         'Perl6::Export::Attrs' => 0,
         'I18N::LangTags'       => 0,
         'Locale::Messages'     => 1.20, # dist libintl-perl
