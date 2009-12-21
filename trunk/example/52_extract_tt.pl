@@ -10,8 +10,9 @@ require Locale::TextDomain::OO::Extract;
 
 my $extractor = Locale::TextDomain::OO::Extract->new(
     preprocess_ref => sub { return },
-    start_rule => qr{\[ \% \s* l() \(}xms,
-    rules      => [
+    pot_charset    => 'UTF-8',
+    start_rule     => qr{\[ \% \s* l() \(}xms,
+    rules          => [
         qr{\[ \% \s* l() \(}xms,
         qr{\s*}xms,
         [
@@ -21,12 +22,14 @@ my $extractor = Locale::TextDomain::OO::Extract->new(
             'RETURN',
         ],
     ],
-    pot_charset => 'UTF-8',
 );
 
 open my $file, '< :encoding(UTF-8)', './files_to_parse/tt.tt'
     or croak $OS_ERROR;
 $extractor->extract('tt', $file);
+
+binmode STDOUT, 'encoding(UTF-8)'
+    or croak "binmode STDOUT\n$OS_ERROR";
 
 open $file, '< :encoding(UTF-8)', 'tt.pot'
     or croak $OS_ERROR;

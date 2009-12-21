@@ -168,3 +168,6 @@ applications have not stored the internationalization data in mo files.
 
 52_extract_tt.pl
     This example shows, how to extract a pot file from a tt template.
+    "binmode" is to change the output Layer of STDOUT. Than every output will
+    be changed from unicode to UTF-8. Use an UTF-8 console or modify that
+    encoding to be equal to your console.
