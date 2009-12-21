@@ -140,12 +140,12 @@ sub new {
 
     # where to store the pot file
     if ( defined $init{pot_dir} ) {
-        $self->$self->_set_pot_dir( delete $init{pot_dir} );
+        $self->_set_pot_dir( delete $init{pot_dir} );
     }
 
     # how to store the pot file
     if ( defined $init{pot_charset} ) {
-        $self->$self->_set_pot_charset( delete $init{pot_charset} );
+        $self->_set_pot_charset( delete $init{pot_charset} );
     }
 
     # error
