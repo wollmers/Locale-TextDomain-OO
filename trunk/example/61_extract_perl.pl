@@ -20,3 +20,8 @@ open $file, '<', $file_name
     or croak "Can not open $file_name\n$OS_ERROR";
 () = print {*STDOUT} <$file>;
 () = close $file;
+
+# $Id$
+
+__END__
+

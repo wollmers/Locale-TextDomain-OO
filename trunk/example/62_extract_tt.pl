@@ -32,3 +32,8 @@ open $file, '< :encoding(UTF-8)', 'tt.pot'
     or croak $OS_ERROR;
 () = print {*STDOUT} <$file>;
 () = close $file;
+
+# $Id$
+
+__END__
+
