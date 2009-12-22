@@ -11,7 +11,7 @@ use Clone qw(clone); # clones not recursive
 require DBI;
 require DBD::PO; DBD::PO->init( qw(:plural) );
 
-my $perl_remove_pod_ref = sub {
+my $perl_remove_pod_code = sub {
     my $content_ref = shift;
 
     my ($is_pod, $is_end);
@@ -30,7 +30,7 @@ my $perl_remove_pod_ref = sub {
     return;
 };
 
-my $perl_parameter_mapping_ref = sub {
+my $perl_parameter_mapping_code = sub {
     my $parameter = shift;
 
     my $context_parameter = shift @{$parameter};
@@ -104,10 +104,13 @@ sub new {
     my $self = bless {}, $class;
 
     # prepare the file and the encoding
-    $self->_set_preprocess_ref(
-        ( defined $init{preprocess_ref} && ref $init{preprocess_ref} eq 'CODE' )
-        ? delete $init{preprocess_ref}
-        : $perl_remove_pod_ref
+    $self->_set_preprocess_code(
+        (
+            defined $init{preprocess_code}
+            && ref $init{preprocess_code} eq 'CODE'
+        )
+        ? delete $init{preprocess_code}
+        : $perl_remove_pod_code
     );
 
     # how to find such lines
@@ -119,7 +122,7 @@ sub new {
 
     # how to find the parameters
     $self->_set_rules(
-        defined $init{rules}
+        ( defined $init{rules} && ref $init{rules} eq 'ARRAY' )
         ? delete $init{rules}
         : $perl_rules
     );
@@ -132,10 +135,13 @@ sub new {
     );
 
     # how to map the parameters to pot file
-    $self->_set_parameter_mapping_ref(
-        defined $init{parameter_mapping_ref}
-        ? delete $init{parameter_mapping_ref}
-        : $perl_parameter_mapping_ref
+    $self->_set_parameter_mapping_code(
+        (
+            defined $init{parameter_mapping_code}
+            && ref $init{parameter_mapping_code} eq 'CODE'
+        )
+        ? delete $init{parameter_mapping_code}
+        : $perl_parameter_mapping_code
     );
 
     # where to store the pot file
@@ -148,6 +154,16 @@ sub new {
         $self->_set_pot_charset( delete $init{pot_charset} );
     }
 
+    # how to store the pot file
+    $self->_set_pot_header(
+        (
+            defined $init{pot_header}
+            && ref $init{pot_header} eq 'HASH'
+        )
+        ? delete $init{pot_header}
+        : {}
+    );
+
     # error
     my $keys = join ', ', keys %init;
     if ($keys) {
@@ -158,9 +174,9 @@ sub new {
 }
 
 my @names = qw(
-    preprocess_ref start_rule rules is_debug parameter_mapping_ref
-    pot_dir pot_charset
-    content_ref references_ref
+    preprocess_code start_rule rules is_debug parameter_mapping_code
+    pot_dir pot_charset pot_header
+    content_ref references
 );
 
 for my $name (@names) {
@@ -211,7 +227,7 @@ sub _parse_pos {
             start_pos => pos( ${$content_ref} ) - length $1,
         };
     }
-    $self->_set_references_ref(\@references);
+    $self->_set_references(\@references);
 
     return $self;
 }
@@ -220,7 +236,7 @@ sub _parse_rules {
     my $self = shift;
 
     my $content_ref = $self->_get_content_ref();
-    for my $reference ( @{ $self->_get_references_ref() } ) {
+    for my $reference ( @{ $self->_get_references() } ) {
         my $rules = clone $self->_get_rules();
         my $pos   = $reference->{start_pos};
         $self->_debug("Starting at pos $pos.");
@@ -294,9 +310,11 @@ sub _parse_rules {
 sub _cleanup {
     my $self = shift;
 
-    my $references_ref = $self->_get_references_ref();
+    my $references = $self->_get_references();
     my $index = 0;
-    @{$references_ref} = grep { exists $_->{parameter} } @{$references_ref};
+    @{$references} = grep {
+        exists $_->{parameter}
+    } @{$references};
 
     return $self;
 }
@@ -305,7 +323,7 @@ sub _calculate_reference {
     my $self = shift;
 
     my $content_ref = $self->_get_content_ref();
-    for my $reference ( @{ $self->_get_references_ref() } ) {
+    for my $reference ( @{ $self->_get_references() } ) {
         my $pre_match = substr ${$content_ref}, 0, $reference->{start_pos};
         my $newline_count = $pre_match =~ tr{\n}{\n};
         $reference->{line_number} = $newline_count + 1;
@@ -317,9 +335,9 @@ sub _calculate_reference {
 sub _calculate_pot_data {
     my ($self, $file_name) = @_;
 
-    my $parameter_mapping_ref = $self->_get_parameter_mapping_ref();
-    for my $reference ( @{ $self->_get_references_ref() } ) {
-        my $parameter = $parameter_mapping_ref->(
+    my $parameter_mapping_code = $self->_get_parameter_mapping_code();
+    for my $reference ( @{ $self->_get_references() } ) {
+        my $parameter = $parameter_mapping_code->(
             delete $reference->{parameter},
         );
         $reference->{pot_data} = {(
@@ -368,7 +386,10 @@ EO_SQL
 
     # write the header
     my $header_msgstr = $dbh->func(
-        { 'Plural-Forms' => 'nplurals=2; plural=n != 1;' },
+        {(
+            'Plural-Forms' => 'nplurals=2; plural=n != 1;',
+            %{ $self->_get_pot_header() },
+        )},
         'build_header_msgstr',
     );
     $dbh->do(<<'EO_SQL', undef, $header_msgstr);
@@ -405,7 +426,7 @@ EO_SQL
 EO_SQL
 
     # write entrys
-    for my $reference ( @{ $self->_get_references_ref() } ) {
+    for my $reference ( @{ $self->_get_references() } ) {
         my $entry = $reference->{pot_data};
         $sth_select->execute(
             @{$entry}{ qw(msgctxt msgid msgid_plural) },
@@ -449,7 +470,7 @@ sub extract {
     $self->_set_content_ref(\<$file_handle>);
     () = close $file_handle;
 
-    $self->_get_preprocess_ref()->( $self->_get_content_ref() );
+    $self->_get_preprocess_code()->( $self->_get_content_ref() );
     $self->_parse_pos();
     $self->_parse_rules();
     $self->_cleanup();
@@ -495,7 +516,7 @@ The defaults are to parse Perl pl or pm files.
 
     my $extractor = Locale::TextDomain::OO::Extract->new(
         # prepare the file and the encoding
-        preprocess_ref => sub {
+        preprocess_code => sub {
             my $content_ref = shift;
 
             ...
@@ -536,7 +557,7 @@ The defaults are to parse Perl pl or pm files.
         is_debug => $boolean, # to check own writen rules
 
         # how to map the parameters to pot file
-        parameter_mapping_ref => sub {
+        parameter_mapping_code => sub {
             my $parameter = shift;
 
             # The chars after __ were stored to make a decision now.
@@ -560,6 +581,10 @@ The defaults are to parse Perl pl or pm files.
         # - Set 'UTF-8' to have a UTF-8 pot file and use Perl unicode.
         # And so on.
         pot_charset => undef,
+
+        # add some key value pairs to the header
+        # more see documentation of DBD::PO
+        pot_header => { ... },
     );
 
 =head2 method extract

@@ -3,8 +3,10 @@
 use strict;
 use warnings;
 
+our $VERSION = 0;
+
 use Carp qw(croak);
-use English qw(-no_mach_vars $OS_ERROR);
+use English qw(-no_match_vars $OS_ERROR);
 
 require Locale::TextDomain::OO::Extract;
 
@@ -39,4 +41,3 @@ open $file, '< :encoding(UTF-8)', 'tt.pot'
 # $Id$
 
 __END__
-
