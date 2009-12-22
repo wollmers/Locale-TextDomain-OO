@@ -11,10 +11,10 @@ use English qw(-no_match_vars $OS_ERROR);
 require Locale::TextDomain::OO::Extract;
 
 my $extractor = Locale::TextDomain::OO::Extract->new(
-    preprocess_ref => sub { return },
-    pot_charset    => 'UTF-8',
-    start_rule     => qr{\[ \% \s* l() \(}xms,
-    rules          => [
+    preprocess_code => sub { return },
+    pot_charset     => 'UTF-8',
+    start_rule      => qr{\[ \% \s* l() \(}xms,
+    rules           => [
         qr{\[ \% \s* l() \(}xms,
         qr{\s*}xms,
         [
