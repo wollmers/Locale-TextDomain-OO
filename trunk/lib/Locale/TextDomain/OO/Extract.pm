@@ -240,7 +240,7 @@ sub _parse_rules {
         my $rules = clone $self->_get_rules();
         my $pos   = $reference->{start_pos};
         $self->_debug("Starting at pos $pos.");
-        my (@parent_rules, @parent_pos);
+        my (@parent_rules, @parent_pos, $has_matched);
         RULE: {
             my $rule = shift @{$rules};
             # goto parent an find next alternative
@@ -249,6 +249,15 @@ sub _parse_rules {
                 if (@parent_rules) {
                     $rules = pop @parent_rules;
                     $pos   = pop @parent_pos;
+                    if ($has_matched) {
+                        SKIP:
+                        while ( $rule = shift @{$rules} ) {
+                            if ( ref $rule eq 'ARRAY' ) {
+                                $self->_debug('Skip alternative.');
+                                next SKIP;
+                            }
+                        }
+                    }
                     $self->_debug(
                         'Should try next alternative.',
                         'Going back to parent.',
@@ -268,6 +277,7 @@ sub _parse_rules {
             }
             # end of child, goto parent
             elsif ( $rule eq 'RETURN') {
+                $has_matched = 0;
                 $rules = pop @parent_rules;
                 pop @parent_pos;
                 $self->_debug(
@@ -279,7 +289,7 @@ sub _parse_rules {
             }
             pos ${ $content_ref } = $pos;
             $self->_debug("Set the current pos to $pos.");
-            my $has_matched
+            $has_matched
                 = my ($match, @result)
                 = ${$content_ref} =~ m{\G ($rule)}xms;
             if ($has_matched) {
@@ -335,6 +345,14 @@ sub _calculate_reference {
 sub _calculate_pot_data {
     my ($self, $file_name) = @_;
 
+    if ( $self->_get_is_debug() ) {
+        use Data::Dumper;
+        $self->_debug(
+            Data::Dumper
+                ->new([$self->_get_references()], ['parameters'])
+                ->Dump();
+        );
+    }
     my $parameter_mapping_code = $self->_get_parameter_mapping_code();
     for my $reference ( @{ $self->_get_references() } ) {
         my $parameter = $parameter_mapping_code->(
