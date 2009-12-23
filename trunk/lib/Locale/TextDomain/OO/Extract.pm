@@ -346,11 +346,12 @@ sub _calculate_pot_data {
     my ($self, $file_name) = @_;
 
     if ( $self->_get_is_debug() ) {
-        use Data::Dumper;
+        require Data::Dumper;
         $self->_debug(
             Data::Dumper
-                ->new([$self->_get_references()], ['parameters'])
-                ->Dump();
+                ->new([$self->_get_references()], [qw(parameters)])
+                ->Sortkeys(1)
+                ->Dump()
         );
     }
     my $parameter_mapping_code = $self->_get_parameter_mapping_code();
