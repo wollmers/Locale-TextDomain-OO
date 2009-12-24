@@ -75,28 +75,28 @@ my $rules = [
         $optional_whitespace_rule,
         $plural_rule,
     ],
-    [
-        qr{\b (c? p) gettext \(}xms,
-        $optional_whitespace_rule,
-        $context_rule,
-        $optional_whitespace_rule,
-        $komma_rule,
-        $optional_whitespace_rule,
-        $text_rule,
-    ],
-    [
-        qr{\b (d c? p) gettext \(}xms,
-        $optional_whitespace_rule,
-        $domain_rule,
-        $optional_whitespace_rule,
-        $komma_rule,
-        $optional_whitespace_rule,
-        $context_rule,
-        $optional_whitespace_rule,
-        $komma_rule,
-        $optional_whitespace_rule,
-        $text_rule,
-    ],
+#    [
+#        qr{\b (c? p) gettext \(}xms,
+#        $optional_whitespace_rule,
+#        $context_rule,
+#        $optional_whitespace_rule,
+#        $komma_rule,
+#        $optional_whitespace_rule,
+#        $text_rule,
+#    ],
+#    [
+#        qr{\b (d c? p) gettext \(}xms,
+#        $optional_whitespace_rule,
+#        $domain_rule,
+#        $optional_whitespace_rule,
+#        $komma_rule,
+#        $optional_whitespace_rule,
+#        $context_rule,
+#        $optional_whitespace_rule,
+#        $komma_rule,
+#        $optional_whitespace_rule,
+#        $text_rule,
+#    ],
     [
         qr{\b (c? n p) gettext \(}xms,
         $optional_whitespace_rule,
@@ -129,6 +129,21 @@ my $rules = [
     ],
 ];
 
+my $preprocess_code = sub {
+    my $content_ref = shift;
+
+    ${$content_ref} =~ s{// [^\n]* $}{}xmsg;
+    ${$content_ref} =~ s{
+        / \* (.*?) \* /
+    }{
+        join q{}, $1 =~ m{(\n)}xmsg;
+    }xmsge;
+
+    die ${$content_ref};
+
+    return;
+};
+
 my $parameter_mapping_code = sub {
     my $parameter = shift;
 
@@ -147,7 +162,7 @@ my $parameter_mapping_code = sub {
 };
 
 my $extractor = Locale::TextDomain::OO::Extract->new(
-    preprocess_code        => sub { return },
+    preprocess_code        => $preprocess_code,
     pot_charset            => 'UTF-8',
     start_rule             => qr{(?: _ | d? c? n? p? gettext ) \(}xms,
     rules                  => $rules,
@@ -167,6 +182,6 @@ open $file, '< :encoding(UTF-8)', 'javascript.pot'
 () = print {*STDOUT} <$file>;
 () = close $file;
 
-# $Id: 52_extract_tt.pl 219 2009-12-22 06:15:17Z steffenw $
+# $Id$
 
 __END__
