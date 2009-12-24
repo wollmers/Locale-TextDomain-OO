@@ -75,28 +75,28 @@ my $rules = [
         $optional_whitespace_rule,
         $plural_rule,
     ],
-#    [
-#        qr{\b (c? p) gettext \(}xms,
-#        $optional_whitespace_rule,
-#        $context_rule,
-#        $optional_whitespace_rule,
-#        $komma_rule,
-#        $optional_whitespace_rule,
-#        $text_rule,
-#    ],
-#    [
-#        qr{\b (d c? p) gettext \(}xms,
-#        $optional_whitespace_rule,
-#        $domain_rule,
-#        $optional_whitespace_rule,
-#        $komma_rule,
-#        $optional_whitespace_rule,
-#        $context_rule,
-#        $optional_whitespace_rule,
-#        $komma_rule,
-#        $optional_whitespace_rule,
-#        $text_rule,
-#    ],
+    [
+        qr{\b (c? p) gettext \(}xms,
+        $optional_whitespace_rule,
+        $context_rule,
+        $optional_whitespace_rule,
+        $komma_rule,
+        $optional_whitespace_rule,
+        $text_rule,
+    ],
+    [
+        qr{\b (d c? p) gettext \(}xms,
+        $optional_whitespace_rule,
+        $domain_rule,
+        $optional_whitespace_rule,
+        $komma_rule,
+        $optional_whitespace_rule,
+        $context_rule,
+        $optional_whitespace_rule,
+        $komma_rule,
+        $optional_whitespace_rule,
+        $text_rule,
+    ],
     [
         qr{\b (c? n p) gettext \(}xms,
         $optional_whitespace_rule,
@@ -138,8 +138,6 @@ my $preprocess_code = sub {
     }{
         join q{}, $1 =~ m{(\n)}xmsg;
     }xmsge;
-
-    die ${$content_ref};
 
     return;
 };
