@@ -52,48 +52,37 @@ my $context_rule
         qr{'}xms,
         qr{( (?: \\\\ \\\\ | \\\\ ' | [^'] )+ )}xms,
         qr{'}xms,
-        'RETURN',
     ];
 
-my $komma_rule               = qr{,}xms;
-my $optional_whitespace_rule = qr{\s*}xms;
+my $komma_rule = qr{\s* , \s*}xms;
 
-my $perl_start_rule = qr{__ n?p?x? \(}xms;
+my $perl_start_rule = qr{__ n?p?x? \s* \(}xms;
 my $perl_rules = [
     [
-        qr{__ (x?) \(}xms,
-        $optional_whitespace_rule,
+        qr{__ (x?) \s* \( \s*}xms,
         $text_rule,
     ],
+    'OR',
     [
-        qr{__ (nx?) \(}xms,
-        $optional_whitespace_rule,
+        qr{__ (nx?) \s* \( \s*}xms,
         $singular_rule,
-        $optional_whitespace_rule,
         $komma_rule,
-        $optional_whitespace_rule,
         $plural_rule,
-     ],
+    ],
+    'OR',
     [
-        qr{__ (px?) \(}xms,
-        $optional_whitespace_rule,
+        qr{__ (px?) \s* \( \s*}xms,
         $context_rule,
-        $optional_whitespace_rule,
         $komma_rule,
-        $optional_whitespace_rule,
         $text_rule,
     ],
+    'OR',
     [
-        qr{__ (npx?) \(}xms,
-        $optional_whitespace_rule,
+        qr{__ (npx?) \s* \( \s*}xms,
         $context_rule,
-        $optional_whitespace_rule,
         $komma_rule,
-        $optional_whitespace_rule,
         $singular_rule,
-        $optional_whitespace_rule,
         $komma_rule,
-        $optional_whitespace_rule,
         $plural_rule,
     ],
 ];
@@ -237,32 +226,19 @@ sub _parse_rules {
 
     my $content_ref = $self->_get_content_ref();
     for my $reference ( @{ $self->_get_references() } ) {
-        my $rules = clone $self->_get_rules();
-        my $pos   = $reference->{start_pos};
+        my $rules       = clone $self->_get_rules();
+        my $pos         = $reference->{start_pos};
+        my $has_matched = 0;
         $self->_debug("Starting at pos $pos.");
-        my (@parent_rules, @parent_pos, $has_matched);
+        my (@parent_rules, @parent_pos);
         RULE: {
             my $rule = shift @{$rules};
-            # goto parent an find next alternative
             if (! $rule) {
                 $self->_debug('No more rules found.');
                 if (@parent_rules) {
                     $rules = pop @parent_rules;
-                    $pos   = pop @parent_pos;
-                    if ($has_matched) {
-                        SKIP:
-                        while ( $rule = shift @{$rules} ) {
-                            if ( ref $rule eq 'ARRAY' ) {
-                                $self->_debug('Skip alternative.');
-                                next SKIP;
-                            }
-                        }
-                    }
-                    $self->_debug(
-                        'Should try next alternative.',
-                        'Going back to parent.',
-                        "Current pos is $pos.",
-                    );
+                    ()     = pop @parent_pos;
+                    $self->_debug('Going back to parent.');
                     redo RULE;
                 }
                 last RULE;
@@ -275,16 +251,16 @@ sub _parse_rules {
                 $self->_debug('Going to child.');
                 redo RULE;
             }
-            # end of child, goto parent
-            elsif ( $rule eq 'RETURN') {
-                $has_matched = 0;
-                $rules = pop @parent_rules;
-                pop @parent_pos;
-                $self->_debug(
-                    'End of child detected.',
-                    'Going back to parent.',
-                    "Current pos is $pos.",
-                );
+            # alternative
+            if ( $rule eq 'OR' ) {
+                if ( $has_matched ) {
+                    $rules       = pop @parent_rules;
+                    ()           = pop @parent_pos;
+                    $has_matched = 0;
+                    $self->debug('Ignore alternative.');
+                    redo RULE;
+                }
+                $self->_debug('Try alternative.');
                 redo RULE;
             }
             pos ${ $content_ref } = $pos;
@@ -300,16 +276,14 @@ sub _parse_rules {
                     ( split m{\n}xms, $match ),
                     "The current pos is $pos.",
                 );
+                redo RULE;
             }
-            else {
-                $rules = pop @parent_rules;
-                $pos   = pop @parent_pos;
-                $self->_debug(
-                    "Rule $rule has not matched.",
-                    'Going back to parent.',
-                    "The current pos is $pos.",
-                );
-            }
+            $rules = pop @parent_rules;
+            $pos   = pop @parent_pos;
+            $self->_debug(
+                "Rule $rule has not matched.",
+                'Going back to parent.',
+            );
             redo RULE;
         }
     }
