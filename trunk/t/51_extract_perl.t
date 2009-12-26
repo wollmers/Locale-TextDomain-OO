@@ -11,13 +11,14 @@ use Test::Exception;
 use Test::Differences;
 
 BEGIN {
-    require_ok('Locale::TextDomain::OO::Extract');
+    use_ok('Locale::TextDomain::OO::Extract::Perl');
+    Locale::TextDomain::OO::Extract::Perl->init( qw(:plural) );
 }
 
 my $extractor;
 lives_ok(
     sub {
-        $extractor = Locale::TextDomain::OO::Extract->new();
+        $extractor = Locale::TextDomain::OO::Extract::Perl->new();
     },
     'create extractor object',
 );

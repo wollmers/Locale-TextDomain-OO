@@ -8,33 +8,26 @@ our $VERSION = 0;
 use Carp qw(croak);
 use English qw(-no_match_vars $OS_ERROR);
 
-require Locale::TextDomain::OO::Extract;
+use Locale::TextDomain::OO::Extract::TT;
+BEGIN {
+    Locale::TextDomain::OO::Extract::TT->init( qw(:plural) );
+}
 
-my $extractor = Locale::TextDomain::OO::Extract->new(
-    preprocess_code => sub { return },
-    pot_charset     => 'UTF-8',
-    start_rule      => qr{\[ \% \s* l() \(}xms,
-    rules           => [
-        qr{\[ \% \s* l() \(}xms,
-        qr{\s*}xms,
-        [
-            qr{'}xms,
-            qr{( (?: \\\\ \\\\ | \\\\ ' | [^'] )+ )}xms,
-            qr{'}xms,
-            'RETURN',
-        ],
-    ],
+my $extractor = Locale::TextDomain::OO::Extract::TT->new(
+    pot_charset => 'UTF-8',
 );
 
-open my $file, '< :encoding(UTF-8)', './files_to_parse/tt.tt'
-    or croak $OS_ERROR;
-$extractor->extract('tt', $file);
+my $file_name = './files_to_parse/template.tt';
+open my $file, '< :encoding(UTF-8)', $file_name
+    or croak "Can not open file $file_name\n$OS_ERROR";
+$extractor->extract('template', $file);
 
 binmode STDOUT, 'encoding(UTF-8)'
-    or croak "binmode STDOUT\n$OS_ERROR";
+    or croak "Can not binmode STDOUT\n$OS_ERROR";
 
-open $file, '< :encoding(UTF-8)', 'tt.pot'
-    or croak $OS_ERROR;
+$file_name = 'template.pot';
+open $file, '< :encoding(UTF-8)', $file_name
+    or croak "Can not open $file_name\n$OS_ERROR";
 () = print {*STDOUT} <$file>;
 () = close $file;
 

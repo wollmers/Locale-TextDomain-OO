@@ -8,84 +8,14 @@ use version; our $VERSION = qv('0.04');
 use Carp qw(croak);
 use English qw(-no_match_vars $OS_ERROR $INPUT_RECORD_SEPARATOR);
 use Clone qw(clone); # clones not recursive
-require DBI;
-require DBD::PO; DBD::PO->init( qw(:plural) );
+use DBI ();
+use DBD::PO ();
 
-my $perl_remove_pod_code = sub {
-    my $content_ref = shift;
+sub init {
+    my (undef, @more) = @_;
 
-    my ($is_pod, $is_end);
-    ${$content_ref} = join "\n", map {
-        $_ eq '__END__'  ? do { $is_end = 1; q{} }
-        : $is_end        ? ()
-        : m{= (\w+)}xms  ? (
-            lc $1 eq 'cut'
-            ? do { $is_pod = 0; q{} }
-            : do { $is_pod = 1; q{} }
-        )
-        : $is_pod        ? q{}
-        : $_;
-    } split m{\r? \n \r?}xms, ${$content_ref};
-
-    return;
-};
-
-my $perl_parameter_mapping_code = sub {
-    my $parameter = shift;
-
-    my $context_parameter = shift @{$parameter};
-
-    return {
-        msgctxt      => $context_parameter =~ m{p}xms
-                        ? $context_parameter
-                        : undef,
-        msgid        => scalar shift @{$parameter},
-        msgid_plural => scalar shift @{$parameter},
-    };
-};
-
-my $context_rule
-    = my $text_rule
-    = my $singular_rule
-    = my $plural_rule
-    = [
-        qr{'}xms,
-        qr{( (?: \\\\ \\\\ | \\\\ ' | [^'] )+ )}xms,
-        qr{'}xms,
-    ];
-
-my $komma_rule = qr{\s* , \s*}xms;
-
-my $perl_start_rule = qr{__ n?p?x? \s* \(}xms;
-my $perl_rules = [
-    [
-        qr{__ (x?) \s* \( \s*}xms,
-        $text_rule,
-    ],
-    'OR',
-    [
-        qr{__ (nx?) \s* \( \s*}xms,
-        $singular_rule,
-        $komma_rule,
-        $plural_rule,
-    ],
-    'OR',
-    [
-        qr{__ (px?) \s* \( \s*}xms,
-        $context_rule,
-        $komma_rule,
-        $text_rule,
-    ],
-    'OR',
-    [
-        qr{__ (npx?) \s* \( \s*}xms,
-        $context_rule,
-        $komma_rule,
-        $singular_rule,
-        $komma_rule,
-        $plural_rule,
-    ],
-];
+    return DBD::PO->init(@more);
+}
 
 sub new {
     my ($class, %init) = @_;
@@ -93,45 +23,35 @@ sub new {
     my $self = bless {}, $class;
 
     # prepare the file and the encoding
-    $self->_set_preprocess_code(
-        (
-            defined $init{preprocess_code}
-            && ref $init{preprocess_code} eq 'CODE'
-        )
-        ? delete $init{preprocess_code}
-        : $perl_remove_pod_code
-    );
+    if (
+        defined $init{preprocess_code}
+        && ref $init{preprocess_code} eq 'CODE'
+    ) {
+        $self->_set_preprocess_code( delete $init{preprocess_code} );
+    }
 
     # how to find such lines
-    $self->_set_start_rule(
-        defined $init{start_rule}
-        ? delete $init{start_rule}
-        : $perl_start_rule
-    );
+    if ( defined $init{start_rule} ) {
+        $self->_set_start_rule( delete $init{start_rule} );
+    }
 
     # how to find the parameters
-    $self->_set_rules(
-        ( defined $init{rules} && ref $init{rules} eq 'ARRAY' )
-        ? delete $init{rules}
-        : $perl_rules
-    );
+    if ( defined $init{rules} && ref $init{rules} eq 'ARRAY' ) {
+        $self->_set_rules( delete $init{rules} );
+    }
 
     # debug output for other rules than perl
-    $self->_set_is_debug(
-        defined $init{is_debug}
-        ? delete $init{is_debug}
-        : ()
-    );
+    $self->_set_is_debug( delete $init{is_debug} );
 
     # how to map the parameters to pot file
-    $self->_set_parameter_mapping_code(
-        (
-            defined $init{parameter_mapping_code}
-            && ref $init{parameter_mapping_code} eq 'CODE'
-        )
-        ? delete $init{parameter_mapping_code}
-        : $perl_parameter_mapping_code
-    );
+    if (
+        defined $init{parameter_mapping_code}
+        && ref $init{parameter_mapping_code} eq 'CODE'
+    ) {
+        $self->_set_parameter_mapping_code(
+            delete $init{parameter_mapping_code},
+        );
+    }
 
     # where to store the pot file
     if ( defined $init{pot_dir} ) {
@@ -144,14 +64,12 @@ sub new {
     }
 
     # how to store the pot file
-    $self->_set_pot_header(
-        (
-            defined $init{pot_header}
-            && ref $init{pot_header} eq 'HASH'
-        )
-        ? delete $init{pot_header}
-        : {}
-    );
+    if (
+        defined $init{pot_header}
+        && ref $init{pot_header} eq 'HASH'
+    ) {
+        $self->_set_pot_header( delete $init{pot_header} );
+    }
 
     # error
     my $keys = join ', ', keys %init;
@@ -257,7 +175,7 @@ sub _parse_rules {
                     $rules       = pop @parent_rules;
                     ()           = pop @parent_pos;
                     $has_matched = 0;
-                    $self->debug('Ignore alternative.');
+                    $self->_debug('Ignore alternative.');
                     redo RULE;
                 }
                 $self->_debug('Try alternative.');
@@ -381,7 +299,7 @@ EO_SQL
     my $header_msgstr = $dbh->func(
         {(
             'Plural-Forms' => 'nplurals=2; plural=n != 1;',
-            %{ $self->_get_pot_header() },
+            %{ $self->_get_pot_header() || {} },
         )},
         'build_header_msgstr',
     );
@@ -501,6 +419,15 @@ Otherwise overwrite the default rules.
     use Locale::TextDomain::OO::Extract;
 
 =head1 SUBROUTINES/METHODS
+
+=head2 method init
+
+This method is for initializing DBD::PO.
+How to initialize see DBD:PO.
+
+    BEGIN {
+        Locale::TextDomain::OO::Extract->init( qw(:plural) );
+    }
 
 =head2 method new
 
