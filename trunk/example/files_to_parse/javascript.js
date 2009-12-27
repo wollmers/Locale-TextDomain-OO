@@ -1,4 +1,4 @@
-﻿// this was an extract from http://jsgettext.berlios.de/doc/html/Gettext.html
+// this was an extract from http://jsgettext.berlios.de/doc/html/Gettext.html
 
 alert(_("some string"));
 alert(gt.gettext("some string"));
