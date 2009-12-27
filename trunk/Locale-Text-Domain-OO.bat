@@ -12,7 +12,7 @@ call ./Build test verbose=0
 set TEST_EXAMPLE=
 set TEST_AUTHOR=
 
-echo -- testpod ---
+echo -- testpod --
 pause
 call ./Build testpod
 
