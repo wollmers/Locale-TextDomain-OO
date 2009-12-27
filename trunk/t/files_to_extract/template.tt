@@ -21,7 +21,7 @@
         <tr>
             <td>
 
-	        <input type="checkbox" name="c1" [% IF var.v2 %] checked="checked" [% END %] />[% l('Text Ö') %]
+--TAB--        <input type="checkbox" name="c1" [% IF var.v2 %] checked="checked" [% END %] />[% l('Text Ö') %]
             </td>
         
     <td>
