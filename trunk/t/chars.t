@@ -27,8 +27,10 @@ find(
         untaint         => 1,
         wanted          => sub {
             -d and return;
-            $File::Find::name =~ m{/ \.svn / | \.[pm]o | \.txt \z}xms
+            $File::Find::name =~ m{/ \.svn /}xms
                 and return;
+            $File::Find::name =~ m{\. (?: [pm]o | \.txt | \.js | \.tt )\z}xms
+                and return;    
             $File::Find::name =~ m{
                 (
                     (?: /lib/ | /example/ | /t/ )
@@ -58,7 +60,7 @@ for my $file_name (sort @list) {
         local $/ = ();
         my $text = <$file>;
         # repair last line without \n
-        $text =~ s{[^\x0D\x0A] \z}{\x0D\x0A}xms;
+        $text =~ s{([^\x0D\x0A]) \z}{$1\x0D\x0A}xms;
         @lines = split m{\x0A}, $text;
     }
 
