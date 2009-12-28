@@ -16,7 +16,7 @@ BEGIN {
 my $extractor = Locale::TextDomain::OO::Extract::Perl->new();
 
 my $file_name = '11_gettext_mo.pl';
-open my $file, '<', $file_name
+open my $file, '<', $file_name  ## no critic (BriefOpen)
     or croak "Can not open file $file_name\n$OS_ERROR";
 $extractor->extract('11_gettext_mo', $file);
 

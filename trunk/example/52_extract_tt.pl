@@ -18,7 +18,7 @@ my $extractor = Locale::TextDomain::OO::Extract::TT->new(
 );
 
 my $file_name = './files_to_parse/template.tt';
-open my $file, '< :encoding(UTF-8)', $file_name
+open my $file, '< :encoding(UTF-8)', $file_name ## no critic (BriefOpen)
     or croak "Can not open file $file_name\n$OS_ERROR";
 $extractor->extract('template', $file);
 
