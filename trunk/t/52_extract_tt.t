@@ -7,7 +7,7 @@ use utf8;
 
 use Carp qw(croak);
 use English qw(-no_mach_vars $OS_ERROR $INPUT_RECORD_SEPARATOR);
-use Test::More tests => 6 + 1;
+use Test::More tests => 5 + 1;
 use Test::NoWarnings;
 use Test::Exception;
 use Test::Differences;
@@ -26,16 +26,6 @@ lives_ok(
     },
     'create extractor object',
 );
-
-{
-    my $content = "1\n=pod\n3\n=cut\n5\n__END__\n7\n";
-    $extractor->_get_preprocess_code->(\$content),
-    eq_or_diff(
-        $content,
-        "1\n\n\n\n5\n",
-        'check default preprocess',
-    );
-}
 
 lives_ok(
     sub {

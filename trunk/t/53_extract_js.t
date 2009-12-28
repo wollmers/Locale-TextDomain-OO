@@ -27,11 +27,11 @@ lives_ok(
 );
 
 {
-    my $content = "1\n=pod\n3\n=cut\n5\n__END__\n7\n";
+    my $content = "1\n//2\n3\n4/*\n5\n*/6\n";
     $extractor->_get_preprocess_code->(\$content),
     eq_or_diff(
         $content,
-        "1\n\n\n\n5\n",
+        "1\n\n3\n4\n\n6\n",
         'check default preprocess',
     );
 }
