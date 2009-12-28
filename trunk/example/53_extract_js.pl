@@ -17,7 +17,7 @@ my $extractor = Locale::TextDomain::OO::Extract::JavaScript->new(
     pot_charset => 'UTF-8',
 );
 
-my $file_name = './files_to_parse/javascript.js';
+my $file_name = './files_to_extract/javascript.js';
 open my $file, '< :encoding(UTF-8)', $file_name ## no critic (BriefOpen)
     or croak "Can not open file $file_name\n$OS_ERROR";
 $extractor->extract('javascript', $file);
