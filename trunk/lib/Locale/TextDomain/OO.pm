@@ -3,7 +3,7 @@ package Locale::TextDomain::OO;
 use strict;
 use warnings;
 
-our $VERSION = '0.03';
+our $VERSION = '0.04';
 
 use Carp qw(croak);
 use Cwd qw(abs_path);
@@ -476,7 +476,7 @@ $HeadURL$
 
 =head1 VERSION
 
-0.03
+0.04
 
 =head1 DESCRIPTION
 
