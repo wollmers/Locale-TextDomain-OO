@@ -50,6 +50,7 @@ plan( tests => 5 * scalar @list );
 
 my @ignore_non_ascii = (
     qr{_ (?: utf-8 | cp1252) \. (?: t | pl) \z}xms,
+    qr{_tt \. t \z}xms,
 );
 
 for my $file_name (sort @list) {
