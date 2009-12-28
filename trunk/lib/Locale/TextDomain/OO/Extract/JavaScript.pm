@@ -41,7 +41,7 @@ my $rules = [
     ],
     'OR',
     [
-        qr{\b (d c?) gettext \s* \( \*}xms,
+        qr{\b (d c?) gettext \s* \( \s*}xms,
         $domain_rule,
         $komma_rule,
         $text_rule,
@@ -125,7 +125,7 @@ my $parameter_mapping_code = sub {
 
     return {
         msgctxt      => $extra_parameter =~ m{p}xms
-                        ? $extra_parameter
+                        ? scalar shift @{$parameter}
                         : undef,
         msgid        => scalar shift @{$parameter},
         msgid_plural => scalar shift @{$parameter},
