@@ -12,14 +12,14 @@ use Test::Exception;
 use Test::Differences;
 
 BEGIN {
-    use_ok('Locale::TextDomain::OO::Extract::Perl');
-    Locale::TextDomain::OO::Extract::Perl->init( qw(:plural) );
+    use_ok('Locale::TextDomain::OO::Extract::JavaScript');
+    Locale::TextDomain::OO::Extract::JavaScript->init( qw(:plural) );
 }
 
 my $extractor;
 lives_ok(
     sub {
-        $extractor = Locale::TextDomain::OO::Extract::Perl->new(
+        $extractor = Locale::TextDomain::OO::Extract::JavaScript->new(
             pot_charset => 'UTF-8',
         );
     },
