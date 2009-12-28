@@ -27,6 +27,8 @@ my $parameter_mapping_code = sub {
     my $parameter = shift;
 
     my $extra_parameter = shift @{$parameter};
+    @{$parameter}
+        or return;
 
     return {
         msgctxt      => $extra_parameter =~ m{p}xms

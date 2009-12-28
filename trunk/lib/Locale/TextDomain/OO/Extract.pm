@@ -41,7 +41,7 @@ sub new {
     }
 
     # debug output for other rules than perl
-    $self->_set_is_debug( delete $init{is_debug} );
+    $self->_set_run_debug( delete $init{run_debug} );
 
     # how to map the parameters to pot file
     if (
@@ -81,7 +81,7 @@ sub new {
 }
 
 my @names = qw(
-    preprocess_code start_rule rules is_debug parameter_mapping_code
+    preprocess_code start_rule rules run_debug parameter_mapping_code
     pot_dir pot_charset pot_header
     content_ref references
 );
@@ -114,7 +114,7 @@ sub debug {
 sub _debug {
     my ($self, @messages) = @_;
 
-    $self->_get_is_debug()
+    $self->_get_run_debug()
         or return $self;
     for my $message (@messages) {
         $self->debug($message);
@@ -237,7 +237,7 @@ sub _calculate_reference {
 sub _calculate_pot_data {
     my ($self, $file_name) = @_;
 
-    if ( $self->_get_is_debug() ) {
+    if ( $self->_get_run_debug() ) {
         require Data::Dumper;
         $self->_debug(
             Data::Dumper
@@ -247,10 +247,11 @@ sub _calculate_pot_data {
         );
     }
     my $parameter_mapping_code = $self->_get_parameter_mapping_code();
+    REFERENCE:
     for my $reference ( @{ $self->_get_references() } ) {
         my $parameter = $parameter_mapping_code->(
             delete $reference->{parameter},
-        );
+        ) or next REFERENCE;
         $reference->{pot_data} = {(
             reference => "$file_name:$reference->{line_number}",
             %{$parameter},
@@ -337,8 +338,10 @@ EO_SQL
 EO_SQL
 
     # write entrys
+    REFERENCE:
     for my $reference ( @{ $self->_get_references() } ) {
-        my $entry = $reference->{pot_data};
+        my $entry = $reference->{pot_data}
+            or next REFERENCE;
         $sth_select->execute(
             @{$entry}{ qw(msgctxt msgid msgid_plural) },
         );
@@ -474,7 +477,7 @@ The defaults are to parse Perl pl or pm files.
         ],
 
         # debug output for other rules than perl
-        is_debug => $boolean, # to check own writen rules
+        run_debug => $boolean, # to check own writen rules
 
         # how to map the parameters to pot file
         parameter_mapping_code => sub {

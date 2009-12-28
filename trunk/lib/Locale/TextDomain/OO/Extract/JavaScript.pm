@@ -120,6 +120,8 @@ my $parameter_mapping_code = sub {
     if ( $extra_parameter =~ m{d}xms) {
          shift @{$parameter};
     }
+    @{$parameter}
+        or return;
 
     return {
         msgctxt      => $extra_parameter =~ m{p}xms
