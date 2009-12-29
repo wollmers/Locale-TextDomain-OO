@@ -1,0 +1,179 @@
+Locale-TextDomain-OO folder example
+===================================
+
+This is the explanation which file shows what.
+
+------------------------------------------------------------------------------
+If you run and read this examples realize, that some modules are only written
+to be compatible. If you port some big old applications it is easy to change
+step by step. After every step you have a running application.
+
+Module Locale::TextDomain::OO::Maketext implements the compatibility to
+maketext. You have a maketext method too.
+
+Module Locale::TextDomain::OO::FunctionalInterface was written because
+module Locale::TextDomain has a functional interface. Use this module only if
+your application must have a functional interface.
+
+Module Locale::TextDomain::OO::MessagesStruct was written because some
+applications have not stored the internationalization data in mo files.
+------------------------------------------------------------------------------
+
+01_locale_textdomian_utf-8.pl
+    This example does not use module Locale::Text-Domain::OO. It shows, how to
+    use Unicode, the internal representation as chars. Module Locale::Messages
+    and Locale::TextDomain only transport UTF-8 bytes, not Unicode chars. All
+    this recodes running like subroutine from_to (Encode).
+    The filter (output filter) allows to change the output of module
+    Locale::Messages using subroutine decode_utf8 (Encode). But there is no
+    input filter if the msgstr, msgstr_plural or msgctxt contains Unicode
+    chars like paragraph or the british currency sign. English is not ASCII.
+    For this reason I wrapped the subroutine encode_utf8 (Encode) around. But
+    this is extremly bad and not useful. See bug report:
+        http://rt.cpan.org/Public/Bug/Display.html?id=49758
+    This example uses the Russian UTF-8 mo file.
+
+11_gettext_mo.pl
+    This example shows, how to use the module Locale::Text-Domain::OO.
+    Unicode is not used. Then a char is equal to a byte.
+    This example uses the German ISO-8859-1 example.mo file.
+    Why I write
+        local $ENV{LANGUAGE} = Locale::TextDomain::OO->get_default_language_detect()->('de_DE');
+    and not
+        local $ENV{LANGUAGE} = 'de_DE';
+    This is only to detect the language using module I18N::LangTags including
+    super and panic languages and not to use the Locale::Messages defaults.
+
+12_gettext_mo_utf-8.pl
+    This example is similar to "01_locale_textdomian_utf-8.pl" but the module
+    Locale::Text-Domain::OO is used. It shows, how to use Unicode, the
+    internal representations as chars. The filter (output filter) allows to
+    change the output of module Locale::Messages:OO using subroutine
+    decode_utf8 (Encode). The input_filter allows to change the input to
+    module Locale::Messages:OO using subroutine encode_utf8 (Encode).
+    "binmode" is to change the output Layer of STDOUT. Than every output will
+    be changed from unicode to UTF-8. Use an UTF-8 console or modify that
+    encoding to be equal to your console.
+    This example uses the Russian UTF-8 mo file.
+
+13_gettext_mo_cp1252.pl
+    This example is similar to "12_gettext_mo_utf-8.pl". It shows, how to use
+    Unicode and a not UTF-8 mo file. Here it is cp1252. The filter
+    (output filter) allows to change the output of module Locale::Messages:OO
+    using subroutine decode (Encode). This filter changes the encoding from
+    cp1252 to unicode. The input_filter allows to change the input to module
+    Locale::Messages:OO using subroutine encode (Encode). This filter changes
+    the encoding from unicode to cp1252.
+    This example uses the German cp1252 mo file.
+
+14_N__.pl
+    This example shows how to use all the N__... methods. But this is not
+    normal because the N__... methods are normaly mixed with all the others.
+    Non translation means: "Allow the extractor to find that phrases early but
+    run the translation later". The N__... methods mapping the prases and some
+    constant parameters to any variables. This variables are used later to do
+    any complex things. In that late way the extractor would not be able to
+    extract.
+    This example is similar to "11_gettext_mo.pl".
+    Unicode is not used. Then a char is equal to a byte.
+    This example uses the German ISO-8859-1 example.mo file.
+
+22_gettext_mo_functional_interface
+    This is nearly the same like "11_gettext_mo.pl".
+    The subroutine bind_object of module
+    Locale::TextDomain::OO::FunctionalInterface is only to have a functional
+    interface like module Locale::TextDomain.
+    The you call
+        __(...)
+    and not
+        $loc->__(...)
+    and the same for
+        __x(...)
+    and so on.
+    If it makes no sense, do not use this interface and do not bind the object
+    to this interface and use the object directly.
+
+23_gettext_mo_tied_interface
+    This is nearly the same like "11_gettext_mo.pl".
+    The imported variable $loc you need to write back (bind) the object.
+    Locale::TextDomain::OO::TiedInterface exists to have a tied interface like
+    module Locale::TextDomain.
+    Safe the object into the imported variable $loc.
+    Call the methods as fetch hash or fetch hash reference.
+        $__{[...]}
+    or
+        $__->{[...]}
+    and not
+        $loc->__(...)
+    and the same for
+        $__x{[...]}
+    or
+        $__x->{[...]}
+    and so on.
+    Reduce the import list and write down the needed imports. Mostly you do
+    not need all.
+    If it makes no sense, do not use this interface and do not write back
+    (bind) the object to this interface and use the object directly.
+
+31_gettext_struct_from_locale_po.pl
+    This example shows, how to use module Locale::TextDomain::OO::MessagesStruct
+    to use data which are not from mo files (here po files).
+    Unicode is not used. Then a char is equal to a byte.
+    This example uses the German ISO-8859-1 example.po file.
+    New in this example is
+        $file_path = $loc->get_file_path($text_domain, '.po');
+    This is to find the po file of the langauge and text domain.
+    Also new is
+        $code_ref = $loc->get_function_ref_plural($plural_forms);
+    In the header of every po or mo file is a formula ($plural_forms).
+    This code runs this formula.
+
+32_gettext_struct_from_dbd_po.pl
+    This example is similar to the example before. The difference is, that
+    DBD::PO is a SQL database interface for po files. The performance is lower
+    than the example before. But the example shows, how to use DBI, not more.
+    So you can see, how to bind any database interface as data source.
+    Unicode is not used. Then a char is equal to a byte.
+    This example uses the German ISO-8859-1 example.po file.
+
+33_gettext_struct_from_locale_po_utf-8.pl
+    This example is similar to "31_gettext_struct_from_locale_po.pl".
+    Look for the difference between both and realize, what is to do for Unicode.
+    This example uses the Russian UTF-8 example.po file.
+
+34_gettext_struct_from_dbd_po_utf-8.pl
+    This example is similar to "32_gettext_struct_from_dbd_po.pl".
+    Look for the difference between both and realize, what is to do for Unicode.
+    This example uses the Russian UTF-8 example.po file.
+
+41_maketext_mo.pl
+    This example shows, how to use module Locale::TextDomain::Maketext
+    to use mo files with maketext placeholders. This is useful if you want to
+    port from Locale::Maketext to Locale::TextDomain. This allows placeholders
+    like Locale::Maketext:
+        [_1], [quant,_1,...], [*,_1,...]
+    and the placeholders of Locale::TextDomain too.
+    Unicode is not used. Then a char is equal to a byte.
+    This example uses the German ISO-8859-1 example_maketext.po file.
+
+42_maketext_mo_style_gettext.pl
+    This example is similar to the example before. The placeholders are
+    switched to gettext style:
+        %1, %quant(%1,...), %*(%1,...)
+    Unicode is not used. Then a char is equal to a byte.
+    This example uses the German ISO-8859-1 example_maketext_style_getext.po file.
+
+51_extract_perl.pl
+    This example shows, how to extract a pot file from a Perl application.
+
+52_extract_tt.pl
+    This example shows, how to extract a pot file from a tt template.
+    "binmode" is to change the output Layer of STDOUT. Than every output will
+    be changed from unicode to UTF-8. Use an UTF-8 console or modify that
+    encoding to be equal to your console.
+
+53_extract_js.pl
+    This example shows, how to extract a pot file from a JavaScript file.
+    "binmode" is to change the output Layer of STDOUT. Than every output will
+    be changed from unicode to UTF-8. Use an UTF-8 console or modify that
+    encoding to be equal to your console.
