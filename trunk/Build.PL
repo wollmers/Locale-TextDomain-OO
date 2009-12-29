@@ -21,16 +21,18 @@ Module::Build->new(
         'DBD::PO'              => 2.09,
         'Perl6::Export::Attrs' => 0,
         'I18N::LangTags'       => 0,
-        'Locale::Messages'     => 1.20, # dist libintl-perl
         'Tie::Sub'             => 0.09,
         $is_ppm
-        ? ()
+        ? (
+            'libintl-perl' => 1.20,
+        )
         : (
             Carp                     => 0, # perl dist
             Cwd                      => 0, # perl dist
             Encode                   => 0, # perl dist
             English                  => 0, # perl dist
             'I18N::LangTags::Detect' => 0, # dist I18N-LangTags
+            'Locale::Messages'       => 1.20, # dist libintl-perl
         )
     },
     build_requires => {
