@@ -1,11 +1,13 @@
 Revision history for Perl extension Locale::Text::Domain:OO.
 
-0.04  Tue Dec 29 17:00:00 2009
+0.04  Tue Dec 29 20:00:00 2009
 - add a TiedInterface
 - add an extractor to create the pot files from source
   - a base class
   - a stable extractor for perl source code
   - 2 beta extractors for tt-templates and JavaScript
+- I do not test the first example using Locale::TextDomain
+  because of bug 49744 at Locale::gettext_pp version 1.20.
 
 0.03  Mon Dec  7 22:30:00 2009
 - add forgotten language at test 22
