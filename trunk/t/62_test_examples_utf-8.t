@@ -13,23 +13,23 @@ $ENV{TEST_EXAMPLE} or plan(
     skip_all => 'Set $ENV{TEST_EXAMPLE} to run this test.'
 );
 
-plan(tests => 6);
+plan(tests => 5);
 
 my @data = (
-    {
-        test   => '01_locale_textdomian_utf-8',
-        path   => 'example',
-        script => '-I../lib -T 01_locale_textdomian_utf-8.pl',
-        result => <<'EOT',
-книга
-§ книга
-§§ книг
-§§ книга
-§§ книги
-c книга
-c§ книга
-EOT
-    },
+#    {
+#        test   => '01_locale_textdomian_utf-8',
+#        path   => 'example',
+#        script => '-I../lib -T 01_locale_textdomian_utf-8.pl',
+#        result => <<'EOT',
+#книга
+#§ книга
+#§§ книг
+#§§ книга
+#§§ книги
+#c книга
+#c§ книга
+#EOT
+#    },
     {
         text   => '12_gettext_mo_utf-8',
         path   => 'example',
