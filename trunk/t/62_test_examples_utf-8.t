@@ -78,7 +78,7 @@ EOT
     {
         test   => '52_extract_tt',
         path   => 'example',
-        script => '-I../lib 52_extract_tt.pl',
+        script => '-I../lib 52_extract_tt.pl cleanup',
         result => <<'EOT',
 msgid ""
 msgstr ""

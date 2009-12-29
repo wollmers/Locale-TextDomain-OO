@@ -43,6 +43,11 @@ my $extractor = Locale::TextDomain::OO::Extract::Perl->new();
     () = close $file;
 }
 
+# only for automatic test of example
+if ($ARGV[0] && $ARGV[0] eq 'cleanup') {
+    unlink qw(11_gettext_mo.pot 41_maketext_mo.pot);
+}
+
 # $Id$
 
 __END__

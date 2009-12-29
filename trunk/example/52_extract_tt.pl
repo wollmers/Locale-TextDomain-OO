@@ -1,4 +1,4 @@
-﻿#!perl
+#!perl
 
 use strict;
 use warnings;
@@ -30,6 +30,11 @@ open $file, '< :encoding(UTF-8)', $file_name
     or croak "Can not open $file_name\n$OS_ERROR";
 () = print {*STDOUT} <$file>;
 () = close $file;
+
+# only for automatic test of example
+if ($ARGV[0] && $ARGV[0] eq 'cleanup') {
+    unlink 'template.pot';
+}
 
 # $Id$
 

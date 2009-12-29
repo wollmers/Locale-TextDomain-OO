@@ -164,7 +164,7 @@ EOT
     {
         test   => '51_extract_perl',
         path   => 'example',
-        script => '-I../lib 51_extract_perl.pl',
+        script => '-I../lib 51_extract_perl.pl cleanup',
         result => <<'EOT',
 msgid ""
 msgstr ""
@@ -265,7 +265,7 @@ EOT
     {
         test   => '53_extract_js',
         path   => 'example',
-        script => '-I../lib 53_extract_js.pl',
+        script => '-I../lib 53_extract_js.pl cleanup',
         result => <<'EOT',
 msgid ""
 msgstr ""

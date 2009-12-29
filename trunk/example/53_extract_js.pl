@@ -31,6 +31,11 @@ open $file, '< :encoding(UTF-8)', $file_name
 () = print {*STDOUT} <$file>;
 () = close $file;
 
+# only for automatic test of example
+if ($ARGV[0] && $ARGV[0] eq 'cleanup') {
+    unlink 'javascript.pot';
+}
+
 # $Id$
 
 __END__
