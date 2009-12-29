@@ -61,7 +61,11 @@ binmode STDOUT, ':encoding(utf-8)'
 
 __END__
 
-Output:
+There is a bug
+ http://rt.cpan.org/Public/Bug/Display.html?id=49744
+in Locale::gettext.pp, version 1.20 during calculate plurals.
+
+Correct output should be:
 
 книга
 § книга
