@@ -1043,13 +1043,29 @@ L<Locale::TextDoamin>
 
 L<Locale::Messages>
 
+ At version 1.20:
+
+ The bug L<http://rt.cpan.org/Public/Bug/Display.html?id=49744>
+ "gettext_pp.pm can not parse Russian plural forms"
+ was fixed in module Locale::Text::Domain::OO.
+
+ The bug L<http://rt.cpan.org/Public/Bug/Display.html?id=49758>
+ "no perl unicode support or the half one only"
+ was fixed in module Locale::Text::Domain::OO.
+ The problem is in detail if you have an UTF-8 Perl source
+ and a non ASCII msgid, msgid_plural or msgctxt.
+ Because English is not ASCII, you can have
+ the English currency symbol, the paragraph symbol
+ and so on.
+
 L<http://www.gnu.org/software/gettext/manual/gettext.html>
 
 L<http://en.wikipedia.org/wiki/Gettext>
 
 L<http://translate.sourceforge.net/wiki/l10n/pluralforms>
 
-L<http://rassie.org/archives/247> The choice of the right module for the translation.
+L<http://rassie.org/archives/247>
+The choice of the right module for the translation.
 
 =head1 AUTHOR
 
