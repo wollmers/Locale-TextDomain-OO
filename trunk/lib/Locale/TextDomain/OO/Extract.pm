@@ -384,7 +384,9 @@ sub extract {
     $self->_set_content_ref(\<$file_handle>);
     () = close $file_handle;
 
-    $self->_get_preprocess_code()->( $self->_get_content_ref() );
+    if ( $self->_get_preprocess_code() ) {
+        $self->_get_preprocess_code()->( $self->_get_content_ref() );
+    }
     $self->_parse_pos();
     $self->_parse_rules();
     $self->_cleanup();
@@ -401,7 +403,7 @@ __END__
 
 =head1 NAME
 
-Locale::TextDomain::OO::Extract - Extract internationalization data as pot file
+Locale::TextDomain::OO::Extract - Extracts internationalization data as pot file
 
 $Id$
 
@@ -413,9 +415,7 @@ $HeadURL$
 
 =head1 DESCRIPTION
 
-This module extract internationalizations data and stores this in a pot file.
-The default is to extract a pl or pm file.
-Otherwise overwrite the default rules.
+This module extracts internationalizations data and stores this in a pot file.
 
 =head1 SYNOPSIS
 
@@ -426,7 +426,7 @@ Otherwise overwrite the default rules.
 =head2 method init
 
 This method is for initializing DBD::PO.
-How to initialize see DBD:PO.
+How to initialize see L<DBD::PO>.
 
     BEGIN {
         Locale::TextDomain::OO::Extract->init( qw(:plural) );
@@ -435,7 +435,6 @@ How to initialize see DBD:PO.
 =head2 method new
 
 All parameters are optional.
-The defaults are to parse Perl pl or pm files.
 
     my $extractor = Locale::TextDomain::OO::Extract->new(
         # prepare the file and the encoding
@@ -455,19 +454,19 @@ The defaults are to parse Perl pl or pm files.
             [
                 # __( 'text'
                 # __x( 'text'
-                qr{__ (x?) \(}xms,
+                qr{__ (x?) \s* \( \s*}xms,
                 qr{\s*}xms,
-                # You can reuse this reference
-                # because the last value is 'RETURN'
-                # and so this is not an alternative.
-                # It is something like a sub.
+                # You can re-use the next reference.
+                # It is a subdefinition.
                 [
                     qr{'}xms,
                     qr{( (?: \\\\ \\\\ | \\\\ ' | [^'] )+ )}xms,
                     qr{'}xms,
-                    'RETURN',
                 ],
             ],
+            # The next array reference describes an alternative
+            # and not a subdefinition.
+            'OR',
             [
                 # next alternative e.g.
                 # __n( 'context' , 'text'
@@ -558,6 +557,8 @@ none
 
 =head1 DEPENDENCIES
 
+version
+
 Carp
 
 English
@@ -567,6 +568,10 @@ Clone
 DBI
 
 DBD::PO
+
+=head2 dynamic require
+
+L<Data::Dumper>
 
 =head1 INCOMPATIBILITIES
 
