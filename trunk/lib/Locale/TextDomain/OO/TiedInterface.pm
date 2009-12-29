@@ -195,9 +195,9 @@ none
 
 =head1 DEPENDENCIES
 
-Carp
+version
 
-L<Perl6::Export::Attrs>
+Carp
 
 L<Tie::Sub>
 

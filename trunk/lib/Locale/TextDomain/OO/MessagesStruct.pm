@@ -233,6 +233,8 @@ none
 
 =head1 DEPENDENCIES
 
+version
+
 Carp
 
 =head1 INCOMPATIBILITIES

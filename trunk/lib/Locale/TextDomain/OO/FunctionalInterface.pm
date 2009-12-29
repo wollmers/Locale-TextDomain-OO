@@ -128,6 +128,8 @@ none
 
 =head1 DEPENDENCIES
 
+version
+
 Carp
 
 L<Perl6::Export::Attrs>

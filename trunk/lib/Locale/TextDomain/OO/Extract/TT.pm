@@ -32,7 +32,7 @@ my $parameter_mapping_code = sub {
 
     return {
         msgctxt      => $extra_parameter =~ m{p}xms
-                        ? $extra_parameter
+                        ? scalar shift @{$parameter}
                         : undef,
         msgid        => scalar shift @{$parameter},
         msgid_plural => scalar shift @{$parameter},
@@ -43,7 +43,6 @@ sub new {
     my ($class, %init) = @_;
 
     return $class->SUPER::new(
-        preprocess_code        => sub { return },
         start_rule             => $start_rule,
         rules                  => $rules,
         parameter_mapping_code => $parameter_mapping_code,
@@ -57,7 +56,8 @@ __END__
 
 =head1 NAME
 
-Locale::TextDomain::OO::Extract::TT - Extract internationalization data from TemplateToolkit source
+Locale::TextDomain::OO::Extract::TT
+- Extracts internationalization data from TemplateToolkit code
 
 $Id$
 
@@ -69,7 +69,13 @@ $HeadURL$
 
 =head1 DESCRIPTION
 
-This module extract internationalization data from Template code.
+This module extracts internationalization data from Template code.
+
+Implemented rules:
+
+ [%l('...
+
+Whitespace is allowed everywhere.
 
 =head1 SYNOPSIS
 

@@ -519,6 +519,21 @@ Locale::TextDomain::OO::FunctionalInterface is a wrapper
 to have functions like Locale::TextDomain for the application interface
 and all the benefit from the binded object too.
 
+=head2 When tie the object to a hash?
+
+Fetch a hash is similar to call a subroutine.
+Fetch hash is interpolated in a string but call a subroutine not.
+This is a reason, to use the tied interface.
+
+=head2 How to extract?
+
+Inside this distribution is module L<Locale::TextDomain::OO::Extract>.
+This is a base class for all source scanner to create pot files.
+Use this base class and give this module the rules
+or use one of the already exteded classes.
+L<Locale::TextDomain::OO::Extract::Perl>
+is a extension for Perl code and so on.
+
 =head2 Do not follow the dead end of Locale::Maketext!
 
 What is the problem of?
