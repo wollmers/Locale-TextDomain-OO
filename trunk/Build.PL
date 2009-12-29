@@ -22,6 +22,7 @@ Module::Build->new(
         'Perl6::Export::Attrs' => 0,
         'I18N::LangTags'       => 0,
         'Locale::Messages'     => 1.20, # dist libintl-perl
+        'Tie::Sub'             => 0,
         $is_ppm
         ? ()
         : (
