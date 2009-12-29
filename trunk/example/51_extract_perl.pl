@@ -56,50 +56,45 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;"
 
-#: 11_basics:34
+#: 11_gettext_mo:23
 msgid "This is a text."
 msgstr ""
 
-#: 11_basics:41
-msgid "§ book"
-msgstr ""
-
-#: 11_basics:49
-#: 11_basics:58
+#: 11_gettext_mo:26
 msgid "{name} is programming {language}."
 msgstr ""
 
-#: 11_basics:67
-#: 11_basics:76
+#: 11_gettext_mo:31
+#: 11_gettext_mo:36
 msgid "Singular"
 msgid_plural "Plural"
 msgstr[0] ""
 
-#: 11_basics:86
-#: 11_basics:96
+#: 11_gettext_mo:41
+#: 11_gettext_mo:47
 msgid "{num} shelf"
 msgid_plural "{num} shelves"
 msgstr[0] ""
 
-#: 11_basics:107
+#: 11_gettext_mo:53
 msgctxt "maskulin"
 msgid "Dear"
 msgstr ""
 
-#: 11_basics:116
+#: 11_gettext_mo:57
 msgctxt "maskulin"
 msgid "Dear {name}"
 msgstr ""
 
-#: 11_basics:126
-#: 11_basics:136
+#: 11_gettext_mo:62
+#: 11_gettext_mo:68
 msgctxt "better"
 msgid "shelf"
 msgid_plural "shelves"
 msgstr[0] ""
 
-#: 11_basics:147
-#: 11_basics:158
+#: 11_gettext_mo:74
+#: 11_gettext_mo:81
 msgctxt "better"
 msgid "{num} shelf"
 msgid_plural "{num} shelves"
@@ -113,42 +108,37 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;"
 
-#: 41_maketext_mo:34
+#: 41_maketext_mo:23
 msgid "This is a text."
 msgstr ""
 
-#: 41_maketext_mo:41
-msgid "§ book"
-msgstr ""
-
-#: 41_maketext_mo:49
-#: 41_maketext_mo:58
+#: 41_maketext_mo:26
 msgid "[_1] is programming [_2]."
 msgstr ""
 
-#: 41_maketext_mo:67
-#: 41_maketext_mo:75
+#: 41_maketext_mo:31
+#: 41_maketext_mo:35
 msgid "[quant,_1,shelf,shelves]"
 msgstr ""
 
-#: 41_maketext_mo:84
+#: 41_maketext_mo:39
 msgctxt "maskulin"
 msgid "Dear"
 msgstr ""
 
-#: 41_maketext_mo:93
+#: 41_maketext_mo:43
 msgctxt "maskulin"
 msgid "Dear [_1]"
 msgstr ""
 
-#: 41_maketext_mo:103
-#: 41_maketext_mo:112
+#: 41_maketext_mo:48
+#: 41_maketext_mo:53
 msgctxt "better"
 msgid "[*,_1,shelf,shelves]"
 msgstr ""
 
-#: 41_maketext_mo:122
-#: 41_maketext_mo:130
-#: 41_maketext_mo:138
+#: 41_maketext_mo:58
+#: 41_maketext_mo:62
+#: 41_maketext_mo:66
 msgid "[*,_1,shelf,shelves,no shelf]"
 msgstr ""
