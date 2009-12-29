@@ -19,7 +19,15 @@ my $context_rule
 
 my $komma_rule = qr{\s* , \s*}xms;
 
-my $start_rule = qr{__ n?p?x? \s* \(}xms;
+my $start_rule = qr{
+    (?:
+        __ n?p?x?
+        |
+        maketext (?: _p )?
+    )
+    \s*
+    \(
+}xms;
 
 my $rules = [
     [
@@ -48,6 +56,18 @@ my $rules = [
         $singular_rule,
         $komma_rule,
         $plural_rule,
+    ],
+    'OR',
+    [
+        qr{maketext () \s* \( \s*}xms,
+        $text_rule,
+    ],
+    'OR',
+    [
+        qr{maketext_ (p) \s* \( \s*}xms,
+        $context_rule,
+        $komma_rule,
+        $text_rule,
     ],
 ];
 
@@ -79,7 +99,7 @@ my $parameter_mapping_code = sub {
 
     return {
         msgctxt      => $extra_parameter =~ m{p}xms
-                        ? $extra_parameter
+                        ? scalar shift @{$parameter}
                         : undef,
         msgid        => scalar shift @{$parameter},
         msgid_plural => scalar shift @{$parameter},
@@ -105,7 +125,7 @@ __END__
 =head1 NAME
 
 Locale::TextDomain::OO::Extract::Perl
-- Extract internationalization data from JavaScript source
+- Extracts internationalization data from Perl source code
 
 $Id$
 
@@ -117,7 +137,23 @@ $HeadURL$
 
 =head1 DESCRIPTION
 
-This module extract internationalization data from Perl source code.
+This module extracts internationalization data from Perl source code.
+
+Implemented rules:
+
+ __('...
+ __x('...
+ __n('...
+ __nx('...
+ __p('...
+ __px('...
+ __np('...
+ __npx('...
+ maketext('...
+ maketext_p('...
+
+Anything before __ is allowed, e.g. N__ and so on.
+Whitespace is allowed everywhere.
 
 =head1 SYNOPSIS
 

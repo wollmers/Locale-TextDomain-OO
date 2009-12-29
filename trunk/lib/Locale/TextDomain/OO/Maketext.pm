@@ -6,6 +6,7 @@ use warnings;
 use version; our $VERSION = qv('0.03');
 
 use parent qw(Locale::TextDomain::OO);
+
 use Carp qw(croak);
 
 sub new {
@@ -192,6 +193,18 @@ sub maketext_p {
     return $translation;
 }
 
+BEGIN {
+    no warnings qw(redefine); ## no critic (NoWarnings)
+
+    # Dummy methods for string marking.
+    my $dummy = sub {
+        my (undef, @more) = @_;
+        return @more;
+    };
+    *Nmaketext   = $dummy;
+    *Nmaketext_p = $dummy;
+}
+
 1;
 
 __END__
@@ -292,6 +305,15 @@ This method ignores zero plural forms.
         $books,
     );
 
+=head3 Nmaketext, Nmaketext_p
+
+The extractor looks for C<maketext('...')>
+and has no problem with C<<$loc->Nmaketext('...')>>.
+
+This is the idea of the N-Methods.
+
+    $loc->Nmaketext('...');
+
 =head1 EXAMPLE
 
 Inside of this distribution is a directory named example.
@@ -315,17 +337,13 @@ none
 
 =head1 DEPENDENCIES
 
+version
+
+parent
+
+L<Locale::TextDomain::OO>
+
 Carp
-
-Cwd
-
-English
-
-L<I18N::LangTags::Detect>
-
-L<I18N::LangTags>
-
-Safe
 
 =head1 INCOMPATIBILITIES
 
@@ -337,17 +355,7 @@ none
 
 =head1 SEE ALSO
 
-L<Locale::TextDoamin>
-
-L<Locale::Messages>
-
-L<http://www.gnu.org/software/gettext/manual/gettext.html>
-
-L<http://en.wikipedia.org/wiki/Gettext>
-
-L<http://translate.sourceforge.net/wiki/l10n/pluralforms>
-
-L<http://rassie.org/archives/247> The choice of the right module for the translation.
+L<Locale::TextDoamin:OO>
 
 =head1 AUTHOR
 

@@ -6,7 +6,7 @@ use warnings;
 
 use Carp qw(croak);
 use English qw(-no_mach_vars $OS_ERROR $INPUT_RECORD_SEPARATOR);
-use Test::More tests => 6 + 1;
+use Test::More tests => 9 + 1;
 use Test::NoWarnings;
 use Test::Exception;
 use Test::Differences;
@@ -47,18 +47,42 @@ lives_ok(
     sub {
         open my $file, '<', '11_basics.pot'
             or croak $OS_ERROR;
-        local $INPUT_RECORD_SEPARATOR = '__DATA__';
-        (my $data = <DATA>) =~ s{__DATA__\z}{}xms;
+        local $INPUT_RECORD_SEPARATOR = "__DATA__\n";
+        (my $data = <DATA>) =~ s{__DATA__ .* \z}{}xms;
         eq_or_diff(
             <$file>,
             $data,
             'compare pot content',
         );
     },
-    'read pot file',
+    'read 11_basics.pot',
 );
 
-unlink '11_basics.pot';
+lives_ok(
+    sub {
+        open my $file, '<', './t/41_maketext_mo.t'
+            or croak $OS_ERROR;
+        $extractor->extract('41_maketext_mo', $file);
+    },
+    'open 41_maketext_mo.t and extract pot',
+);
+
+lives_ok(
+    sub {
+        open my $file, '<', '41_maketext_mo.pot'
+            or croak $OS_ERROR;
+        local $INPUT_RECORD_SEPARATOR = "__DATA__\n";
+        (my $data = <DATA>) =~ s{__DATA__ .* \z}{}xms;
+        eq_or_diff(
+            <$file>,
+            $data,
+            'compare pot content',
+        );
+    },
+    'read 41_maketext_mo.pot',
+);
+
+unlink qw(11_basics.pot 41_maketext_mo.pot);
 
 __END__
 msgid ""
@@ -94,29 +118,75 @@ msgid_plural "{num} shelves"
 msgstr[0] ""
 
 #: 11_basics:107
-msgctxt "p"
-msgid "maskulin"
-msgid_plural "Dear"
-msgstr[0] ""
+msgctxt "maskulin"
+msgid "Dear"
+msgstr ""
 
 #: 11_basics:116
-msgctxt "px"
-msgid "maskulin"
-msgid_plural "Dear {name}"
-msgstr[0] ""
+msgctxt "maskulin"
+msgid "Dear {name}"
+msgstr ""
 
 #: 11_basics:126
 #: 11_basics:136
-msgctxt "np"
-msgid "better"
-msgid_plural "shelf"
+msgctxt "better"
+msgid "shelf"
+msgid_plural "shelves"
 msgstr[0] ""
 
 #: 11_basics:147
 #: 11_basics:158
-msgctxt "npx"
-msgid "better"
-msgid_plural "{num} shelf"
+msgctxt "better"
+msgid "{num} shelf"
+msgid_plural "{num} shelves"
 msgstr[0] ""
+
+__DATA__
+msgid ""
+msgstr ""
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=iso-8859-1\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;"
+
+#: 41_maketext_mo:34
+msgid "This is a text."
+msgstr ""
+
+#: 41_maketext_mo:41
+msgid "§ book"
+msgstr ""
+
+#: 41_maketext_mo:49
+#: 41_maketext_mo:58
+msgid "[_1] is programming [_2]."
+msgstr ""
+
+#: 41_maketext_mo:67
+#: 41_maketext_mo:75
+msgid "[quant,_1,shelf,shelves]"
+msgstr ""
+
+#: 41_maketext_mo:84
+msgctxt "maskulin"
+msgid "Dear"
+msgstr ""
+
+#: 41_maketext_mo:93
+msgctxt "maskulin"
+msgid "Dear [_1]"
+msgstr ""
+
+#: 41_maketext_mo:103
+#: 41_maketext_mo:112
+msgctxt "better"
+msgid "[*,_1,shelf,shelves]"
+msgstr ""
+
+#: 41_maketext_mo:122
+#: 41_maketext_mo:130
+#: 41_maketext_mo:138
+msgid "[*,_1,shelf,shelves,no shelf]"
+msgstr ""
 
 __DATA__
