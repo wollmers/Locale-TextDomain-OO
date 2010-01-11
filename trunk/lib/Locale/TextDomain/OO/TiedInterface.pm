@@ -56,7 +56,7 @@ sub import {
         }
         (my $method = $import) =~ s{\A (?: (\$) | % )}{}xms
             or croak qq{"$import" is not a hash or a hash reference};
-        my $is_ref = $1; ## no critic (CaptureWithoutTest)
+        my $is_ref = $1;
         exists $method_name{$method}
             or croak qq{Method "$method" is not a translation method};
         {
