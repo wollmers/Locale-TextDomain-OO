@@ -6,6 +6,7 @@ use warnings;
 use version; our $VERSION = qv('0.04');
 
 use parent qw(Locale::TextDomain::OO::Extract);
+use Clone qw(clone);
 
 my $domain_rule
     = my $context_rule
@@ -113,6 +114,49 @@ my $remove_comment_code = sub {
     return;
 };
 
+my @escape_sequence_mapping = (
+    ## no critic (InterpolationOfLiterals CaptureWithoutTest)
+    # Single quotation mark
+    qr{(\\\\)* \\'}xms                    => sub { return $_[0] . qq{'} },
+    # Double quotation mark
+    qr{(\\\\)* \\"}xms                    => sub { return $_[0] . qq{"} },
+    # Backspace
+    qr{(\\\\)* \\b}xms                    => sub { return $_[0] . qq{\b} },
+    # Form feed
+    qr{(\\\\)* \\f}xms                    => sub { return $_[0] . qq{\f} },
+    # New line
+    qr{(\\\\)* \\n}xms                    => sub { return $_[0] . qq{\n} },
+    # Carriage return
+    qr{(\\\\)* \\r}xms                    => sub { return $_[0] . qq{\r} },
+    # Horizontal tab
+    qr{(\\\\)* \\t}xms                    => sub { return $_[0] . qq{\t} },
+    # Octal sequence (3 digits: ddd)
+    qr{(\\\\)* \\  ( [0-3][0-7]{2} )}xms  => sub { return $_[0] . chr oct $_[1] },
+    # Hexadecimal sequence (2 digits: dd)
+    qr{(\\\\)* \\x ( [0-9A-Fa-f]{2} )}xms => sub { return $_[0] . chr hex $_[1] },
+    # Unicode sequence (4 hex digits: dddd)
+    qr{(\\\\)* \\u ( [0-9A-Fa-f]{4} )}xms => sub { return $_[0] . chr hex $_[1] },
+    # Backslash
+    qr{\\\\}xms                           => sub { return qq{\\} },
+    ## use critic (InterpolationOfLiterals CaptureWithoutTest)
+);
+
+my $interpolate_escape_sequence = sub {
+    my $string = shift;
+
+    defined $string
+        or return;
+    # nothing to interpolate
+    ( index $string, qq{\\} ) > 0 ## no critic (InterpolationOfLiterals)
+        or return $string;
+    my $mapping = clone \@escape_sequence_mapping;
+    while ( my ($regex, $result) = splice @{$mapping}, 0, 2 ) {
+        $string =~ s{$regex}{ $result->($1 || q{}, $2) }xmsge;
+    };
+
+    return $string;
+};
+
 my $parameter_mapping_code = sub {
     my $parameter = shift;
 
@@ -125,10 +169,17 @@ my $parameter_mapping_code = sub {
 
     return {
         msgctxt      => $extra_parameter =~ m{p}xms
-                        ? scalar shift @{$parameter}
+                        ? scalar $interpolate_escape_sequence->(
+                            shift @{$parameter}
+                        )
                         : undef,
-        msgid        => scalar shift @{$parameter},
-        msgid_plural => scalar shift @{$parameter},
+        msgid        => scalar $interpolate_escape_sequence->(
+                            shift @{$parameter}
+                        ),
+        msgid_plural => scalar $interpolate_escape_sequence->(
+                            shift @{$parameter}
+                        ),
+
     };
 };
 

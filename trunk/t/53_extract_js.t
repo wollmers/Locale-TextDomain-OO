@@ -36,6 +36,41 @@ lives_ok(
     );
 }
 
+# http://www.c-point.com/javascript_tutorial/special_characters.htm
+{
+    my $parameter_mapping_code = $extractor->_get_parameter_mapping_code();
+
+    eq_or_diff(
+        $parameter_mapping_code->([q{}, <<"EOT"])->{msgid},
+\\' \\\\'
+\\" \\\\"
+\\b \\\\b
+\\f \\\\f
+\\n \\\\n
+\\r \\\\r
+\\t \\\\t
+\\001 \\\\002
+\\x03 \\\\x04
+\\u0005 \\\\u0006
+\\ \\\\
+EOT
+        <<"EOT",
+' \\'
+" \\"
+\b \\b
+\f \\f
+\n \\n
+\r \\r
+\t \\t
+\001 \\002
+\x03 \\x04
+\x05 \\u0006
+\\ \\\\
+EOT
+        'check default preprocess',
+    );
+}
+
 lives_ok(
     sub {
         open my $file, '< :encoding(UTF-8)', './t/files_to_extract/javascript.js'

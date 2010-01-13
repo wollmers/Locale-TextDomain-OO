@@ -71,7 +71,7 @@ lives_ok(
     sub {
         open my $file, '<', '41_maketext_mo.pot'
             or croak $OS_ERROR;
-        local $INPUT_RECORD_SEPARATOR = "__DATA__\n";
+        local $INPUT_RECORD_SEPARATOR = "__DATA__\r\n";
         (my $data = <DATA>) =~ s{__DATA__ .* \z}{}xms;
         eq_or_diff(
             <$file>,
