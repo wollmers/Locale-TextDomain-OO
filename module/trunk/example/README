@@ -162,18 +162,3 @@ applications have not stored the internationalization data in mo files.
         %1, %quant(%1,...), %*(%1,...)
     Unicode is not used. Then a char is equal to a byte.
     This example uses the German ISO-8859-1 example_maketext_style_getext.po file.
-
-51_extract_perl.pl
-    This example shows, how to extract a pot file from a Perl application.
-
-52_extract_tt.pl
-    This example shows, how to extract a pot file from a tt template.
-    "binmode" is to change the output Layer of STDOUT. Than every output will
-    be changed from unicode to UTF-8. Use an UTF-8 console or modify that
-    encoding to be equal to your console.
-
-53_extract_js.pl
-    This example shows, how to extract a pot file from a JavaScript file.
-    "binmode" is to change the output Layer of STDOUT. Than every output will
-    be changed from unicode to UTF-8. Use an UTF-8 console or modify that
-    encoding to be equal to your console.
