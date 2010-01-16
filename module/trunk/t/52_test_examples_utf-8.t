@@ -13,7 +13,7 @@ $ENV{TEST_EXAMPLE} or plan(
     skip_all => 'Set $ENV{TEST_EXAMPLE} to run this test.'
 );
 
-plan(tests => 5);
+plan(tests => 4);
 
 my @data = (
 #    {
@@ -73,32 +73,6 @@ EOT
 §§ книги
 c книга
 c§ книга
-EOT
-    },
-    {
-        test   => '52_extract_tt',
-        path   => 'example',
-        script => '-I../lib 52_extract_tt.pl cleanup',
-        result => <<'EOT',
-msgid ""
-msgstr ""
-"MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
-"Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=n != 1;"
-
-#: template:9
-msgid "Text Ä"
-msgstr ""
-
-#: template:13
-msgid "Text Ö"
-msgstr ""
-
-#: template:16
-msgid "Text Ü"
-msgstr ""
-
 EOT
     },
 );

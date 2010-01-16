@@ -527,7 +527,7 @@ This is a reason, to use the tied interface.
 
 =head2 How to extract?
 
-Inside this distribution is module L<Locale::TextDomain::OO::Extract>.
+Use module L<Locale::TextDomain::OO::Extract>.
 This is a base class for all source scanner to create pot files.
 Use this base class and give this module the rules
 or use one of the already exteded classes.

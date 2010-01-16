@@ -16,8 +16,7 @@ Module::Build->new(
         version                => 0,
         parent                 => 0,
         Safe                   => 0,
-        Clone                  => 0, # for extractor only
-        DBI                    => 0, # for extractor only
+        DBI                    => 0,
         'DBD::PO'              => 2.09,
         'Perl6::Export::Attrs' => 0,
         'I18N::LangTags'       => 0,
