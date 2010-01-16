@@ -115,7 +115,7 @@ my $remove_comment_code = sub {
 };
 
 my @escape_sequence_mapping = (
-    ## no critic (InterpolationOfLiterals CaptureWithoutTest)
+    ## no critic (InterpolationOfLiterals)
     # Single quotation mark
     qr{(\\\\)* \\'}xms                    => sub { return $_[0] . qq{'} },
     # Double quotation mark
@@ -138,7 +138,7 @@ my @escape_sequence_mapping = (
     qr{(\\\\)* \\u ( [0-9A-Fa-f]{4} )}xms => sub { return $_[0] . chr hex $_[1] },
     # Backslash
     qr{\\\\}xms                           => sub { return qq{\\} },
-    ## use critic (InterpolationOfLiterals CaptureWithoutTest)
+    ## use critic (InterpolationOfLiterals)
 );
 
 my $interpolate_escape_sequence = sub {
