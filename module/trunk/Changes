@@ -1,5 +1,8 @@
 Revision history for Perl extension Locale::Text::Domain:OO.
 
+0.05  Sat Jan 16 10:00:00 2010
+- remove the extractor to a second distribution
+
 0.04  Tue Dec 29 20:00:00 2009
 - add a TiedInterface
 - add an extractor to create the pot files from source
