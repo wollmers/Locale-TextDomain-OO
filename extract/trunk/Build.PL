@@ -6,33 +6,33 @@ use Module::Build;
 my $is_ppm = eval 'require ActivePerl::PPM::Package';
 
 Module::Build->new(
-    module_name       => 'Locale::TextDomain::OO',
+    module_name       => 'Locale::TextDomain::OO::Extract',
     license           => 'perl',
-    dist_abstract     => 'Locale::TextDomain::OO - Perl OO Interface to Uniforum Message Translation',
+    dist_abstract     => 'Locale::TextDomain::OO::Extract - Extracts internationalization data as gettext pot file',
     dist_author       => 'Steffen Winkler <steffenw at cpan.org>',
-    dist_version_from => 'lib/Locale/TextDomain/OO.pm',
+    dist_version_from => 'lib/Locale/TextDomain/OO/Extract.pm',
     requires          => {
         perl                   => 5.006,
         version                => 0,
         parent                 => 0,
-        Safe                   => 0,
+#        Safe                   => 0,
         Clone                  => 0, # for extractor only
         DBI                    => 0, # for extractor only
         'DBD::PO'              => 2.09,
-        'Perl6::Export::Attrs' => 0,
-        'I18N::LangTags'       => 0,
-        'Tie::Sub'             => 0.09,
+#        'Perl6::Export::Attrs' => 0,
+#        'I18N::LangTags'       => 0,
+#        'Tie::Sub'             => 0.09,
         $is_ppm
         ? (
-            'libintl-perl' => 1.20,
+#            'libintl-perl' => 1.20,
         )
         : (
             Carp                     => 0, # perl dist
             Cwd                      => 0, # perl dist
             Encode                   => 0, # perl dist
             English                  => 0, # perl dist
-            'I18N::LangTags::Detect' => 0, # dist I18N-LangTags
-            'Locale::Messages'       => 1.20, # dist libintl-perl
+#            'I18N::LangTags::Detect' => 0, # dist I18N-LangTags
+#            'Locale::Messages'       => 1.20, # dist libintl-perl
         )
     },
     build_requires => {

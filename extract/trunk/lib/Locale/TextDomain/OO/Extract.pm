@@ -3,7 +3,7 @@ package Locale::TextDomain::OO::Extract;
 use strict;
 use warnings;
 
-use version; our $VERSION = qv('0.04');
+our $VERSION = '0.05';
 
 use Carp qw(croak);
 use English qw(-no_match_vars $OS_ERROR $INPUT_RECORD_SEPARATOR);
@@ -403,7 +403,7 @@ __END__
 
 =head1 NAME
 
-Locale::TextDomain::OO::Extract - Extracts internationalization data as pot file
+Locale::TextDomain::OO::Extract - Extracts internationalization data as gettext pot file
 
 $Id: Extract.pm 271 2010-01-16 07:37:06Z steffenw $
 
@@ -411,7 +411,7 @@ $HeadURL: https://perl-gettext-oo.svn.sourceforge.net/svnroot/perl-gettext-oo/mo
 
 =head1 VERSION
 
-0.04
+0.05
 
 =head1 DESCRIPTION
 
