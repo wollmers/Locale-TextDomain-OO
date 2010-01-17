@@ -36,16 +36,16 @@ lives_ok(
 
 lives_ok(
     sub {
-        open my $file, '<', './t/11_basics.t'
+        open my $file, '<', './t/files_to_extract/gettext.pl'
             or croak $OS_ERROR;
-        $extractor->extract('11_basics', $file);
+        $extractor->extract('gettext', $file);
     },
-    'open 11_basics.t and extract pot',
+    'open gettext.pl and extract pot',
 );
 
 lives_ok(
     sub {
-        open my $file, '<', '11_basics.pot'
+        open my $file, '<', 'gettext.pot'
             or croak $OS_ERROR;
         local $INPUT_RECORD_SEPARATOR = "__DATA__\n";
         (my $data = <DATA>) =~ s{__DATA__ .* \z}{}xms;
@@ -55,21 +55,21 @@ lives_ok(
             'compare pot content',
         );
     },
-    'read 11_basics.pot',
+    'read gettext.pot',
 );
 
 lives_ok(
     sub {
-        open my $file, '<', './t/41_maketext_mo.t'
+        open my $file, '<', './t/files_to_extract/maketext.pl'
             or croak $OS_ERROR;
-        $extractor->extract('41_maketext_mo', $file);
+        $extractor->extract('maketext', $file);
     },
-    'open 41_maketext_mo.t and extract pot',
+    'open maketext.pl and extract pot',
 );
 
 lives_ok(
     sub {
-        open my $file, '<', '41_maketext_mo.pot'
+        open my $file, '<', 'maketext.pot'
             or croak $OS_ERROR;
         local $INPUT_RECORD_SEPARATOR = "__DATA__\r\n";
         (my $data = <DATA>) =~ s{__DATA__ .* \z}{}xms;
@@ -79,10 +79,10 @@ lives_ok(
             'compare pot content',
         );
     },
-    'read 41_maketext_mo.pot',
+    'read maketext.pot',
 );
 
-unlink qw(11_basics.pot 41_maketext_mo.pot);
+unlink qw(gettext.pot maketext.pot);
 
 __END__
 msgid ""
@@ -92,50 +92,45 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;"
 
-#: 11_basics:34
+#: gettext:23
 msgid "This is a text."
 msgstr ""
 
-#: 11_basics:41
-msgid "§ book"
-msgstr ""
-
-#: 11_basics:49
-#: 11_basics:58
+#: gettext:26
 msgid "{name} is programming {language}."
 msgstr ""
 
-#: 11_basics:67
-#: 11_basics:76
+#: gettext:31
+#: gettext:36
 msgid "Singular"
 msgid_plural "Plural"
 msgstr[0] ""
 
-#: 11_basics:86
-#: 11_basics:96
+#: gettext:41
+#: gettext:47
 msgid "{num} shelf"
 msgid_plural "{num} shelves"
 msgstr[0] ""
 
-#: 11_basics:107
+#: gettext:53
 msgctxt "maskulin"
 msgid "Dear"
 msgstr ""
 
-#: 11_basics:116
+#: gettext:57
 msgctxt "maskulin"
 msgid "Dear {name}"
 msgstr ""
 
-#: 11_basics:126
-#: 11_basics:136
+#: gettext:62
+#: gettext:68
 msgctxt "better"
 msgid "shelf"
 msgid_plural "shelves"
 msgstr[0] ""
 
-#: 11_basics:147
-#: 11_basics:158
+#: gettext:74
+#: gettext:81
 msgctxt "better"
 msgid "{num} shelf"
 msgid_plural "{num} shelves"
@@ -149,43 +144,38 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;"
 
-#: 41_maketext_mo:34
+#: maketext:23
 msgid "This is a text."
 msgstr ""
 
-#: 41_maketext_mo:41
-msgid "§ book"
-msgstr ""
-
-#: 41_maketext_mo:49
-#: 41_maketext_mo:58
+#: maketext:26
 msgid "[_1] is programming [_2]."
 msgstr ""
 
-#: 41_maketext_mo:67
-#: 41_maketext_mo:75
+#: maketext:31
+#: maketext:35
 msgid "[quant,_1,shelf,shelves]"
 msgstr ""
 
-#: 41_maketext_mo:84
+#: maketext:39
 msgctxt "maskulin"
 msgid "Dear"
 msgstr ""
 
-#: 41_maketext_mo:93
+#: maketext:43
 msgctxt "maskulin"
 msgid "Dear [_1]"
 msgstr ""
 
-#: 41_maketext_mo:103
-#: 41_maketext_mo:112
+#: maketext:48
+#: maketext:53
 msgctxt "better"
 msgid "[*,_1,shelf,shelves]"
 msgstr ""
 
-#: 41_maketext_mo:122
-#: 41_maketext_mo:130
-#: 41_maketext_mo:138
+#: maketext:58
+#: maketext:62
+#: maketext:66
 msgid "[*,_1,shelf,shelves,no shelf]"
 msgstr ""
 

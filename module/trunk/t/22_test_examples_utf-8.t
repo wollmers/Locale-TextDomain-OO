@@ -13,72 +13,13 @@ $ENV{TEST_EXAMPLE} or plan(
     skip_all => 'Set $ENV{TEST_EXAMPLE} to run this test.'
 );
 
-plan(tests => 5);
+plan(tests => 1);
 
 my @data = (
-#    {
-#        test   => '01_locale_textdomian_utf-8',
-#        path   => 'example',
-#        script => '-I../lib -T 01_locale_textdomian_utf-8.pl',
-#        result => <<'EOT',
-#книга
-#§ книга
-#§§ книг
-#§§ книга
-#§§ книги
-#c книга
-#c§ книга
-#EOT
-#    },
     {
-        text   => '12_gettext_mo_utf-8',
+        test   => '12_extract_tt',
         path   => 'example',
-        script => '-I../lib -T 12_gettext_mo_utf-8.pl',
-        result => <<'EOT',
-книга
-§ книга
-EOT
-    },
-    {
-        text   => '13_gettext_mo_cp1252',
-        path   => 'example',
-        script => '-I../lib -T 13_gettext_mo_cp1252.pl',
-        result => <<'EOT',
-Das sind deutsche Umlaute: ä ö ü ß Ä Ö Ü.
-EOT
-    },
-    {
-        test   => '33_gettext_struct_from_locale_po_utf-8',
-        path   => 'example',
-        script => '-I../lib -T 33_gettext_struct_from_locale_po_utf-8.pl',
-        result => <<'EOT',
-книга
-§ книга
-§§ книг
-§§ книга
-§§ книги
-c книга
-c§ книга
-EOT
-    },
-    {
-        test   => '34_gettext_struct_from_dbd_po_utf-8',
-        path   => 'example',
-        script => '-I../lib -T 34_gettext_struct_from_dbd_po_utf-8.pl',
-        result => <<'EOT',
-книга
-§ книга
-§§ книг
-§§ книга
-§§ книги
-c книга
-c§ книга
-EOT
-    },
-    {
-        test   => '52_extract_tt',
-        path   => 'example',
-        script => '-I../lib 52_extract_tt.pl cleanup',
+        script => '-I../lib 12_extract_tt.pl cleanup',
         result => <<'EOT',
 msgid ""
 msgstr ""

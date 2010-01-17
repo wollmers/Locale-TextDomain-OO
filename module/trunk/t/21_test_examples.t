@@ -11,160 +11,13 @@ $ENV{TEST_EXAMPLE} or plan(
     skip_all => 'Set $ENV{TEST_EXAMPLE} to run this test.'
 );
 
-plan(tests => 10);
+plan(tests => 2);
 
 my @data = (
     {
-        test   => '11_gettext_mo',
+        test   => '11_extract_perl',
         path   => 'example',
-        script => '-I../lib -T 11_gettext_mo.pl',
-        result => <<'EOT',
-Das ist ein Text.
-Steffen programmiert Perl.
-Einzahl
-Mehrzahl
-1 Regal
-2 Regale
-Sehr geehrter Herr
-Sehr geehrter Herr Winkler
-gutes Regal
-gute Regale
-1 gutes Regal
-2 gute Regale
-EOT
-    },
-    {
-        test   => '14_N__',
-        path   => 'example',
-        script => '-I../lib -T 14_N__.pl',
-        result => <<'EOT',
-Das ist ein Text.
-Steffen programmiert Perl.
-Einzahl
-1 Regal
-Sehr geehrter Herr
-Sehr geehrter Herr Winkler
-gutes Regal
-1 gutes Regal
-EOT
-    },
-    {
-        test   => '22_gettext_mo_functional_interface',
-        path   => 'example',
-        script => '-I../lib -T 22_gettext_mo_functional_interface.pl',
-        result => <<'EOT',
-Das ist ein Text.
-Steffen programmiert Perl.
-Einzahl
-Mehrzahl
-1 Regal
-2 Regale
-Sehr geehrter Herr
-Sehr geehrter Herr Winkler
-gutes Regal
-gute Regale
-1 gutes Regal
-2 gute Regale
-EOT
-    },
-    {
-        test   => '23_gettext_mo_tied_interface',
-        path   => 'example',
-        script => '-I../lib -T 23_gettext_mo_tied_interface.pl',
-        result => <<'EOT',
-Das ist ein Text.
-Das ist ein Text.
-Steffen programmiert Perl.
-Einzahl
-Mehrzahl
-1 Regal
-2 Regale
-Sehr geehrter Herr
-Sehr geehrter Herr Winkler
-gutes Regal
-gute Regale
-1 gutes Regal
-2 gute Regale
-EOT
-    },
-    {
-        test   => '31_gettext_struct_from_locale_po',
-        path   => 'example',
-        script => '-I../lib -T 31_gettext_struct_from_locale_po.pl',
-        result => <<'EOT',
-Das ist ein Text.
-Steffen programmiert Perl.
-Einzahl
-Mehrzahl
-1 Regal
-2 Regale
-Sehr geehrter Herr
-Sehr geehrter Herr Winkler
-gutes Regal
-gute Regale
-1 gutes Regal
-2 gute Regale
-EOT
-    },
-    {
-        test   => '32_gettext_struct_from_dbd_po',
-        path   => 'example',
-        script => '-I../lib -T 32_gettext_struct_from_dbd_po.pl',
-        result => <<'EOT',
-Das ist ein Text.
-Steffen programmiert Perl.
-Einzahl
-Mehrzahl
-1 Regal
-2 Regale
-Sehr geehrter Herr
-Sehr geehrter Herr Winkler
-gutes Regal
-gute Regale
-1 gutes Regal
-2 gute Regale
-EOT
-    },
-    {
-        test   => '41_maketext_mo',
-        path   => 'example',
-        script => '-I../lib -T 41_maketext_mo.pl',
-        result => <<'EOT',
-Das ist ein Text.
-Steffen programmiert Perl.
-1 Regal
-2 Regale
-Sehr geehrter Herr
-Sehr geehrter Herr Winkler
-1 gutes Regal
-2 gute Regale
-0 Regale
-1 Regal
-2 Regale
-EOT
-    },
-    {
-        test   => '42_maketext_mo_style_gettext',
-        path   => 'example',
-        script => '-I../lib -T 42_maketext_mo_style_gettext.pl',
-        result => <<'EOT',
-Das ist ein Text.
-Steffen programmiert Perl.
-1 Regal
-2 Regale
-Sehr geehrter Herr
-Sehr geehrter Herr Winkler
-1 gutes Regal
-2 gute Regale
-0 Regale
-1 Regal
-2 Regale
-EOT
-    },
-    {
-        test   => '51_extract_perl',
-        path   => 'example',
-        script => '-I../lib 51_extract_perl.pl cleanup',
+        script => '-I../lib 11_extract_perl.pl cleanup',
         result => <<'EOT',
 msgid ""
 msgstr ""
@@ -173,45 +26,45 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;"
 
-#: 11_gettext_mo:23
+#: gettext:23
 msgid "This is a text."
 msgstr ""
 
-#: 11_gettext_mo:26
+#: gettext:26
 msgid "{name} is programming {language}."
 msgstr ""
 
-#: 11_gettext_mo:31
-#: 11_gettext_mo:36
+#: gettext:31
+#: gettext:36
 msgid "Singular"
 msgid_plural "Plural"
 msgstr[0] ""
 
-#: 11_gettext_mo:41
-#: 11_gettext_mo:47
+#: gettext:41
+#: gettext:47
 msgid "{num} shelf"
 msgid_plural "{num} shelves"
 msgstr[0] ""
 
-#: 11_gettext_mo:53
+#: gettext:53
 msgctxt "maskulin"
 msgid "Dear"
 msgstr ""
 
-#: 11_gettext_mo:57
+#: gettext:57
 msgctxt "maskulin"
 msgid "Dear {name}"
 msgstr ""
 
-#: 11_gettext_mo:62
-#: 11_gettext_mo:68
+#: gettext:62
+#: gettext:68
 msgctxt "better"
 msgid "shelf"
 msgid_plural "shelves"
 msgstr[0] ""
 
-#: 11_gettext_mo:74
-#: 11_gettext_mo:81
+#: gettext:74
+#: gettext:81
 msgctxt "better"
 msgid "{num} shelf"
 msgid_plural "{num} shelves"
@@ -225,47 +78,47 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;"
 
-#: 41_maketext_mo:23
+#: maketext:23
 msgid "This is a text."
 msgstr ""
 
-#: 41_maketext_mo:26
+#: maketext:26
 msgid "[_1] is programming [_2]."
 msgstr ""
 
-#: 41_maketext_mo:31
-#: 41_maketext_mo:35
+#: maketext:31
+#: maketext:35
 msgid "[quant,_1,shelf,shelves]"
 msgstr ""
 
-#: 41_maketext_mo:39
+#: maketext:39
 msgctxt "maskulin"
 msgid "Dear"
 msgstr ""
 
-#: 41_maketext_mo:43
+#: maketext:43
 msgctxt "maskulin"
 msgid "Dear [_1]"
 msgstr ""
 
-#: 41_maketext_mo:48
-#: 41_maketext_mo:53
+#: maketext:48
+#: maketext:53
 msgctxt "better"
 msgid "[*,_1,shelf,shelves]"
 msgstr ""
 
-#: 41_maketext_mo:58
-#: 41_maketext_mo:62
-#: 41_maketext_mo:66
+#: maketext:58
+#: maketext:62
+#: maketext:66
 msgid "[*,_1,shelf,shelves,no shelf]"
 msgstr ""
 
 EOT
     },
     {
-        test   => '53_extract_js',
+        test   => '12_extract_js',
         path   => 'example',
-        script => '-I../lib 53_extract_js.pl cleanup',
+        script => '-I../lib 12_extract_js.pl cleanup',
         result => <<'EOT',
 msgid ""
 msgstr ""

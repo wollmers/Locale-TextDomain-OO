@@ -6,7 +6,7 @@ use warnings;
 
 use Carp qw(croak);
 use English qw(-no_mach_vars $OS_ERROR $INPUT_RECORD_SEPARATOR);
-use Test::More tests => 6 + 1;
+use Test::More tests => 7 + 1;
 use Test::NoWarnings;
 use Test::Exception;
 use Test::Differences;
