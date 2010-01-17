@@ -39,7 +39,7 @@ Module::Build->new(
         'Test::NoWarnings'  => 0,
         'Test::Exception'   => 0,
         'Test::Differences' => 0,
-        'Test::Deep'        => 0,
+#        'Test::Deep'        => 0,
         'Data::Dumper'      => 0,
         $is_ppm
         ? (
