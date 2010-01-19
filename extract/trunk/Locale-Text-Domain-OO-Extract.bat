@@ -2,6 +2,8 @@ perl -w -e "unlink './MANIFEST', glob './*.ppd'"
 perl Build.PL
 call ./Build realclean
 
+echo -- AUTHOR_DIST=tar.gz --
+set AUTHOR_DIST=tar.gz
 perl Build.PL
 
 echo -- test --
@@ -41,6 +43,18 @@ echo -- test Kwalitee --
 pause
 perl -w -e "use Test::More;use Test::Kwalitee"
 
+echo -- prereq_report --
+pause
+call ./Build prereq_report
+set TEST_RELEASE=1
+perl t/prereq_build.t
+set TEST_RELEASE=
+
+echo -- AUTHOR_DIST=ppm --
+pause
+set AUTHOR_DIST=ppm
+perl Build.PL
+
 echo -- ppmdist --
 pause
 call ./Build ppmdist
@@ -48,13 +62,6 @@ call ./Build ppmdist
 echo -- ppd --
 pause
 call ./Build ppd
-
-echo -- prereq_report --
-pause
-call ./Build prereq_report
-set TEST_RELEASE=1
-perl t/prereq_build.t
-set TEST_RELEASE=
 
 echo -- END --
 pause
