@@ -29,7 +29,7 @@ find(
             -d and return;
             $File::Find::name =~ m{/ \.svn /}xms
                 and return;
-            $File::Find::name =~ m{\. (?: [pm]o | js | tt )\z}xms
+            $File::Find::name =~ m{\. (?: [pm]o )\z}xms
                 and return;
             $File::Find::name =~ m{
                 (
