@@ -1,5 +1,8 @@
 Revision history for Perl extension Locale::Text::Domain:OO.
 
+0.06  Wed Jan 20 07:15:00 2010
+- repair Makefile.PL
+
 0.05  Sat Jan 16 10:00:00 2010
 - remove the extractor to a second distribution
 
