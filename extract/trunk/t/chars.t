@@ -56,7 +56,7 @@ my @ignore_non_ascii = (
 for my $file_name (sort @list) {
     my @lines;
     {
-        open my $file, '<: raw', $file_name
+        open my $file, '< :raw', $file_name
             or die "Cannnot open file $file_name";
         local $/ = ();
         my $text = <$file>;
