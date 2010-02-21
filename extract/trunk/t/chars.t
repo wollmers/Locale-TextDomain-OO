@@ -3,9 +3,9 @@
 use strict;
 use warnings;
 
+use Cwd qw(getcwd);
 use File::Find;
 use Test::More;
-use Cwd qw(getcwd);
 
 $ENV{TEST_AUTHOR}
     or plan skip_all => 'Author test. Set $ENV{TEST_AUTHOR} to a true value to run.';
@@ -27,8 +27,11 @@ find(
         untaint         => 1,
         wanted          => sub {
             -d and return;
-            $File::Find::name =~ m{/ \.svn /}xms
-                and return;
+            $File::Find::name =~ m{
+                / \.svn /
+                | / \.git /
+                | / \.gitignore \z
+            }xms and return;
             $File::Find::name =~ m{\. (?: [pm]o | js | tt )\z}xms
                 and return;
             $File::Find::name =~ m{
