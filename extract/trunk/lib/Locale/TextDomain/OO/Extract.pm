@@ -339,8 +339,8 @@ EO_SQL
 
     # write entrys
     REFERENCE:
-    for my $reference ( @{ $self->_get_references() } ) {
-        my $entry = $reference->{pot_data}
+    for ( @{ $self->_get_references() } ) {
+        my $entry = $_->{pot_data}
             or next REFERENCE;
         $sth_select->execute(
             @{$entry}{ qw(msgctxt msgid msgid_plural) },
