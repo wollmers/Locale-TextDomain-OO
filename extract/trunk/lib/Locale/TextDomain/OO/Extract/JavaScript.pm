@@ -147,11 +147,11 @@ my $interpolate_escape_sequence = sub {
     defined $string
         or return;
     # nothing to interpolate
-    ( index $string, qq{\\} ) > 0 ## no critic (InterpolationOfLiterals)
+    ( index $string, qq{\\} ) >= 0 ## no critic (InterpolationOfLiterals)
         or return $string;
     my $mapping = clone \@escape_sequence_mapping;
-    while ( my ($regex, $result) = splice @{$mapping}, 0, 2 ) {
-        $string =~ s{$regex}{ $result->($1 || q{}, $2) }xmsge;
+    while ( my ($regex, $callback) = splice @{$mapping}, 0, 2 ) {
+        $string =~ s{$regex}{ $callback->($1 || q{}, $2) }xmsge;
     };
 
     return $string;
