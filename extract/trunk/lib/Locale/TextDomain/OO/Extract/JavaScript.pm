@@ -114,45 +114,44 @@ my $remove_comment_code = sub {
     return;
 };
 
-my @escape_sequence_mapping = (
-    ## no critic (InterpolationOfLiterals)
-    # Single quotation mark
-    qr{(\\\\)* \\'}xms                    => sub { return $_[0] . qq{'} },
-    # Double quotation mark
-    qr{(\\\\)* \\"}xms                    => sub { return $_[0] . qq{"} },
-    # Backspace
-    qr{(\\\\)* \\b}xms                    => sub { return $_[0] . qq{\b} },
-    # Form feed
-    qr{(\\\\)* \\f}xms                    => sub { return $_[0] . qq{\f} },
-    # New line
-    qr{(\\\\)* \\n}xms                    => sub { return $_[0] . qq{\n} },
-    # Carriage return
-    qr{(\\\\)* \\r}xms                    => sub { return $_[0] . qq{\r} },
-    # Horizontal tab
-    qr{(\\\\)* \\t}xms                    => sub { return $_[0] . qq{\t} },
-    # Octal sequence (3 digits: ddd)
-    qr{(\\\\)* \\  ( [0-3][0-7]{2} )}xms  => sub { return $_[0] . chr oct $_[1] },
-    # Hexadecimal sequence (2 digits: dd)
-    qr{(\\\\)* \\x ( [0-9A-Fa-f]{2} )}xms => sub { return $_[0] . chr hex $_[1] },
-    # Unicode sequence (4 hex digits: dddd)
-    qr{(\\\\)* \\u ( [0-9A-Fa-f]{4} )}xms => sub { return $_[0] . chr hex $_[1] },
-    # Backslash
-    qr{\\\\}xms                           => sub { return qq{\\} },
-    ## use critic (InterpolationOfLiterals)
+my %char_of = (
+    b => "\b",
+    f => "\f",
+    n => "\n",
+    r => "\r",
+    t => "\t",
 );
 
 my $interpolate_escape_sequence = sub {
     my $string = shift;
 
+    # nothing to interpolate
     defined $string
         or return;
-    # nothing to interpolate
-    ( index $string, qq{\\} ) >= 0 ## no critic (InterpolationOfLiterals)
-        or return $string;
-    my $mapping = clone \@escape_sequence_mapping;
-    while ( my ($regex, $callback) = splice @{$mapping}, 0, 2 ) {
-        $string =~ s{$regex}{ $callback->($1 || q{}, $2) }xmsge;
-    };
+
+    $string =~ s{
+        \\
+        (?:
+            ( [bfnrt] ) # Backspace
+                        # Form feed
+                        # New line
+                        # Carriage return
+                        # Horizontal tab
+            | u ( [0-9A-Fa-f]{4} ) # Unicode sequence (4 hex digits: dddd)
+            | x ( [0-9A-Fa-f]{2} ) # Hexadecimal sequence (2 digits: dd)
+            |   ( [0-3][0-7]{2}  ) # Octal sequence (3 digits: ddd)
+            | (.) # Backslash itself
+                  # Single quotation mark
+                  # Double quotation mark
+                  # anything else that needs no escape
+        )
+    }{
+       $1 ? $char_of{$1} :
+       $2 ? chr hex $2   :
+       $3 ? chr hex $3   :
+       $4 ? chr oct $4   :
+       $5
+    }xmsge;
 
     return $string;
 };
@@ -332,7 +331,7 @@ Steffen Winkler
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2009,
+Copyright (c) 2009 - 2010,
 Steffen Winkler
 C<< <steffenw at cpan.org> >>.
 All rights reserved.

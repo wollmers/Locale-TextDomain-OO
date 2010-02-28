@@ -28,6 +28,7 @@ lives_ok(
 
 {
     my $content = "1\n//2\n3\n4/*\n5\n*/6\n";
+    # remove comments
     $extractor->_get_preprocess_code->(\$content),
     eq_or_diff(
         $content,
@@ -51,7 +52,7 @@ lives_ok(
 \\t \\\\t
 \\001 \\\\002
 \\x03 \\\\x04
-\\u0005 \\\\u0006
+\\uD0D0 \\\\uD0D0
 \\ \\\\
 EOT
         <<"EOT",
@@ -64,8 +65,8 @@ EOT
 \t \\t
 \001 \\002
 \x03 \\x04
-\u0005 \\u0006
-\\ \\\\
+\x{D0D0} \\uD0D0
+ \\
 EOT
         'check default preprocess',
     );
