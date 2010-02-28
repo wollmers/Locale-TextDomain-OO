@@ -297,6 +297,7 @@ sub _store_pot_file {
 EO_SQL
 
     # write the header
+    $self->_debug("Write header of $file_name.pot");
     my $header_msgstr = $dbh->func(
         {(
             'Plural-Forms' => 'nplurals=2; plural=n != 1;',
@@ -343,18 +344,22 @@ EO_SQL
         my $entry = $_->{pot_data}
             or next REFERENCE;
         $sth_select->execute(
-            @{$entry}{ qw(msgctxt msgid msgid_plural) },
+            map {
+                defined $_ ? $_ : q{};
+            } @{$entry}{ qw(msgctxt msgid msgid_plural) }
         );
         my ($reference) = $sth_select->fetchrow_array();
         if ($reference && length $reference) {
             # Concat with the po_separator. The default is "\n".
             $reference = "$reference\n$entry->{reference}";
+            $self->_debug("Data found, update reference to $reference");
             $sth_update->execute(
                 $reference,
                 @{$entry}{ qw(msgctxt msgid msgid_plural) },
             );
         }
         else {
+            $self->_debug("Data not found, insert reference $entry->{reference}");
             $sth_insert->execute(
                 @{$entry}{ qw(reference msgctxt msgid msgid_plural) },
             );
