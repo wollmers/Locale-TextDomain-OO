@@ -116,8 +116,8 @@ sub _debug {
 
     $self->_get_run_debug()
         or return $self;
-    for my $message (@messages) {
-        $self->debug($message);
+    for my $line ( map { split m{\n}xms, $_ } @messages ) {
+        $self->debug($line);
     }
 
     return $self;
@@ -355,7 +355,9 @@ EO_SQL
             $self->_debug("Data found, update reference to $reference");
             $sth_update->execute(
                 $reference,
-                @{$entry}{ qw(msgctxt msgid msgid_plural) },
+                map {
+                    defined $_ ? $_ : q{};
+                } @{$entry}{ qw(msgctxt msgid msgid_plural) }
             );
         }
         else {
