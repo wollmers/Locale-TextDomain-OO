@@ -112,10 +112,28 @@ sub debug {
 }
 
 sub _debug {
-    my ($self, @messages) = @_;
+    my ($self, $group, @messages) = @_;
 
-    $self->_get_run_debug()
+    my $run_debug = $self->_get_run_debug()
         or return $self;
+    my $is_debug;
+    DEBUG: for my $word ( split m{\s+}xms, $run_debug ) {
+        if ( $word eq ':all' ) {
+            $is_debug = 1;
+            next DEBUG;
+        }
+        if ( $word eq $group ) {
+            $is_debug = 1;
+            next DEBUG;
+        }
+        if ( $word eq "!$group" ) {
+            $is_debug = 0;
+            next DEBUG;
+        }
+    }
+    $is_debug
+        or return $self;
+
     for my $line ( map { split m{\n}xms, $_ } @messages ) {
         $self->debug($line);
     }
@@ -147,16 +165,16 @@ sub _parse_rules {
         my $rules       = clone $self->_get_rules();
         my $pos         = $reference->{start_pos};
         my $has_matched = 0;
-        $self->_debug("Starting at pos $pos.");
+        $self->_debug('parser', "Starting at pos $pos.");
         my (@parent_rules, @parent_pos);
         RULE: {
             my $rule = shift @{$rules};
             if (! $rule) {
-                $self->_debug('No more rules found.');
+                $self->_debug('parser', 'No more rules found.');
                 if (@parent_rules) {
                     $rules = pop @parent_rules;
                     ()     = pop @parent_pos;
-                    $self->_debug('Going back to parent.');
+                    $self->_debug('parser', 'Going back to parent.');
                     redo RULE;
                 }
                 last RULE;
@@ -166,7 +184,7 @@ sub _parse_rules {
                 push @parent_rules, $rules;
                 push @parent_pos,   $pos;
                 $rules = clone $rule;
-                $self->_debug('Going to child.');
+                $self->_debug('parser', 'Going to child.');
                 redo RULE;
             }
             # alternative
@@ -175,14 +193,14 @@ sub _parse_rules {
                     $rules       = pop @parent_rules;
                     ()           = pop @parent_pos;
                     $has_matched = 0;
-                    $self->_debug('Ignore alternative.');
+                    $self->_debug('parser', 'Ignore alternative.');
                     redo RULE;
                 }
-                $self->_debug('Try alternative.');
+                $self->_debug('parser', 'Try alternative.');
                 redo RULE;
             }
             pos ${ $content_ref } = $pos;
-            $self->_debug("Set the current pos to $pos.");
+            $self->_debug('parser', "Set the current pos to $pos.");
             $has_matched
                 = my ($match, @result)
                 = ${$content_ref} =~ m{\G ($rule)}xms;
@@ -190,6 +208,7 @@ sub _parse_rules {
                 push @{ $reference->{parameter} }, @result;
                 $pos += length $match;
                 $self->_debug(
+                    'parser',
                     qq{Rule $rule has matched:},
                     ( split m{\n}xms, $match ),
                     "The current pos is $pos.",
@@ -199,6 +218,7 @@ sub _parse_rules {
             $rules = pop @parent_rules;
             $pos   = pop @parent_pos;
             $self->_debug(
+                'parser',
                 "Rule $rule has not matched.",
                 'Going back to parent.',
             );
@@ -240,6 +260,7 @@ sub _calculate_pot_data {
     if ( $self->_get_run_debug() ) {
         require Data::Dumper;
         $self->_debug(
+            'data',
             Data::Dumper
                 ->new([$self->_get_references()], [qw(parameters)])
                 ->Sortkeys(1)
@@ -297,7 +318,7 @@ sub _store_pot_file {
 EO_SQL
 
     # write the header
-    $self->_debug("Write header of $file_name.pot");
+    $self->_debug('file', "Write header of $file_name.pot");
     my $header_msgstr = $dbh->func(
         {(
             'Plural-Forms' => 'nplurals=2; plural=n != 1;',
@@ -352,7 +373,10 @@ EO_SQL
         if ($reference && length $reference) {
             # Concat with the po_separator. The default is "\n".
             $reference = "$reference\n$entry->{reference}";
-            $self->_debug("Data found, update reference to $reference");
+            $self->_debug(
+                'file',
+                "Data found, update reference to $reference",
+            );
             $sth_update->execute(
                 $reference,
                 map {
@@ -361,7 +385,10 @@ EO_SQL
             );
         }
         else {
-            $self->_debug("Data not found, insert reference $entry->{reference}");
+            $self->_debug(
+                'file',
+                "Data not found, insert reference $entry->{reference}",
+            );
             $sth_insert->execute(
                 @{$entry}{ qw(reference msgctxt msgid msgid_plural) },
             );
@@ -483,7 +510,14 @@ All parameters are optional.
         ],
 
         # debug output for other rules than perl
-        run_debug => $boolean, # to check own writen rules
+        run_debug => ':all !parser', # debug all but not the parser
+                     # :all    - switch on all debugs
+                     # parser  - switch on parser debug
+                     # data    - switch on data debug
+                     # file    - switch on file debug
+                     # !parser - switch off parser debug
+                     # !data   - switch off data debug
+                     # !file   - switch off file debug
 
         # how to map the parameters to pot file
         parameter_mapping_code => sub {
