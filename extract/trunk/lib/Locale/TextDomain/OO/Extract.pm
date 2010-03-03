@@ -111,27 +111,35 @@ sub debug {
     return $self;
 }
 
+my %debug_switch_of = (
+    ':all' => ~ 0,
+    parser => 2 ** 0,
+    data   => 2 ** 1,
+    file   => 2 ** 2,
+);
+
 sub _debug {
     my ($self, $group, @messages) = @_;
 
     my $run_debug = $self->_get_run_debug()
         or return $self;
-    my $is_debug;
-    DEBUG: for my $word ( split m{\s+}xms, $run_debug ) {
-        if ( $word eq ':all' ) {
-            $is_debug = 1;
-            next DEBUG;
+    my $debug = 0;
+    DEBUG: for ( split m{\s+}xms, $run_debug ) {
+        my $switch = $_;
+        my $is_not = $switch =~ s{\A !}{}xms;
+        if ( exists $debug_switch_of{$switch} ) {
+            if ($is_not) {
+                $debug &= ~ $debug_switch_of{$switch};
+            }
+            else {
+                $debug |= $debug_switch_of{$switch};
+            }
         }
-        if ( $word eq $group ) {
-            $is_debug = 1;
-            next DEBUG;
-        }
-        if ( $word eq "!$group" ) {
-            $is_debug = 0;
-            next DEBUG;
+        else {
+            croak "Unknwon debug switch $_";
         }
     }
-    $is_debug
+    $debug & $debug_switch_of{$group}
         or return $self;
 
     for my $line ( map { split m{\n}xms, $_ } @messages ) {
