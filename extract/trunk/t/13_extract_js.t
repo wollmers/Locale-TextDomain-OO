@@ -122,7 +122,7 @@ msgstr ""
 
 #: javascript:8
 msgid ""
-"Hello World!\\n"
+"Hello World!\n"
 ""
 msgstr ""
 
@@ -137,10 +137,10 @@ msgstr ""
 #: javascript:11
 #: javascript:15
 msgid ""
-"One file deleted.\\n"
+"One file deleted.\n"
 ""
 msgid_plural ""
-"%d files deleted.\\n"
+"%d files deleted.\n"
 ""
 msgstr[0] ""
 
