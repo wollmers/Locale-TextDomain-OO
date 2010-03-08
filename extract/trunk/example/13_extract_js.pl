@@ -65,7 +65,7 @@ msgstr ""
 
 #: javascript:8
 msgid ""
-"Hello World!\\n"
+"Hello World!\n"
 ""
 msgstr ""
 
@@ -78,20 +78,12 @@ msgid "This is the %1 %2"
 msgstr ""
 
 #: javascript:11
-msgid ""
-"One file deleted.\\n"
-""
-msgid_plural ""
-"%d files deleted.\\n"
-""
-msgstr[0] ""
-
 #: javascript:15
 msgid ""
-"One file deleted.\\n"
+"One file deleted.\n"
 ""
 msgid_plural ""
-"%d files deleted.\\n"
+"%d files deleted.\n"
 ""
 msgstr[0] ""
 
