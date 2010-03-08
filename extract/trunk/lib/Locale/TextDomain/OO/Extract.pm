@@ -23,10 +23,7 @@ sub new {
     my $self = bless {}, $class;
 
     # prepare the file and the encoding
-    if (
-        defined $init{preprocess_code}
-        && ref $init{preprocess_code} eq 'CODE'
-    ) {
+    if ( ref $init{preprocess_code} eq 'CODE' ) {
         $self->_set_preprocess_code( delete $init{preprocess_code} );
     }
 
@@ -36,7 +33,7 @@ sub new {
     }
 
     # how to find the parameters
-    if ( defined $init{rules} && ref $init{rules} eq 'ARRAY' ) {
+    if ( ref $init{rules} eq 'ARRAY' ) {
         $self->_set_rules( delete $init{rules} );
     }
 
@@ -44,10 +41,7 @@ sub new {
     $self->_set_run_debug( delete $init{run_debug} );
 
     # how to map the parameters to pot file
-    if (
-        defined $init{parameter_mapping_code}
-        && ref $init{parameter_mapping_code} eq 'CODE'
-    ) {
+    if ( ref $init{parameter_mapping_code} eq 'CODE' ) {
         $self->_set_parameter_mapping_code(
             delete $init{parameter_mapping_code},
         );
@@ -64,10 +58,7 @@ sub new {
     }
 
     # how to store the pot file
-    if (
-        defined $init{pot_header}
-        && ref $init{pot_header} eq 'HASH'
-    ) {
+    if ( ref $init{pot_header} eq 'HASH' ) {
         $self->_set_pot_header( delete $init{pot_header} );
     }
 
