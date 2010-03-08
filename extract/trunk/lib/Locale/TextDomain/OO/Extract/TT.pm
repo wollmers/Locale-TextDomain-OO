@@ -3,7 +3,7 @@ package Locale::TextDomain::OO::Extract::TT;
 use strict;
 use warnings;
 
-use version; our $VERSION = qv('0.04');
+use version; our $VERSION = qv('0.05');
 
 use parent qw(Locale::TextDomain::OO::Extract);
 

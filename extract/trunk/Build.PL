@@ -27,7 +27,7 @@ Module::Build->new(
         parent                 => 0,
         Clone                  => 0,
         DBI                    => 0,
-        'DBD::PO'              => 2.09,
+        'DBD::PO'              => 2.11,
         $is_ppm
         ? ()
         : (

@@ -32,7 +32,6 @@
 \bcover_db\b
 #!end included D:\Perl\lib\ExtUtils\MANIFEST.SKIP
 
-
 # Avoid Module::Build generated and utility files.
 \bBuild$
 \bBuild.bat$
@@ -42,5 +41,5 @@
 \bbuild.com$
 
 # Avoid archives of this distribution
-\bLocale-TextDomain-OO-[\d\.\_]+
+\bLocale-TextDomain-OO-Extract[\d\.\_]+
 ^MYMETA.yml$
