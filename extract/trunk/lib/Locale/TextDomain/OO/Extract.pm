@@ -317,19 +317,21 @@ sub _store_pot_file {
         undef,
         {RaiseError => 1},
     );
-    if (! $self->_is_append() ) {
-        $dbh->{po_tables}->{pot} = {file => "$file_name.pot"};
+    $dbh->{po_tables}->{pot} = {file => "$file_name.pot"};
+    if (! $self->_is_append()) {
+        $dbh->do('DROP TABLE IF EXISTS pot');
     }
-    $dbh->do('DROP TABLE IF EXISTS pot');
-    $dbh->do(<<'EO_SQL');
-        CREATE TABLE pot IF NOT EXISTS (
-            reference    VARCHAR,
-            msgctxt      VARCHAR,
-            msgid        VARCHAR,
-            msgid_plural VARCHAR
-        )
+    if (! -f "$self->_get_pot_dir()/$file_name.pot") {
+        $dbh->do(<<'EO_SQL');
+            CREATE TABLE pot (
+                reference    VARCHAR,
+                msgctxt      VARCHAR,
+                msgid        VARCHAR,
+                msgid_plural VARCHAR
+            )
 EO_SQL
-
+    }
+    
     # write the header
     $self->_debug('file', "Write header of $file_name.pot");
     my $header_msgstr = $dbh->func(
