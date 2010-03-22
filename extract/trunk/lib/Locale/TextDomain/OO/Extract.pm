@@ -83,23 +83,26 @@ my @names = qw(
 );
 
 for my $name (@names) {
+    (my $data_name = $name) =~ s{\A is_}{}xms;
     no strict qw(refs);       ## no critic (NoStrict)
     no warnings qw(redefine); ## no critic (NoWarnings)
-    *{"_set_$name"} = sub {
+
+    *{"_set_$data_name"} = sub {
         my ($self, $data) = @_;
 
-        $self->{$name} = $data;
+        $self->{$data_name} = $data;
 
         return $self;
     };
-    if ($name =~ s{is_}{}xms) {
-        *{"_is_$name"} = sub {
-            return shift->{$name};
+
+    if ($name ne $data_name) {
+        *{"_is_$data_name"} = sub {
+            return shift->{$data_name};
         };
     }
     else {
-        *{"_get_$name"} = sub {
-            return shift->{$name};
+        *{"_get_$data_name"} = sub {
+            return shift->{$data_name};
         };
     }
 }
