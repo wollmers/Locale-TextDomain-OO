@@ -62,6 +62,11 @@ sub new {
         $self->_set_pot_header( delete $init{pot_header} );
     }
 
+    # how write the pot file
+    if ( exists $init{is_append} ) {
+        $self->_set_append( delete $init{is_append} );
+    }
+
     # error
     my $keys = join ', ', keys %init;
     if ($keys) {
@@ -73,7 +78,7 @@ sub new {
 
 my @names = qw(
     preprocess_code start_rule rules run_debug parameter_mapping_code
-    pot_dir pot_charset pot_header
+    pot_dir pot_charset pot_header is_append
     content_ref references
 );
 
@@ -87,9 +92,16 @@ for my $name (@names) {
 
         return $self;
     };
-    *{"_get_$name"} = sub {
-        return shift->{$name};
-    };
+    if ($name =~ s{is_}{}xms) {
+        *{"_is_$name"} = sub {
+            return shift->{$name};
+        };
+    }
+    else {
+        *{"_get_$name"} = sub {
+            return shift->{$name};
+        };
+    }
 }
 
 sub debug {
@@ -305,10 +317,12 @@ sub _store_pot_file {
         undef,
         {RaiseError => 1},
     );
-    $dbh->{po_tables}->{pot} = {file => "$file_name.pot"};
+    if (! $self->_is_append() ) {
+        $dbh->{po_tables}->{pot} = {file => "$file_name.pot"};
+    }
     $dbh->do('DROP TABLE IF EXISTS pot');
     $dbh->do(<<'EO_SQL');
-        CREATE TABLE pot (
+        CREATE TABLE pot IF NOT EXISTS (
             reference    VARCHAR,
             msgctxt      VARCHAR,
             msgid        VARCHAR,
@@ -547,6 +561,9 @@ All parameters are optional.
         # add some key value pairs to the header
         # more see documentation of DBD::PO
         pot_header => { ... },
+
+        # how to write the pot file
+        is_append => $boolean,
     );
 
 =head2 method extract
