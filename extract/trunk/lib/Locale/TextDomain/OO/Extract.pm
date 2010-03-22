@@ -331,7 +331,7 @@ sub _store_pot_file {
             )
 EO_SQL
     }
-    
+
     # write the header
     $self->_debug('file', "Write header of $file_name.pot");
     my $header_msgstr = $dbh->func(
