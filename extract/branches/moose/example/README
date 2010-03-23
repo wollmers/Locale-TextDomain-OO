@@ -1,0 +1,19 @@
+Locale-TextDomain-OO folder example
+===================================
+
+This is the explanation which file shows what.
+
+11_extract_perl.pl
+    This example shows, how to extract a pot file from a Perl application.
+
+12_extract_tt.pl
+    This example shows, how to extract a pot file from a tt template.
+    "binmode" is to change the output Layer of STDOUT. Than every output will
+    be changed from unicode to UTF-8. Use an UTF-8 console or modify that
+    encoding to be equal to your console.
+
+13_extract_js.pl
+    This example shows, how to extract a pot file from a JavaScript file.
+    "binmode" is to change the output Layer of STDOUT. Than every output will
+    be changed from unicode to UTF-8. Use an UTF-8 console or modify that
+    encoding to be equal to your console.
