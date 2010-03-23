@@ -1,15 +1,16 @@
 package Locale::TextDomain::OO::Extract;
 
-use strict;
-use warnings;
-
-our $VERSION = '0.05';
-
-use Carp qw(croak);
+use Moose;
+use MooseX::StrictConstructor;
+#use MooseX::FollowPBP;
+use MooseX::Accessors::ReadWritePrivate;
+use Carp qw(confess);
 use English qw(-no_match_vars $OS_ERROR $INPUT_RECORD_SEPARATOR);
 use Clone qw(clone); # clones not recursive
 use DBI ();
 use DBD::PO ();
+
+our $VERSION = '0.05';
 
 sub init {
     my (undef, @more) = @_;
@@ -17,95 +18,45 @@ sub init {
     return DBD::PO->init(@more);
 }
 
-sub new {
-    my ($class, %init) = @_;
-
-    my $self = bless {}, $class;
-
-    # prepare the file and the encoding
-    if ( ref $init{preprocess_code} eq 'CODE' ) {
-        $self->_set_preprocess_code( delete $init{preprocess_code} );
-    }
-
-    # how to find such lines
-    if ( defined $init{start_rule} ) {
-        $self->_set_start_rule( delete $init{start_rule} );
-    }
-
-    # how to find the parameters
-    if ( ref $init{rules} eq 'ARRAY' ) {
-        $self->_set_rules( delete $init{rules} );
-    }
-
-    # debug output for other rules than perl
-    $self->_set_run_debug( delete $init{run_debug} );
-
-    # how to map the parameters to pot file
-    if ( ref $init{parameter_mapping_code} eq 'CODE' ) {
-        $self->_set_parameter_mapping_code(
-            delete $init{parameter_mapping_code},
-        );
-    }
-
-    # where to store the pot file
-    if ( defined $init{pot_dir} ) {
-        $self->_set_pot_dir( delete $init{pot_dir} );
-    }
-
-    # how to store the pot file
-    if ( defined $init{pot_charset} ) {
-        $self->_set_pot_charset( delete $init{pot_charset} );
-    }
-
-    # how to store the pot file
-    if ( ref $init{pot_header} eq 'HASH' ) {
-        $self->_set_pot_header( delete $init{pot_header} );
-    }
-
-    # how write the pot file
-    if ( exists $init{is_append} ) {
-        $self->_set_append( delete $init{is_append} );
-    }
-
-    # error
-    my $keys = join ', ', keys %init;
-    if ($keys) {
-        croak "Unknown parameter: $keys";
-    }
-
-    return $self;
+for my $name (qw(preprocess_code parameter_mapping_code)) {
+    has $name => (
+        is         => 'rw',
+        isa        => 'CodeRef',
+        lazy_build => 1,
+    );
 }
-
-my @names = qw(
-    preprocess_code start_rule rules run_debug parameter_mapping_code
-    pot_dir pot_charset pot_header is_append
-    content_ref references
+has start_rule => (
+    is => 'rw',
+    isa => 'RegexpRef',
+    lazy_build => 1,
 );
-
-for my $name (@names) {
-    (my $data_name = $name) =~ s{\A is_}{}xms;
-    no strict qw(refs);       ## no critic (NoStrict)
-    no warnings qw(redefine); ## no critic (NoWarnings)
-
-    *{"_set_$data_name"} = sub {
-        my ($self, $data) = @_;
-
-        $self->{$data_name} = $data;
-
-        return $self;
-    };
-
-    if ($name ne $data_name) {
-        *{"_is_$data_name"} = sub {
-            return shift->{$data_name};
-        };
-    }
-    else {
-        *{"_get_$data_name"} = sub {
-            return shift->{$data_name};
-        };
-    }
+for my $name (qw(run_debug pot_dir pot_charset pot_header)) {
+    has $name => (
+        is         => 'rw',
+        isa        => 'Str',
+        lazy_build => 1,
+    );
 }
+has rules => (
+    is         => 'rw',
+    isa        => 'ArrayRef',
+    lazy_build => 1,
+);
+has is_append => (
+    is         => 'rw',
+    isa        => 'Bool',
+    lazy_build => 1,
+);
+has content_ref => (
+    is => 'rwp',
+    isa => 'ScalarRef',
+    lazy_build => 1,
+);
+has references => (
+    is         => 'rwp',
+    isa        => 'ArrayRef',
+    lazy_build => 1,
+);
 
 sub debug {
     my ($self, $message) = @_;
@@ -127,7 +78,7 @@ my %debug_switch_of = (
 sub _debug {
     my ($self, $group, @messages) = @_;
 
-    my $run_debug = $self->_get_run_debug()
+    my $run_debug = $self->get_run_debug()
         or return $self;
     my $debug = 0;
     DEBUG: for ( split m{\s+}xms, $run_debug ) {
@@ -142,7 +93,7 @@ sub _debug {
             }
         }
         else {
-            croak "Unknwon debug switch $_";
+            confess "Unknwon debug switch $_";
         }
     }
     $debug & $debug_switch_of{$group}
@@ -158,8 +109,8 @@ sub _debug {
 sub _parse_pos {
     my $self = shift;
 
-    my $regex = $self->_get_start_rule();
-    my $content_ref = $self->_get_content_ref();
+    my $regex = $self->get_start_rule();
+    my $content_ref = $self->get_content_ref();
     my @references;
     while ( ${$content_ref} =~ m{\G .*? ($regex)}xmsgc ) {
         push @references, {
@@ -174,9 +125,9 @@ sub _parse_pos {
 sub _parse_rules {
     my $self = shift;
 
-    my $content_ref = $self->_get_content_ref();
-    for my $reference ( @{ $self->_get_references() } ) {
-        my $rules       = clone $self->_get_rules();
+    my $content_ref = $self->get_content_ref();
+    for my $reference ( @{ $self->get_references() } ) {
+        my $rules       = clone $self->get_rules();
         my $pos         = $reference->{start_pos};
         my $has_matched = 0;
         $self->_debug('parser', "Starting at pos $pos.");
@@ -246,7 +197,7 @@ sub _parse_rules {
 sub _cleanup {
     my $self = shift;
 
-    my $references = $self->_get_references();
+    my $references = $self->get_references();
     my $index = 0;
     @{$references} = grep {
         exists $_->{parameter}
@@ -258,8 +209,8 @@ sub _cleanup {
 sub _calculate_reference {
     my $self = shift;
 
-    my $content_ref = $self->_get_content_ref();
-    for my $reference ( @{ $self->_get_references() } ) {
+    my $content_ref = $self->get_content_ref();
+    for my $reference ( @{ $self->get_references() } ) {
         my $pre_match = substr ${$content_ref}, 0, $reference->{start_pos};
         my $newline_count = $pre_match =~ tr{\n}{\n};
         $reference->{line_number} = $newline_count + 1;
@@ -271,19 +222,19 @@ sub _calculate_reference {
 sub _calculate_pot_data {
     my ($self, $file_name) = @_;
 
-    if ( $self->_get_run_debug() ) {
+    if ( $self->get_run_debug() ) {
         require Data::Dumper;
         $self->_debug(
             'data',
             Data::Dumper
-                ->new([$self->_get_references()], [qw(parameters)])
+                ->new([$self->get_references()], [qw(parameters)])
                 ->Sortkeys(1)
                 ->Dump()
         );
     }
-    my $parameter_mapping_code = $self->_get_parameter_mapping_code();
+    my $parameter_mapping_code = $self->get_parameter_mapping_code();
     REFERENCE:
-    for my $reference ( @{ $self->_get_references() } ) {
+    for my $reference ( @{ $self->get_references() } ) {
         my $parameter = $parameter_mapping_code->(
             delete $reference->{parameter},
         ) or next REFERENCE;
@@ -305,13 +256,13 @@ sub _store_pot_file {
         . (
             join q{;}, (
                 (
-                    defined $self->_get_pot_dir()
-                    ? join q{=}, 'f_dir', $self->_get_pot_dir()
+                    defined $self->get_pot_dir()
+                    ? join q{=}, 'f_dir', $self->get_pot_dir()
                     : ()
                 ),
                 (
-                    defined $self->_get_pot_charset()
-                    ? join q{=}, 'po_charset', $self->_get_pot_charset()
+                    defined $self->get_pot_charset()
+                    ? join q{=}, 'po_charset', $self->get_pot_charset()
                     : ()
                 ),
             )
@@ -324,7 +275,7 @@ sub _store_pot_file {
     if (! $self->_is_append()) {
         $dbh->do('DROP TABLE IF EXISTS pot');
     }
-    if (! -f "$self->_get_pot_dir()/$file_name.pot") {
+    if (! -f "$self->get_pot_dir()/$file_name.pot") {
         $dbh->do(<<'EO_SQL');
             CREATE TABLE pot (
                 reference    VARCHAR,
@@ -340,7 +291,7 @@ EO_SQL
     my $header_msgstr = $dbh->func(
         {(
             'Plural-Forms' => 'nplurals=2; plural=n != 1;',
-            %{ $self->_get_pot_header() || {} },
+            %{ $self->get_pot_header() || {} },
         )},
         'build_header_msgstr',
     );
@@ -379,7 +330,7 @@ EO_SQL
 
     # write entrys
     REFERENCE:
-    for ( @{ $self->_get_references() } ) {
+    for ( @{ $self->get_references() } ) {
         my $entry = $_->{pot_data}
             or next REFERENCE;
         $sth_select->execute(
@@ -426,18 +377,18 @@ sub extract {
     my ($self, $file_name, $file_handle) = @_;
 
     defined $file_name
-        or croak 'No file name given';
+        or confess 'No file name given';
     if (! ref $file_handle) {
         open $file_handle, '<', $file_name ## no critic (BriefOpen)
-            or croak "Can not open file $file_name\n$OS_ERROR";
+            or confess "Can not open file $file_name\n$OS_ERROR";
     }
 
     local $INPUT_RECORD_SEPARATOR = ();
     $self->_set_content_ref(\<$file_handle>);
     () = close $file_handle;
 
-    if ( $self->_get_preprocess_code() ) {
-        $self->_get_preprocess_code()->( $self->_get_content_ref() );
+    if ( $self->get_preprocess_code() ) {
+        $self->get_preprocess_code()->( $self->get_content_ref() );
     }
     $self->_parse_pos();
     $self->_parse_rules();
@@ -448,6 +399,9 @@ sub extract {
 
     return $self;
 }
+
+no Moose;
+__PACKAGE__->meta()->make_immutable();
 
 1;
 
@@ -577,17 +531,33 @@ The default pot_dir is "./".
 
 Call
 
-    $extractor->extract('dir/filename.pl');
+    $extractor->extract({file_name => 'dir/filename.pl'});
 
 to extract "dir/filename.pl" to have a "$pot_dir/dir/filename.pl.pot".
 
 Call
 
     open my $file_handle, '<', 'dir/filename.pl'
-        or croak "Can no open file dir/filename.pl\n$OS_ERROR";
-    $extractor->extract('filename', $file_handle);
+        or confess "Can no open file dir/filename.pl\n$OS_ERROR";
+    $extractor->extract({
+        file_name  => 'filename',
+        filehandle => $file_handle,
+    });
 
 to extract "dir/filename.pl" to have a "$pot_dir/filename.pot".
+
+Call
+
+    $extractor->extract({
+        file_name        => 'filename',
+        source_file_name => 'dir/a.pl',
+    });
+    $extractor->extract({
+        file_name        => 'filename',
+        source_file_name => 'dir/b.pl',
+    });
+
+to extract "dir/a.pl" and "dir/b.pl" to have a "$pot_dir/filename.pot".
 
 =head2 method debug
 
