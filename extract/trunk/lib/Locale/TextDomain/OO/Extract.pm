@@ -62,12 +62,12 @@ sub new {
         $self->_set_pot_header( delete $init{pot_header} );
     }
 
-    # how to write the pot file
+    # how write the pot file
     if ( exists $init{is_append} ) {
         $self->_set_append( delete $init{is_append} );
     }
 
-    # how to write the pot data
+    # how write data
     if ( exists $init{store_pot_code} ) {
         $self->_set_store_pot_code( delete $init{store_pot_code} );
     }
@@ -339,19 +339,19 @@ sub _store_pot_file {
             )
 EO_SQL
 
-    # write the header
-    $self->_debug('file', "Write header of $file_name.pot");
-    my $header_msgstr = $dbh->func(
-        {(
-            'Plural-Forms' => 'nplurals=2; plural=n != 1;',
-            %{ $self->_get_pot_header() || {} },
-        )},
-        'build_header_msgstr',
-    );
-    $dbh->do(<<'EO_SQL', undef, $header_msgstr);
-        INSERT INTO pot
-        (msgstr)
-        VALUES (?)
+        # write the header
+        $self->_debug('file', "Write header of $file_name.pot");
+        my $header_msgstr = $dbh->func(
+            {(
+                'Plural-Forms' => 'nplurals=2; plural=n != 1;',
+                %{ $self->_get_pot_header() || {} },
+            )},
+            'build_header_msgstr',
+        );
+        $dbh->do(<<'EO_SQL', undef, $header_msgstr);
+            INSERT INTO pot
+            (msgstr)
+            VALUES (?)
 EO_SQL
     }
 
