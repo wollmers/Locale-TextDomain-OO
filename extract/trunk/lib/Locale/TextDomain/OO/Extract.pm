@@ -62,9 +62,14 @@ sub new {
         $self->_set_pot_header( delete $init{pot_header} );
     }
 
-    # how write the pot file
+    # how to write the pot file
     if ( exists $init{is_append} ) {
         $self->_set_append( delete $init{is_append} );
+    }
+
+    # how to write the pot data
+    if ( exists $init{store_pot_code} ) {
+        $self->_set_store_pot_code( delete $init{store_pot_code} );
     }
 
     # error
@@ -78,7 +83,7 @@ sub new {
 
 my @names = qw(
     preprocess_code start_rule rules run_debug parameter_mapping_code
-    pot_dir pot_charset pot_header is_append
+    pot_dir pot_charset pot_header is_append store_pot_code
     content_ref references
 );
 
@@ -324,7 +329,7 @@ sub _store_pot_file {
     if (! $self->_is_append()) {
         $dbh->do('DROP TABLE IF EXISTS pot');
     }
-    if (! -f "$self->_get_pot_dir()/$file_name.pot") {
+    if (! -f $self->_get_pot_dir() . "/$file_name.pot") {
         $dbh->do(<<'EO_SQL');
             CREATE TABLE pot (
                 reference    VARCHAR,
@@ -333,7 +338,6 @@ sub _store_pot_file {
                 msgid_plural VARCHAR
             )
 EO_SQL
-    }
 
     # write the header
     $self->_debug('file', "Write header of $file_name.pot");
@@ -349,6 +353,7 @@ EO_SQL
         (msgstr)
         VALUES (?)
 EO_SQL
+    }
 
     # to check if the entry is known
     my $sth_select = $dbh->prepare(<<'EO_SQL');
@@ -423,13 +428,17 @@ EO_SQL
 }
 
 sub extract {
-    my ($self, $file_name, $file_handle) = @_;
+    my ($self, $arg_ref) = @_;
 
+    my $file_name        = $arg_ref->{file_name};
     defined $file_name
         or croak 'No file name given';
+    my $source_file_name = $arg_ref->{source_file_name} || $file_name;
+    my $file_handle      = $arg_ref->{file_handle};
+
     if (! ref $file_handle) {
-        open $file_handle, '<', $file_name ## no critic (BriefOpen)
-            or croak "Can not open file $file_name\n$OS_ERROR";
+        open $file_handle, '<', $source_file_name ## no critic (BriefOpen)
+            or croak "Can not open file $source_file_name\n$OS_ERROR";
     }
 
     local $INPUT_RECORD_SEPARATOR = ();
@@ -443,8 +452,20 @@ sub extract {
     $self->_parse_rules();
     $self->_cleanup();
     $self->_calculate_reference();
-    $self->_calculate_pot_data($file_name);
-    $self->_store_pot_file($file_name);
+    $self->_calculate_pot_data($source_file_name);
+    if ( $self->_get_store_pot_code() ) {
+        $self->_get_store_pot_code()->({
+            pot_dir     => scalar $self->_get_pot_dir(),
+            pot_charset => scalar $self->_get_pot_charset(),
+            is_append   => scalar $self->_is_append(),
+            pot_header  => scalar $self->_get_pot_header(),
+            references  => scalar $self->_get_references(),
+            file_name   => $file_name,
+        });
+    }
+    else {
+        $self->_store_pot_file($file_name);
+    }
 
     return $self;
 }
