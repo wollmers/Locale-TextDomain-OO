@@ -48,14 +48,16 @@ has is_append => (
     lazy_build => 1,
 );
 has content_ref => (
-    is => 'rwp',
-    isa => 'ScalarRef',
+    is         => 'rwp',
+    isa        => 'ScalarRef',
     lazy_build => 1,
+    init_args  => undef,
 );
 has references => (
     is         => 'rwp',
     isa        => 'ArrayRef',
     lazy_build => 1,
+    init_args  => undef,
 );
 
 sub debug {
