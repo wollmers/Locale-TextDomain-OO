@@ -23,7 +23,7 @@ my $rules = [
     $text_rule,
 ];
 
-my $parameter_mapping_code = sub {
+sub _parameter_mapping_code {
     my $parameter = shift;
 
     my $extra_parameter = shift @{$parameter};
@@ -37,7 +37,7 @@ my $parameter_mapping_code = sub {
         msgid        => scalar shift @{$parameter},
         msgid_plural => scalar shift @{$parameter},
     };
-};
+}
 
 sub new {
     my ($class, %init) = @_;
@@ -45,7 +45,7 @@ sub new {
     return $class->SUPER::new(
         start_rule             => $start_rule,
         rules                  => $rules,
-        parameter_mapping_code => $parameter_mapping_code,
+        parameter_mapping_code => \&_parameter_mapping_code,
         %init,
     );
 }

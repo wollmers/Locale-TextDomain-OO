@@ -13,7 +13,6 @@ use Test::Differences;
 
 BEGIN {
     use_ok('Locale::TextDomain::OO::Extract::JavaScript');
-    Locale::TextDomain::OO::Extract::JavaScript->init( qw(:plural) );
 }
 
 my $extractor;
@@ -74,21 +73,24 @@ EOT
 
 lives_ok(
     sub {
-        open my $file, '< :encoding(UTF-8)', './t/files_to_extract/javascript.js'
+        open my $file_handle, '< :encoding(UTF-8)', './t/files_to_extract/javascript.js'
             or croak $OS_ERROR;
-        $extractor->extract('javascript', $file);
+        $extractor->extract({
+            file_name   => 'javascript',
+            file_handle => $file_handle,
+        });
     },
     'open javascript.js and extract pot',
 );
 
 lives_ok(
     sub {
-        open my $file, '< :encoding(UTF-8)', 'javascript.pot'
+        open my $file_handle, '< :encoding(UTF-8)', 'javascript.pot'
             or croak $OS_ERROR;
         local $INPUT_RECORD_SEPARATOR = '__DATA__';
         (my $data = <DATA>) =~ s{__DATA__\z}{}xms;
         eq_or_diff(
-            <$file>,
+            <$file_handle>,
             $data,
             'compare pot content',
         );

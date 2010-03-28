@@ -101,7 +101,7 @@ my $rules = [
     ],
 ];
 
-my $remove_comment_code = sub {
+sub _remove_comment_code {
     my $content_ref = shift;
 
     ${$content_ref} =~ s{// [^\n]* $}{}xmsg;
@@ -112,7 +112,7 @@ my $remove_comment_code = sub {
     }xmsge;
 
     return;
-};
+}
 
 my %char_of = (
     b => "\b",
@@ -122,7 +122,7 @@ my %char_of = (
     t => "\t",
 );
 
-my $interpolate_escape_sequence = sub {
+sub _interpolate_escape_sequence {
     my $string = shift;
 
     # nothing to interpolate
@@ -154,9 +154,9 @@ my $interpolate_escape_sequence = sub {
     }xmsge;
 
     return $string;
-};
+}
 
-my $parameter_mapping_code = sub {
+sub _parameter_mapping_code {
     my $parameter = shift;
 
     my $extra_parameter = shift @{$parameter};
@@ -168,28 +168,28 @@ my $parameter_mapping_code = sub {
 
     return {
         msgctxt      => $extra_parameter =~ m{p}xms
-                        ? scalar $interpolate_escape_sequence->(
+                        ? scalar _interpolate_escape_sequence(
                             shift @{$parameter}
                         )
                         : undef,
-        msgid        => scalar $interpolate_escape_sequence->(
+        msgid        => scalar _interpolate_escape_sequence(
                             shift @{$parameter}
                         ),
-        msgid_plural => scalar $interpolate_escape_sequence->(
+        msgid_plural => scalar _interpolate_escape_sequence(
                             shift @{$parameter}
                         ),
 
     };
-};
+}
 
 sub new {
     my ($class, %init) = @_;
 
     return $class->SUPER::new(
-        preprocess_code        => $remove_comment_code,
+        preprocess_code        => \&_remove_comment_code,
         start_rule             => $start_rule,
         rules                  => $rules,
-        parameter_mapping_code => $parameter_mapping_code,
+        parameter_mapping_code => \&_parameter_mapping_code,
         %init,
     );
 }

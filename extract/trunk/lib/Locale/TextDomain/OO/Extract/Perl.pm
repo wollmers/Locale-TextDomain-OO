@@ -71,7 +71,7 @@ my $rules = [
     ],
 ];
 
-my $remove_pod_code = sub {
+sub _remove_pod_code {
     my $content_ref = shift;
 
     my ($is_pod, $is_end);
@@ -88,9 +88,9 @@ my $remove_pod_code = sub {
     } split m{\r? \n \r?}xms, ${$content_ref};
 
     return;
-};
+}
 
-my $parameter_mapping_code = sub {
+sub _parameter_mapping_code {
     my $parameter = shift;
 
     my $extra_parameter = shift @{$parameter};
@@ -104,16 +104,16 @@ my $parameter_mapping_code = sub {
         msgid        => scalar shift @{$parameter},
         msgid_plural => scalar shift @{$parameter},
     };
-};
+}
 
 sub new {
     my ($class, %init) = @_;
 
     return $class->SUPER::new(
-        preprocess_code        => $remove_pod_code,
+        preprocess_code        => \&_remove_pod_code,
         start_rule             => $start_rule,
         rules                  => $rules,
-        parameter_mapping_code => $parameter_mapping_code,
+        parameter_mapping_code => \&_parameter_mapping_code,
         %init,
     );
 }

@@ -9,38 +9,41 @@ use Carp qw(croak);
 use English qw(-no_match_vars $OS_ERROR);
 
 use Locale::TextDomain::OO::Extract::Perl;
-BEGIN {
-    Locale::TextDomain::OO::Extract::Perl->init( qw(:plural) );
-}
 
 my $extractor = Locale::TextDomain::OO::Extract::Perl->new();
 
 {
     my $file_name = './files_to_extract/gettext.pl';
-    open my $file, '<', $file_name
+    open my $file_handle, '<', $file_name ## no critic (BriefOpen)
         or croak "Can not open file $file_name\n$OS_ERROR";
-    $extractor->extract('gettext', $file);
+    $extractor->extract({
+        file_name   => 'gettext',
+        file_handle => $file_handle,
+    });
 
     $file_name = 'gettext.pot';
-    open $file, '<', $file_name
+    open $file_handle, '<', $file_name
         or croak "Can not open $file_name\n$OS_ERROR";
-    () = print {*STDOUT} <$file>;
-    () = close $file;
+    () = print {*STDOUT} <$file_handle>;
+    () = close $file_handle;
 }
 
 () = print {*STDOUT} q{-} x 78, "\n"; ## no critic (MagicNumbers)
 
 {
     my $file_name = './files_to_extract/maketext.pl';
-    open my $file, '<', $file_name
+    open my $file_handle, '<', $file_name ## no critic (BriefOpen)
         or croak "Can not open file $file_name\n$OS_ERROR";
-    $extractor->extract('maketext', $file);
+    $extractor->extract({
+        file_name   => 'maketext',
+        file_handle => $file_handle,
+    });
 
     $file_name = 'maketext.pot';
-    open $file, '<', $file_name
+    open $file_handle, '<', $file_name
     or croak "Can not open $file_name\n$OS_ERROR";
-    () = print {*STDOUT} <$file>;
-    () = close $file;
+    () = print {*STDOUT} <$file_handle>;
+    () = close $file_handle;
 }
 
 # only for automatic test of example

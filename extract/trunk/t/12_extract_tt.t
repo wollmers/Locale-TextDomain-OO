@@ -14,7 +14,6 @@ use Test::Differences;
 
 BEGIN {
     use_ok('Locale::TextDomain::OO::Extract::TT');
-    Locale::TextDomain::OO::Extract::TT->init( qw(:plural) );
 }
 
 my $extractor;
@@ -29,21 +28,24 @@ lives_ok(
 
 lives_ok(
     sub {
-        open my $file, '< :encoding(UTF-8)', './t/files_to_extract/template.tt'
+        open my $file_handle, '< :encoding(UTF-8)', './t/files_to_extract/template.tt'
             or croak $OS_ERROR;
-        $extractor->extract('template', $file);
+        $extractor->extract({
+            file_name   => 'template',
+            file_handle => $file_handle,
+        });
     },
     'open template.tt and extract pot',
 );
 
 lives_ok(
     sub {
-        open my $file, '< :encoding(UTF-8)', 'template.pot'
+        open my $file_handle, '< :encoding(UTF-8)', 'template.pot'
             or croak $OS_ERROR;
         local $INPUT_RECORD_SEPARATOR = '__DATA__';
         (my $data = <DATA>) =~ s{__DATA__\z}{}xms;
         eq_or_diff(
-            <$file>,
+            <$file_handle>,
             $data,
             'compare pot content',
         );

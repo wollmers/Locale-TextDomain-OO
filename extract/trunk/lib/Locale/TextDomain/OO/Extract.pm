@@ -8,8 +8,8 @@ our $VERSION = '0.05';
 use Carp qw(croak);
 use English qw(-no_match_vars $OS_ERROR $INPUT_RECORD_SEPARATOR);
 use Clone qw(clone); # clones not recursive
-use DBI ();
-use DBD::PO ();
+require DBI;
+require DBD::PO; DBD::PO->init(':plural');
 
 sub init {
     my (undef, @more) = @_;
@@ -84,7 +84,7 @@ sub new {
 my @names = qw(
     preprocess_code start_rule rules run_debug parameter_mapping_code
     pot_dir pot_charset pot_header is_append store_pot_code
-    content_ref references
+    content_ref stack
 );
 
 for my $name (@names) {
@@ -165,13 +165,13 @@ sub _parse_pos {
 
     my $regex = $self->_get_start_rule();
     my $content_ref = $self->_get_content_ref();
-    my @references;
+    my @stack;
     while ( ${$content_ref} =~ m{\G .*? ($regex)}xmsgc ) {
-        push @references, {
+        push @stack, {
             start_pos => pos( ${$content_ref} ) - length $1,
         };
     }
-    $self->_set_references(\@references);
+    $self->_set_stack(\@stack);
 
     return $self;
 }
@@ -180,9 +180,9 @@ sub _parse_rules {
     my $self = shift;
 
     my $content_ref = $self->_get_content_ref();
-    for my $reference ( @{ $self->_get_references() } ) {
+    for my $stack_item ( @{ $self->_get_stack() } ) {
         my $rules       = clone $self->_get_rules();
-        my $pos         = $reference->{start_pos};
+        my $pos         = $stack_item->{start_pos};
         my $has_matched = 0;
         $self->_debug('parser', "Starting at pos $pos.");
         my (@parent_rules, @parent_pos);
@@ -224,7 +224,7 @@ sub _parse_rules {
                 = my ($match, @result)
                 = ${$content_ref} =~ m{\G ($rule)}xms;
             if ($has_matched) {
-                push @{ $reference->{parameter} }, @result;
+                push @{ $stack_item->{parameter} }, @result;
                 $pos += length $match;
                 $self->_debug(
                     'parser',
@@ -251,11 +251,11 @@ sub _parse_rules {
 sub _cleanup {
     my $self = shift;
 
-    my $references = $self->_get_references();
+    my $stack = $self->_get_stack();
     my $index = 0;
-    @{$references} = grep {
+    @{$stack} = grep {
         exists $_->{parameter}
-    } @{$references};
+    } @{$stack};
 
     return $self;
 }
@@ -264,10 +264,10 @@ sub _calculate_reference {
     my $self = shift;
 
     my $content_ref = $self->_get_content_ref();
-    for my $reference ( @{ $self->_get_references() } ) {
-        my $pre_match = substr ${$content_ref}, 0, $reference->{start_pos};
+    for my $stack_item ( @{ $self->_get_stack() } ) {
+        my $pre_match = substr ${$content_ref}, 0, $stack_item->{start_pos};
         my $newline_count = $pre_match =~ tr{\n}{\n};
-        $reference->{line_number} = $newline_count + 1;
+        $stack_item->{line_number} = $newline_count + 1;
     }
 
     return $self;
@@ -281,19 +281,19 @@ sub _calculate_pot_data {
         $self->_debug(
             'data',
             Data::Dumper
-                ->new([$self->_get_references()], [qw(parameters)])
+                ->new([$self->_get_stack()], [qw(parameters)])
                 ->Sortkeys(1)
                 ->Dump()
         );
     }
     my $parameter_mapping_code = $self->_get_parameter_mapping_code();
-    REFERENCE:
-    for my $reference ( @{ $self->_get_references() } ) {
+    STACK_ITEM:
+    for my $stack_item ( @{ $self->_get_stack() } ) {
         my $parameter = $parameter_mapping_code->(
-            delete $reference->{parameter},
-        ) or next REFERENCE;
-        $reference->{pot_data} = {(
-            reference => "$file_name:$reference->{line_number}",
+            delete $stack_item->{parameter},
+        ) or next STACK_ITEM;
+        $stack_item->{pot_data} = {(
+            reference => "$file_name:$stack_item->{line_number}",
             %{$parameter},
         )};
     }
@@ -329,7 +329,7 @@ sub _store_pot_file {
     if (! $self->_is_append()) {
         $dbh->do('DROP TABLE IF EXISTS pot');
     }
-    if (! -f $self->_get_pot_dir() . "/$file_name.pot") {
+    if (! -f ($self->_get_pot_dir() || q{.}) . "/$file_name.pot") {
         $dbh->do(<<'EO_SQL');
             CREATE TABLE pot (
                 reference    VARCHAR,
@@ -383,10 +383,10 @@ EO_SQL
 EO_SQL
 
     # write entrys
-    REFERENCE:
-    for ( @{ $self->_get_references() } ) {
+    STACK_ITEM:
+    for ( @{ $self->_get_stack() } ) {
         my $entry = $_->{pot_data}
-            or next REFERENCE;
+            or next STACK_ITEM;
         $sth_select->execute(
             map {
                 defined $_ ? $_ : q{};
@@ -459,7 +459,7 @@ sub extract {
             pot_charset => scalar $self->_get_pot_charset(),
             is_append   => scalar $self->_is_append(),
             pot_header  => scalar $self->_get_pot_header(),
-            references  => scalar $self->_get_references(),
+            stack       => scalar $self->_get_stack(),
             file_name   => $file_name,
         });
     }

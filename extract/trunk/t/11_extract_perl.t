@@ -13,7 +13,6 @@ use Test::Differences;
 
 BEGIN {
     use_ok('Locale::TextDomain::OO::Extract::Perl');
-    Locale::TextDomain::OO::Extract::Perl->init( qw(:plural) );
 }
 
 my $extractor;
@@ -36,21 +35,24 @@ lives_ok(
 
 lives_ok(
     sub {
-        open my $file, '<', './t/files_to_extract/gettext.pl'
+        open my $file_handle, '<', './t/files_to_extract/gettext.pl'
             or croak $OS_ERROR;
-        $extractor->extract('gettext', $file);
+        $extractor->extract({
+            file_name   => 'gettext',
+            file_handle => $file_handle,
+        });
     },
     'open gettext.pl and extract pot',
 );
 
 lives_ok(
     sub {
-        open my $file, '<', 'gettext.pot'
+        open my $file_handle, '<', 'gettext.pot'
             or croak $OS_ERROR;
         local $INPUT_RECORD_SEPARATOR = "__DATA__\n";
         (my $data = <DATA>) =~ s{__DATA__ .* \z}{}xms;
         eq_or_diff(
-            <$file>,
+            <$file_handle>,
             $data,
             'compare pot content',
         );
@@ -60,21 +62,24 @@ lives_ok(
 
 lives_ok(
     sub {
-        open my $file, '<', './t/files_to_extract/maketext.pl'
+        open my $file_handle, '<', './t/files_to_extract/maketext.pl'
             or croak $OS_ERROR;
-        $extractor->extract('maketext', $file);
+        $extractor->extract({
+            file_name   => 'maketext',
+            file_handle => $file_handle,
+        });
     },
     'open maketext.pl and extract pot',
 );
 
 lives_ok(
     sub {
-        open my $file, '<', 'maketext.pot'
+        open my $file_handle, '<', 'maketext.pot'
             or croak $OS_ERROR;
         local $INPUT_RECORD_SEPARATOR = "__DATA__\r\n";
         (my $data = <DATA>) =~ s{__DATA__ .* \z}{}xms;
         eq_or_diff(
-            <$file>,
+            <$file_handle>,
             $data,
             'compare pot content',
         );
