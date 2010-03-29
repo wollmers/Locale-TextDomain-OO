@@ -163,8 +163,10 @@ sub _debug {
 sub _parse_pos {
     my $self = shift;
 
-    my $regex = $self->_get_start_rule();
+    my $regex       = $self->_get_start_rule();
     my $content_ref = $self->_get_content_ref();
+    defined ${$content_ref}
+        or return $self;
     my @stack;
     while ( ${$content_ref} =~ m{\G .*? ($regex)}xmsgc ) {
         push @stack, {
@@ -207,7 +209,7 @@ sub _parse_rules {
                 redo RULE;
             }
             # alternative
-            if ( $rule eq 'OR' ) {
+            if ( lc $rule eq 'or' ) {
                 if ( $has_matched ) {
                     $rules       = pop @parent_rules;
                     ()           = pop @parent_pos;
@@ -674,7 +676,7 @@ Steffen Winkler
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2009,
+Copyright (c) 2009 - 2010,
 Steffen Winkler
 C<< <steffenw at cpan.org> >>.
 All rights reserved.
