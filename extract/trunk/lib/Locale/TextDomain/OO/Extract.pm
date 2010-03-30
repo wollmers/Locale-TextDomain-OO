@@ -395,7 +395,7 @@ EO_SQL
             } @{$entry}{ qw(msgctxt msgid msgid_plural) }
         );
         my ($reference) = $sth_select->fetchrow_array();
-        if ($reference && length $reference) {
+        if (defined $reference && length $reference) {
             # Concat with the po_separator. The default is "\n".
             $reference = "$reference\n$entry->{reference}";
             $self->_debug(
