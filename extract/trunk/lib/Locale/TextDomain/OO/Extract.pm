@@ -501,7 +501,8 @@ This module extracts internationalizations data and stores this in a pot file.
 =head2 method init
 
 This method is for initializing DBD::PO.
-How to initialize see L<DBD::PO>.
+How to initialize, see L<DBD::PO>.
+Normally you have not to do this, because the defult is:
 
     BEGIN {
         Locale::TextDomain::OO::Extract->init( qw(:plural) );
@@ -592,6 +593,20 @@ All parameters are optional.
 
         # how to write the pot file
         is_append => $boolean,
+
+        # write your own code to store pot file
+        store_pot_code => sub {
+            my $attr_ref = shift;
+
+            my $pot_dir     = $sttr_ref->{pot_dir};     # undef or string
+            my $pot_charset = $sttr_ref->{pot_charset}; # undef or string
+            my $is_append   = $sttr_ref->{is_append};   # boolean
+            my $pot_header  = $sttr_ref->{pot_header};  # hashref
+            my $stack       = $sttr_ref->{stack};       # arrayref
+            my $file_name   = $sttr_ref->{file_name};   # undef or string
+
+            ...
+        },
     );
 
 =head2 method extract
