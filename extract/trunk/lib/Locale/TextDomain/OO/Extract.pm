@@ -5,6 +5,8 @@ use warnings;
 
 our $VERSION = '0.05';
 
+use parent qw(Locale::TextDomain::OO::RegexExtractor);
+
 use Carp qw(croak);
 require DBI;
 require DBD::PO; DBD::PO->init(':plural');
@@ -51,7 +53,7 @@ sub new {
         : ();
     } @names;
 
-    my $self = SUPER::new(%init);
+    my $self = $class->SUPER::new(%init);
 
     # where to store the pot file
     if ( defined $init{pot_dir} ) {
