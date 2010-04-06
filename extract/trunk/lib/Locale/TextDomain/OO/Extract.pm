@@ -56,23 +56,29 @@ sub new {
     my $self = $class->SUPER::new(%init);
 
     # where to store the pot file
-    if ( defined $init{pot_dir} ) {
-        $self->_set_pot_dir( delete $init{pot_dir} );
+    if ( defined $my_init{pot_dir} ) {
+        $self->_set_pot_dir( delete $my_init{pot_dir} );
     }
 
     # how to store the pot file
-    if ( defined $init{pot_charset} ) {
-        $self->_set_pot_charset( delete $init{pot_charset} );
+    if ( defined $my_init{pot_charset} ) {
+        $self->_set_pot_charset( delete $my_init{pot_charset} );
     }
 
     # how to store the pot file
-    if ( ref $init{pot_header} eq 'HASH' ) {
-        $self->_set_pot_header( delete $init{pot_header} );
+    if ( ref $my_init{pot_header} eq 'HASH' ) {
+        $self->_set_pot_header( delete $my_init{pot_header} );
     }
 
     # how write the pot file
-    if ( exists $init{is_append} ) {
-        $self->_set_append( delete $init{is_append} );
+    if ( exists $my_init{is_append} ) {
+        $self->_set_append( delete $my_init{is_append} );
+    }
+
+    # error
+    my $keys = join ', ', keys %my_init;
+    if ($keys) {
+        croak "Unknown parameter: $keys";
     }
 
     return $self;
