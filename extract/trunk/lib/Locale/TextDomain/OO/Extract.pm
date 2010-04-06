@@ -6,8 +6,6 @@ use warnings;
 our $VERSION = '0.05';
 
 use Carp qw(croak);
-use English qw(-no_match_vars $OS_ERROR $INPUT_RECORD_SEPARATOR);
-use Clone qw(clone); # clones not recursive
 require DBI;
 require DBD::PO; DBD::PO->init(':plural');
 
@@ -17,75 +15,7 @@ sub init {
     return DBD::PO->init(@more);
 }
 
-sub new {
-    my ($class, %init) = @_;
-
-    my $self = bless {}, $class;
-
-    # prepare the file and the encoding
-    if ( ref $init{preprocess_code} eq 'CODE' ) {
-        $self->_set_preprocess_code( delete $init{preprocess_code} );
-    }
-
-    # how to find such lines
-    if ( defined $init{start_rule} ) {
-        $self->_set_start_rule( delete $init{start_rule} );
-    }
-
-    # how to find the parameters
-    if ( ref $init{rules} eq 'ARRAY' ) {
-        $self->_set_rules( delete $init{rules} );
-    }
-
-    # debug output for other rules than perl
-    $self->_set_run_debug( delete $init{run_debug} );
-
-    # how to map the parameters to pot file
-    if ( ref $init{parameter_mapping_code} eq 'CODE' ) {
-        $self->_set_parameter_mapping_code(
-            delete $init{parameter_mapping_code},
-        );
-    }
-
-    # where to store the pot file
-    if ( defined $init{pot_dir} ) {
-        $self->_set_pot_dir( delete $init{pot_dir} );
-    }
-
-    # how to store the pot file
-    if ( defined $init{pot_charset} ) {
-        $self->_set_pot_charset( delete $init{pot_charset} );
-    }
-
-    # how to store the pot file
-    if ( ref $init{pot_header} eq 'HASH' ) {
-        $self->_set_pot_header( delete $init{pot_header} );
-    }
-
-    # how write the pot file
-    if ( exists $init{is_append} ) {
-        $self->_set_append( delete $init{is_append} );
-    }
-
-    # how write data
-    if ( exists $init{store_pot_code} ) {
-        $self->_set_store_pot_code( delete $init{store_pot_code} );
-    }
-
-    # error
-    my $keys = join ', ', keys %init;
-    if ($keys) {
-        croak "Unknown parameter: $keys";
-    }
-
-    return $self;
-}
-
-my @names = qw(
-    preprocess_code start_rule rules run_debug parameter_mapping_code
-    pot_dir pot_charset pot_header is_append store_pot_code
-    content_ref stack
-);
+my @names = qw(pot_dir pot_charset pot_header is_append);
 
 for my $name (@names) {
     (my $data_name = $name) =~ s{\A is_}{}xms;
@@ -112,198 +42,41 @@ for my $name (@names) {
     }
 }
 
-sub debug {
-    my ($self, $message) = @_;
+sub new {
+    my ($class, %init) = @_;
 
-    defined $message
-        or return $self->debug('undef');
-    () = print {*STDERR} "\n# $message";
+    my %my_init = map {
+        exists $init{$_}
+        ? ( $_  => delete $init{$_} )
+        : ();
+    } @names;
 
-    return $self;
-}
+    my $self = SUPER::new(%init);
 
-my %debug_switch_of = (
-    ':all' => ~ 0,
-    parser => 2 ** 0,
-    data   => 2 ** 1,
-    file   => 2 ** 2,
-);
-
-sub _debug {
-    my ($self, $group, @messages) = @_;
-
-    my $run_debug = $self->_get_run_debug()
-        or return $self;
-    my $debug = 0;
-    DEBUG: for ( split m{\s+}xms, $run_debug ) {
-        my $switch = $_;
-        my $is_not = $switch =~ s{\A !}{}xms;
-        if ( exists $debug_switch_of{$switch} ) {
-            if ($is_not) {
-                $debug &= ~ $debug_switch_of{$switch};
-            }
-            else {
-                $debug |= $debug_switch_of{$switch};
-            }
-        }
-        else {
-            croak "Unknwon debug switch $_";
-        }
+    # where to store the pot file
+    if ( defined $init{pot_dir} ) {
+        $self->_set_pot_dir( delete $init{pot_dir} );
     }
-    $debug & $debug_switch_of{$group}
-        or return $self;
 
-    for my $line ( map { split m{\n}xms, $_ } @messages ) {
-        $self->debug($line);
+    # how to store the pot file
+    if ( defined $init{pot_charset} ) {
+        $self->_set_pot_charset( delete $init{pot_charset} );
+    }
+
+    # how to store the pot file
+    if ( ref $init{pot_header} eq 'HASH' ) {
+        $self->_set_pot_header( delete $init{pot_header} );
+    }
+
+    # how write the pot file
+    if ( exists $init{is_append} ) {
+        $self->_set_append( delete $init{is_append} );
     }
 
     return $self;
 }
 
-sub _parse_pos {
-    my $self = shift;
-
-    my $regex       = $self->_get_start_rule();
-    my $content_ref = $self->_get_content_ref();
-    defined ${$content_ref}
-        or return $self;
-    my @stack;
-    while ( ${$content_ref} =~ m{\G .*? ($regex)}xmsgc ) {
-        push @stack, {
-            start_pos => pos( ${$content_ref} ) - length $1,
-        };
-    }
-    $self->_set_stack(\@stack);
-
-    return $self;
-}
-
-sub _parse_rules {
-    my $self = shift;
-
-    my $content_ref = $self->_get_content_ref();
-    for my $stack_item ( @{ $self->_get_stack() } ) {
-        my $rules       = clone $self->_get_rules();
-        my $pos         = $stack_item->{start_pos};
-        my $has_matched = 0;
-        $self->_debug('parser', "Starting at pos $pos.");
-        my (@parent_rules, @parent_pos);
-        RULE: {
-            my $rule = shift @{$rules};
-            if (! $rule) {
-                $self->_debug('parser', 'No more rules found.');
-                if (@parent_rules) {
-                    $rules = pop @parent_rules;
-                    ()     = pop @parent_pos;
-                    $self->_debug('parser', 'Going back to parent.');
-                    redo RULE;
-                }
-                last RULE;
-            }
-            # goto child
-            if ( ref $rule eq 'ARRAY' ) {
-                push @parent_rules, $rules;
-                push @parent_pos,   $pos;
-                $rules = clone $rule;
-                $self->_debug('parser', 'Going to child.');
-                redo RULE;
-            }
-            # alternative
-            if ( lc $rule eq 'or' ) {
-                if ( $has_matched ) {
-                    $rules       = pop @parent_rules;
-                    ()           = pop @parent_pos;
-                    $has_matched = 0;
-                    $self->_debug('parser', 'Ignore alternative.');
-                    redo RULE;
-                }
-                $self->_debug('parser', 'Try alternative.');
-                redo RULE;
-            }
-            pos ${ $content_ref } = $pos;
-            $self->_debug('parser', "Set the current pos to $pos.");
-            $has_matched
-                = my ($match, @result)
-                = ${$content_ref} =~ m{\G ($rule)}xms;
-            if ($has_matched) {
-                push @{ $stack_item->{parameter} }, @result;
-                $pos += length $match;
-                $self->_debug(
-                    'parser',
-                    qq{Rule $rule has matched:},
-                    ( split m{\n}xms, $match ),
-                    "The current pos is $pos.",
-                );
-                redo RULE;
-            }
-            $rules = pop @parent_rules;
-            $pos   = pop @parent_pos;
-            $self->_debug(
-                'parser',
-                "Rule $rule has not matched.",
-                'Going back to parent.',
-            );
-            redo RULE;
-        }
-    }
-
-    return $self;
-}
-
-sub _cleanup {
-    my $self = shift;
-
-    my $stack = $self->_get_stack();
-    my $index = 0;
-    @{$stack} = grep {
-        exists $_->{parameter}
-    } @{$stack};
-
-    return $self;
-}
-
-sub _calculate_reference {
-    my $self = shift;
-
-    my $content_ref = $self->_get_content_ref();
-    for my $stack_item ( @{ $self->_get_stack() } ) {
-        my $pre_match = substr ${$content_ref}, 0, $stack_item->{start_pos};
-        my $newline_count = $pre_match =~ tr{\n}{\n};
-        $stack_item->{line_number} = $newline_count + 1;
-    }
-
-    return $self;
-}
-
-sub _calculate_pot_data {
-    my ($self, $file_name) = @_;
-
-    if ( $self->_get_run_debug() ) {
-        require Data::Dumper;
-        $self->_debug(
-            'data',
-            Data::Dumper
-                ->new([$self->_get_stack()], [qw(parameters)])
-                ->Sortkeys(1)
-                ->Dump()
-        );
-    }
-    my $parameter_mapping_code = $self->_get_parameter_mapping_code();
-    STACK_ITEM:
-    for my $stack_item ( @{ $self->_get_stack() } ) {
-        my $parameter = $parameter_mapping_code->(
-            delete $stack_item->{parameter},
-        ) or next STACK_ITEM;
-        $stack_item->{pot_data} = {(
-            reference => "$file_name:$stack_item->{line_number}",
-            %{$parameter},
-        )};
-    }
-
-    return $self;
-}
-
-sub _store_pot_file {
+sub store_data {
     my ($self, $file_name) = @_;
 
     # create a new pot file
@@ -425,49 +198,6 @@ EO_SQL
         $_->finish();
     }
     $dbh->disconnect();
-
-    return $self;
-}
-
-sub extract {
-    my ($self, $arg_ref) = @_;
-
-    my $file_name        = $arg_ref->{file_name};
-    defined $file_name
-        or croak 'No file name given';
-    my $source_file_name = $arg_ref->{source_file_name} || $file_name;
-    my $file_handle      = $arg_ref->{file_handle};
-
-    if (! ref $file_handle) {
-        open $file_handle, '<', $source_file_name ## no critic (BriefOpen)
-            or croak "Can not open file $source_file_name\n$OS_ERROR";
-    }
-
-    local $INPUT_RECORD_SEPARATOR = ();
-    $self->_set_content_ref(\<$file_handle>);
-    () = close $file_handle;
-
-    if ( $self->_get_preprocess_code() ) {
-        $self->_get_preprocess_code()->( $self->_get_content_ref() );
-    }
-    $self->_parse_pos();
-    $self->_parse_rules();
-    $self->_cleanup();
-    $self->_calculate_reference();
-    $self->_calculate_pot_data($source_file_name);
-    if ( $self->_get_store_pot_code() ) {
-        $self->_get_store_pot_code()->({
-            pot_dir     => scalar $self->_get_pot_dir(),
-            pot_charset => scalar $self->_get_pot_charset(),
-            is_append   => scalar $self->_is_append(),
-            pot_header  => scalar $self->_get_pot_header(),
-            stack       => scalar $self->_get_stack(),
-            file_name   => $file_name,
-        });
-    }
-    else {
-        $self->_store_pot_file($file_name);
-    }
 
     return $self;
 }
