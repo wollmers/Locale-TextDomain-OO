@@ -33,12 +33,12 @@ for my $name (@names) {
     };
 
     if ($name ne $data_name) {
-        *{"_is_$data_name"} = sub {
+        *{"is_$data_name"} = sub {
             return shift->{$data_name};
         };
     }
     else {
-        *{"_get_$data_name"} = sub {
+        *{"get_$data_name"} = sub {
             return shift->{$data_name};
         };
     }
@@ -93,13 +93,13 @@ sub store_data {
         . (
             join q{;}, (
                 (
-                    defined $self->_get_pot_dir()
-                    ? join q{=}, 'f_dir', $self->_get_pot_dir()
+                    defined $self->get_pot_dir()
+                    ? join q{=}, 'f_dir', $self->get_pot_dir()
                     : ()
                 ),
                 (
-                    defined $self->_get_pot_charset()
-                    ? join q{=}, 'po_charset', $self->_get_pot_charset()
+                    defined $self->get_pot_charset()
+                    ? join q{=}, 'po_charset', $self->get_pot_charset()
                     : ()
                 ),
             )
@@ -109,10 +109,10 @@ sub store_data {
         {RaiseError => 1},
     );
     $dbh->{po_tables}->{pot} = {file => "$file_name.pot"};
-    if (! $self->_is_append()) {
+    if (! $self->is_append()) {
         $dbh->do('DROP TABLE IF EXISTS pot');
     }
-    if (! -f ($self->_get_pot_dir() || q{.}) . "/$file_name.pot") {
+    if (! -f ($self->get_pot_dir() || q{.}) . "/$file_name.pot") {
         $dbh->do(<<'EO_SQL');
             CREATE TABLE pot (
                 reference    VARCHAR,
@@ -127,7 +127,7 @@ EO_SQL
         my $header_msgstr = $dbh->func(
             {(
                 'Plural-Forms' => 'nplurals=2; plural=n != 1;',
-                %{ $self->_get_pot_header() || {} },
+                %{ $self->get_pot_header() || {} },
             )},
             'build_header_msgstr',
         );
@@ -167,7 +167,7 @@ EO_SQL
 
     # write entrys
     STACK_ITEM:
-    for ( @{ $self->_get_stack() } ) {
+    for ( @{ $self->get_stack() } ) {
         my $entry = $_->{pot_data}
             or next STACK_ITEM;
         $sth_select->execute(

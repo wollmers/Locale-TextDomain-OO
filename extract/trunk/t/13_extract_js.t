@@ -28,7 +28,7 @@ lives_ok(
 {
     my $content = "1\n//2\n3\n4/*\n5\n*/6\n";
     # remove comments
-    $extractor->_get_preprocess_code->(\$content),
+    $extractor->get_preprocess_code()->(\$content),
     eq_or_diff(
         $content,
         "1\n\n3\n4\n\n6\n",
@@ -38,7 +38,7 @@ lives_ok(
 
 # http://www.c-point.com/javascript_tutorial/special_characters.htm
 {
-    my $parameter_mapping_code = $extractor->_get_parameter_mapping_code();
+    my $parameter_mapping_code = $extractor->get_parameter_mapping_code();
 
     eq_or_diff(
         $parameter_mapping_code->([q{}, <<"EOT"])->{msgid},

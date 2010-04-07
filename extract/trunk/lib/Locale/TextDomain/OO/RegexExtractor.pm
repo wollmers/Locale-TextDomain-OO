@@ -55,7 +55,6 @@ sub new {
 
 my @names = qw(
     preprocess_code start_rule rules run_debug parameter_mapping_code
-    store_code
     content_ref stack
 );
 
@@ -70,7 +69,7 @@ for my $name (@names) {
 
         return $self;
     };
-    *{"_get_$name"} = sub {
+    *{"get_$name"} = sub {
         return shift->{$name};
     };
 }
@@ -95,7 +94,7 @@ my %debug_switch_of = (
 sub _debug {
     my ($self, $group, @messages) = @_;
 
-    my $run_debug = $self->_get_run_debug()
+    my $run_debug = $self->get_run_debug()
         or return $self;
     my $debug = 0;
     DEBUG: for ( split m{\s+}xms, $run_debug ) {
@@ -126,8 +125,8 @@ sub _debug {
 sub _parse_pos {
     my $self = shift;
 
-    my $regex       = $self->_get_start_rule();
-    my $content_ref = $self->_get_content_ref();
+    my $regex       = $self->get_start_rule();
+    my $content_ref = $self->get_content_ref();
     defined ${$content_ref}
         or return $self;
     my @stack;
@@ -144,9 +143,9 @@ sub _parse_pos {
 sub _parse_rules {
     my $self = shift;
 
-    my $content_ref = $self->_get_content_ref();
-    for my $stack_item ( @{ $self->_get_stack() } ) {
-        my $rules       = clone $self->_get_rules();
+    my $content_ref = $self->get_content_ref();
+    for my $stack_item ( @{ $self->get_stack() } ) {
+        my $rules       = clone $self->get_rules();
         my $pos         = $stack_item->{start_pos};
         my $has_matched = 0;
         $self->_debug('parser', "Starting at pos $pos.");
@@ -216,7 +215,7 @@ sub _parse_rules {
 sub _cleanup {
     my $self = shift;
 
-    my $stack = $self->_get_stack();
+    my $stack = $self->get_stack();
     my $index = 0;
     @{$stack} = grep {
         exists $_->{parameter}
@@ -228,8 +227,8 @@ sub _cleanup {
 sub _calculate_reference {
     my $self = shift;
 
-    my $content_ref = $self->_get_content_ref();
-    for my $stack_item ( @{ $self->_get_stack() } ) {
+    my $content_ref = $self->get_content_ref();
+    for my $stack_item ( @{ $self->get_stack() } ) {
         my $pre_match = substr ${$content_ref}, 0, $stack_item->{start_pos};
         my $newline_count = $pre_match =~ tr{\n}{\n};
         $stack_item->{line_number} = $newline_count + 1;
@@ -241,19 +240,19 @@ sub _calculate_reference {
 sub _calculate_data {
     my ($self, $file_name) = @_;
 
-    if ( $self->_get_run_debug() ) {
+    if ( $self->get_run_debug() ) {
         require Data::Dumper;
         $self->_debug(
             'data',
             Data::Dumper
-                ->new([$self->_get_stack()], [qw(parameters)])
+                ->new([$self->get_stack()], [qw(parameters)])
                 ->Sortkeys(1)
                 ->Dump()
         );
     }
-    my $parameter_mapping_code = $self->_get_parameter_mapping_code();
+    my $parameter_mapping_code = $self->get_parameter_mapping_code();
     STACK_ITEM:
-    for my $stack_item ( @{ $self->_get_stack() } ) {
+    for my $stack_item ( @{ $self->get_stack() } ) {
         my $parameter = $parameter_mapping_code->(
             delete $stack_item->{parameter},
         ) or next STACK_ITEM;
@@ -284,8 +283,8 @@ sub extract {
     $self->_set_content_ref(\<$file_handle>);
     () = close $file_handle;
 
-    if ( $self->_get_preprocess_code() ) {
-        $self->_get_preprocess_code()->( $self->_get_content_ref() );
+    if ( $self->get_preprocess_code() ) {
+        $self->get_preprocess_code()->( $self->get_content_ref() );
     }
     $self->_parse_pos();
     $self->_parse_rules();
@@ -319,25 +318,51 @@ This module extracts internationalizations data and stores this in a pot file.
 
 =head1 SYNOPSIS
 
-    use Locale::TextDomain::OO::RegexExtractor;
+    use parent qw(Locale::TextDomain::OO::RegexExtractor);
+
+    sub store_data {
+        my ($self, $file_name) = @_;
+
+        my $stack = $self->get_stack();
+        ...
+
+        return $self;
+    }
+
+    my $extractor = Locale::TextDomain::OO::RegexExtractor->new(
+        start_rule => qr{...}xms,
+        rules      => [
+            ...
+        ],
+    );
+
+    # Scan file $file_name.
+    # Call method store_data with $file_name.
+    # The reference is $file_name.
+    $extractor->extract({file_name => $file_name});
+
+    # Scan file from open $file_handle.
+    # Call method store_date with $file_name.
+    # The reference is $file_name
+    $extractor->extract({file_name => $file_name, file_handle => $fh});
+
+    # Scan file $file_name.
+    # Call method store_date with $file_name.
+    # The reference is $source_file_name.
+    $extractor->extract({file_name => $file_name, source_file_name => $source_file_name});
+
+    # Scan file from open $file_handle.
+    # Call method store_date with $file_name.
+    # The reference is $source_file_name.
+    $extractor->extract({file_name => $file_name, file_handle => $fh, source_file_name => $source_file_name});
 
 =head1 SUBROUTINES/METHODS
 
-=head2 method init
-
-This method is for initializing DBD::PO.
-How to initialize, see L<DBD::PO>.
-Normally you have not to do this, because the defult is:
-
-    BEGIN {
-        Locale::TextDomain::OO::Extract->init( qw(:plural) );
-    }
-
 =head2 method new
 
-All parameters are optional.
+    All parameters are optional.
 
-    my $extractor = Locale::TextDomain::OO::Extract->new(
+    my $extractor = Locale::TextDomain::OO::RegexExtractor->new(
         # prepare the file and the encoding
         preprocess_code => sub {
             my $content_ref = shift;
@@ -401,37 +426,6 @@ All parameters are optional.
                 msgid_plural => scalar shift @{$parameter},
             };
         },
-
-        # where to store the pot file
-        pot_dir => './',
-
-        # how to store the pot file
-        # - The meaning of undef is ISO-8859-1 but use not Perl unicode.
-        # - Set 'ISO-8859-1' to have a ISO-8859-1 pot file and use Perl unicode.
-        # - Set 'UTF-8' to have a UTF-8 pot file and use Perl unicode.
-        # And so on.
-        pot_charset => undef,
-
-        # add some key value pairs to the header
-        # more see documentation of DBD::PO
-        pot_header => { ... },
-
-        # how to write the pot file
-        is_append => $boolean,
-
-        # write your own code to store pot file
-        store_pot_code => sub {
-            my $attr_ref = shift;
-
-            my $pot_dir     = $sttr_ref->{pot_dir};     # undef or string
-            my $pot_charset = $sttr_ref->{pot_charset}; # undef or string
-            my $is_append   = $sttr_ref->{is_append};   # boolean
-            my $pot_header  = $sttr_ref->{pot_header};  # hashref
-            my $stack       = $sttr_ref->{stack};       # arrayref
-            my $file_name   = $sttr_ref->{file_name};   # undef or string
-
-            ...
-        },
     );
 
 =head2 method extract
@@ -456,6 +450,35 @@ to extract "dir/filename.pl" to have a "$pot_dir/filename.pot".
 
 Switch on the debug to see on STDERR how the rules are handled.
 Inherit of this class and write your own debug method if needed.
+
+=head2 method store_date
+
+This method is not inside this package.
+You have to write this method by yourself.
+Use the following methods to get data from the object.
+
+    sub store_data {
+        my ($self, $file_name) = @_;
+
+        my $stack = $self->get_stack();
+        ...
+
+        rerurn $self;
+    }
+
+
+=head2 method get_content_ref (normally not used)
+
+Get the content of the scanned file.
+
+    $self = $extractor->get_content_ref();
+
+ get_parameter_mapping_code
+ get_preprocess_code
+ get_rules
+ get_run_debug
+ get_stack
+ get_start_rule
 
 =head1 EXAMPLE
 
