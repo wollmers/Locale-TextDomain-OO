@@ -15,10 +15,6 @@ sub new {
     my $self = bless {}, $class;
 
     # prepare the file and the encoding
-    if ( ref $init{preprocess_code} eq 'CODE' ) {
-        $self->_set_preprocess_code( delete $init{preprocess_code} );
-    }
-
     # how to find such lines
     if ( defined $init{start_rule} ) {
         $self->_set_start_rule( delete $init{start_rule} );
@@ -31,13 +27,6 @@ sub new {
 
     # debug output for other rules than perl
     $self->_set_run_debug( delete $init{run_debug} );
-
-    # how to map the parameters to pot file
-    if ( ref $init{parameter_mapping_code} eq 'CODE' ) {
-        $self->_set_parameter_mapping_code(
-            delete $init{parameter_mapping_code},
-        );
-    }
 
     # how write data
     if ( exists $init{store_code} ) {
@@ -54,7 +43,7 @@ sub new {
 }
 
 my @names = qw(
-    preprocess_code start_rule rules run_debug parameter_mapping_code
+    start_rule rules run_debug
     content_ref stack
 );
 
@@ -250,13 +239,12 @@ sub _calculate_data {
                 ->Dump()
         );
     }
-    my $parameter_mapping_code = $self->get_parameter_mapping_code();
     STACK_ITEM:
     for my $stack_item ( @{ $self->get_stack() } ) {
-        my $parameter = $parameter_mapping_code->(
+        my $parameter = $self->stack_item_mapping->(
             delete $stack_item->{parameter},
         ) or next STACK_ITEM;
-        $stack_item->{pot_data} = {(
+        $stack_item->{data} = {(
             reference => "$file_name:$stack_item->{line_number}",
             %{$parameter},
         )};
@@ -283,8 +271,8 @@ sub extract {
     $self->_set_content_ref(\<$file_handle>);
     () = close $file_handle;
 
-    if ( $self->get_preprocess_code() ) {
-        $self->get_preprocess_code()->( $self->get_content_ref() );
+    if ( $self->can('preprocess') ) {
+        $self->preprocess();
     }
     $self->_parse_pos();
     $self->_parse_rules();
@@ -314,11 +302,38 @@ $HeadURL: https://perl-gettext-oo.svn.sourceforge.net/svnroot/perl-gettext-oo/mo
 
 =head1 DESCRIPTION
 
-This module extracts internationalizations data and stores this in a pot file.
+This module extracts data using regexes to store anywhere.
 
 =head1 SYNOPSIS
 
     use parent qw(Locale::TextDomain::OO::RegexExtractor);
+
+    # optional method
+    sub preprocess {
+        my $self = shift;
+
+        my $content_ref = $self->get_content_ref();
+        # modify anyhow
+        ${$content_ref}=~ s{\\n}{\n}xmsg;
+
+        return $self;
+    }
+
+    # how to map the stack_entry to a pot entry
+    sub stack_entry_mapping {
+        my ($self, $stack_entry) = @_;
+
+        # The chars after __ were stored to make a decision now.
+        my $context_parameter = shift @{$stack_entry};
+
+        return {
+            msgctxt      => $context_parameter =~ m{p}xms
+                            ? $context_parameter
+                            : undef,
+            msgid        => scalar shift @{$stack_entry},
+            msgid_plural => scalar shift @{$stack_entry},
+        };
+    }
 
     sub store_data {
         my ($self, $file_name) = @_;
@@ -411,26 +426,11 @@ This module extracts internationalizations data and stores this in a pot file.
                      # !data   - switch off data debug
                      # !file   - switch off file debug
 
-        # how to map the parameters to pot file
-        parameter_mapping_code => sub {
-            my $parameter = shift;
-
-            # The chars after __ were stored to make a decision now.
-            my $context_parameter = shift @{$parameter};
-
-            return {
-                msgctxt      => $context_parameter =~ m{p}xms
-                                ? $context_parameter
-                                : undef,
-                msgid        => scalar shift @{$parameter},
-                msgid_plural => scalar shift @{$parameter},
-            };
-        },
     );
 
 =head2 method extract
 
-The default pot_dir is "./".
+The default dir is "./".
 
 Call
 
@@ -467,15 +467,13 @@ Use the following methods to get data from the object.
     }
 
 
-=head2 method get_content_ref (normally not used)
+=head2 method get_content_ref (normally not used outside of this module)
 
 Get the content of the scanned file.
 
     $self = $extractor->get_content_ref();
 
- get_parameter_mapping_code
- get_preprocess_code
- get_rules
+=head2 method get_rules
  get_run_debug
  get_stack
  get_start_rule
