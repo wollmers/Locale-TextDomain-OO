@@ -25,9 +25,10 @@ lives_ok(
 
 {
     my $content = "1\n=pod\n3\n=cut\n5\n__END__\n7\n";
-    $extractor->get_preprocess_code()->(\$content),
+    $extractor->_set_content_ref(\$content);
+    $extractor->preprocess(),
     eq_or_diff(
-        $content,
+       $content,
         "1\n\n\n\n5\n",
         'check default preprocess',
     );

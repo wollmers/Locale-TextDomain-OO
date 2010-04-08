@@ -232,9 +232,73 @@ This module extracts internationalizations data and stores this in a pot file.
 
 =head1 SYNOPSIS
 
-    use Locale::TextDomain::OO::Extract;
+    use parent qw(Locale::TextDomain::OO::Extract);
 
-=head1 SUBROUTINES/METHODS
+    # optional method
+    sub preprocess {
+        my $self = shift;
+
+        my $content_ref = $self->get_content_ref();
+        # modify anyhow
+        ${$content_ref}=~ s{\\n}{\n}xmsg;
+
+        return $self;
+    }
+
+    # how to map the stack_entry e.g. to a pot entry
+    sub stack_entry_mapping {
+        my ($self, $stack_entry) = @_;
+
+        # The chars after __ were stored to make a decision now.
+        my $context_parameter = shift @{$stack_entry};
+
+        return {
+            msgctxt      => $context_parameter =~ m{p}xms
+                            ? $context_parameter
+                            : undef,
+            msgid        => scalar shift @{$stack_entry},
+            msgid_plural => scalar shift @{$stack_entry},
+        };
+    }
+
+    sub store_data {
+        my ($self, $file_name) = @_;
+
+        my $stack = $self->get_stack();
+        ...
+
+        return $self;
+    }
+
+    my $extractor = Locale::TextDomain::OO::Extract->new(
+        start_rule => qr{...}xms,
+        rules      => [
+            ...
+        ],
+    );
+
+    # Scan file $file_name.
+    # Call method store_data with $file_name.
+    # The reference is $file_name.
+    $extractor->extract({file_name => $file_name});
+
+    # or
+    # Scan file from open $file_handle.
+    # Call method store_date with $file_name.
+    # The reference is $file_name
+    $extractor->extract({file_name => $file_name, file_handle => $fh});
+
+    # or
+    # Scan file $file_name.
+    # Call method store_date with $file_name.
+    # The reference is $source_file_name.
+    $extractor->extract({file_name => $file_name, source_file_name => $source_file_name});
+
+    # or
+    # Scan file from open $file_handle.
+    # Call method store_date with $file_name.
+    # The reference is $source_file_name.
+    $extractor->extract({file_name => $file_name, file_handle => $fh, source_file_name => $source_file_name});
 
 =head2 method init
 

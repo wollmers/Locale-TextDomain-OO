@@ -71,8 +71,10 @@ my $rules = [
     ],
 ];
 
-sub _remove_pod_code {
-    my $content_ref = shift;
+sub preprocess {
+    my $self =shift;
+
+    my $content_ref = $self->get_content_ref();
 
     my ($is_pod, $is_end);
     ${$content_ref} = join "\n", map {
@@ -87,22 +89,22 @@ sub _remove_pod_code {
         : $_;
     } split m{\r? \n \r?}xms, ${$content_ref};
 
-    return;
+    return $self;
 }
 
-sub _parameter_mapping_code {
-    my $parameter = shift;
+sub stack_item_mapping {
+    my ($self, $stack_item) = @_;
 
-    my $extra_parameter = shift @{$parameter};
-    @{$parameter}
+    my $extra_parameter = shift @{$stack_item};
+    @{$stack_item}
         or return;
 
     return {
         msgctxt      => $extra_parameter =~ m{p}xms
-                        ? scalar shift @{$parameter}
+                        ? scalar shift @{$stack_item}
                         : undef,
-        msgid        => scalar shift @{$parameter},
-        msgid_plural => scalar shift @{$parameter},
+        msgid        => scalar shift @{$stack_item},
+        msgid_plural => scalar shift @{$stack_item},
     };
 }
 
@@ -110,10 +112,8 @@ sub new {
     my ($class, %init) = @_;
 
     return $class->SUPER::new(
-        preprocess_code        => \&_remove_pod_code,
-        start_rule             => $start_rule,
-        rules                  => $rules,
-        parameter_mapping_code => \&_parameter_mapping_code,
+        start_rule => $start_rule,
+        rules      => $rules,
         %init,
     );
 }

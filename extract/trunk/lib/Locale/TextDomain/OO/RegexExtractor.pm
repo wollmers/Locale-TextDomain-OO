@@ -290,7 +290,7 @@ __END__
 
 =head1 NAME
 
-Locale::TextDomain::OO::RegexExtractor - Extracts data using regex
+Locale::TextDomain::OO::RegexExtractor - Abstract class to extract data using regexes
 
 $Id: Extract.pm 271 2010-01-16 07:37:06Z steffenw $
 
@@ -319,19 +319,19 @@ This module extracts data using regexes to store anywhere.
         return $self;
     }
 
-    # how to map the stack_entry to a pot entry
-    sub stack_entry_mapping {
-        my ($self, $stack_entry) = @_;
+    # how to map the stack_item e.g. to a pot entry
+    sub stack_item_mapping {
+        my ($self, $stack_item) = @_;
 
         # The chars after __ were stored to make a decision now.
-        my $context_parameter = shift @{$stack_entry};
+        my $context_parameter = shift @{$stack_item};
 
         return {
             msgctxt      => $context_parameter =~ m{p}xms
                             ? $context_parameter
                             : undef,
-            msgid        => scalar shift @{$stack_entry},
-            msgid_plural => scalar shift @{$stack_entry},
+            msgid        => scalar shift @{$stack_item},
+            msgid_plural => scalar shift @{$stack_item},
         };
     }
 
@@ -356,16 +356,19 @@ This module extracts data using regexes to store anywhere.
     # The reference is $file_name.
     $extractor->extract({file_name => $file_name});
 
+    # or
     # Scan file from open $file_handle.
     # Call method store_date with $file_name.
     # The reference is $file_name
     $extractor->extract({file_name => $file_name, file_handle => $fh});
 
+    # or
     # Scan file $file_name.
     # Call method store_date with $file_name.
     # The reference is $source_file_name.
     $extractor->extract({file_name => $file_name, source_file_name => $source_file_name});
 
+    # or
     # Scan file from open $file_handle.
     # Call method store_date with $file_name.
     # The reference is $source_file_name.
@@ -453,30 +456,34 @@ Inherit of this class and write your own debug method if needed.
 
 =head2 method store_date
 
-This method is not inside this package.
-You have to write this method by yourself.
+This method is not inside of this package.
+Example code see SYNOPSIS.
+
 Use the following methods to get data from the object.
 
-    sub store_data {
-        my ($self, $file_name) = @_;
+=head2 method get_content_ref
 
-        my $stack = $self->get_stack();
-        ...
+Get access to the content of the scanned file.
 
-        rerurn $self;
-    }
+    $scalar_ref = $extractor->get_content_ref();
 
+=head2 method get_stack
 
-=head2 method get_content_ref (normally not used outside of this module)
+Get access to the parsed result.
 
-Get the content of the scanned file.
+    $array_ref = $extractor->get_stack();
 
-    $self = $extractor->get_content_ref();
+=head2 method get_start_rule (normally not used)
 
-=head2 method get_rules
- get_run_debug
- get_stack
- get_start_rule
+    $regex = $extractor->get_start_rule();
+
+=head2 method get_rules (normally not used)
+
+    $array_ref = $extractor->get_rules();
+
+=head2 method get_run_debug (normally not used)
+
+    $string = $extractor->get_run_debug();
 
 =head1 EXAMPLE
 
@@ -510,10 +517,6 @@ Carp
 English
 
 Clone
-
-DBI
-
-DBD::PO
 
 =head2 dynamic require
 
