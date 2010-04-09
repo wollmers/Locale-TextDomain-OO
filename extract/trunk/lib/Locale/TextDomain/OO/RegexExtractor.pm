@@ -241,7 +241,7 @@ sub _calculate_data {
     }
     STACK_ITEM:
     for my $stack_item ( @{ $self->get_stack() } ) {
-        my $parameter = $self->stack_item_mapping->(
+        my $parameter = $self->stack_item_mapping(
             delete $stack_item->{parameter},
         ) or next STACK_ITEM;
         $stack_item->{data} = {(

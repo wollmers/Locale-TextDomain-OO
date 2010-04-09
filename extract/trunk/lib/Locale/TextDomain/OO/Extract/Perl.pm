@@ -72,7 +72,7 @@ my $rules = [
 ];
 
 sub preprocess {
-    my $self =shift;
+    my $self = shift;
 
     my $content_ref = $self->get_content_ref();
 
@@ -239,7 +239,7 @@ Steffen Winkler
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2009,
+Copyright (c) 2009 - 2010,
 Steffen Winkler
 C<< <steffenw at cpan.org> >>.
 All rights reserved.

@@ -6,7 +6,6 @@ use warnings;
 use version; our $VERSION = qv('0.05');
 
 use parent qw(Locale::TextDomain::OO::Extract);
-use Clone qw(clone);
 
 my $domain_rule
     = my $context_rule
@@ -101,8 +100,11 @@ my $rules = [
     ],
 ];
 
-sub _remove_comment_code {
-    my $content_ref = shift;
+# remove comment code
+sub preprocess {
+    my $self = shift;
+
+    my $content_ref = $self->get_content_ref();
 
     ${$content_ref} =~ s{// [^\n]* $}{}xmsg;
     ${$content_ref} =~ s{
@@ -111,7 +113,7 @@ sub _remove_comment_code {
         join q{}, $1 =~ m{(\n)}xmsg;
     }xmsge;
 
-    return;
+    return $self;
 }
 
 my %char_of = (
@@ -123,7 +125,7 @@ my %char_of = (
 );
 
 sub _interpolate_escape_sequence {
-    my $string = shift;
+    my ($self, $string) = @_;
 
     # nothing to interpolate
     defined $string
@@ -156,27 +158,27 @@ sub _interpolate_escape_sequence {
     return $string;
 }
 
-sub _parameter_mapping_code {
-    my $parameter = shift;
+sub stack_item_mapping {
+    my ($self, $stack_item) = @_;
 
-    my $extra_parameter = shift @{$parameter};
+    my $extra_parameter = shift @{$stack_item};
     if ( $extra_parameter =~ m{d}xms) {
-         shift @{$parameter};
+         shift @{$stack_item};
     }
-    @{$parameter}
+    @{$stack_item}
         or return;
 
     return {
         msgctxt      => $extra_parameter =~ m{p}xms
-                        ? scalar _interpolate_escape_sequence(
-                            shift @{$parameter}
+                        ? scalar $self->_interpolate_escape_sequence(
+                            shift @{$stack_item}
                         )
                         : undef,
-        msgid        => scalar _interpolate_escape_sequence(
-                            shift @{$parameter}
+        msgid        => scalar $self->_interpolate_escape_sequence(
+                            shift @{$stack_item}
                         ),
-        msgid_plural => scalar _interpolate_escape_sequence(
-                            shift @{$parameter}
+        msgid_plural => scalar $self->_interpolate_escape_sequence(
+                            shift @{$stack_item}
                         ),
 
     };
@@ -186,10 +188,8 @@ sub new {
     my ($class, %init) = @_;
 
     return $class->SUPER::new(
-        preprocess_code        => \&_remove_comment_code,
-        start_rule             => $start_rule,
-        rules                  => $rules,
-        parameter_mapping_code => \&_parameter_mapping_code,
+        start_rule => $start_rule,
+        rules      => $rules,
         %init,
     );
 }

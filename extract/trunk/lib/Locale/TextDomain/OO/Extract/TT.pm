@@ -14,8 +14,6 @@ my $text_rule
         qr{'}xms,
     ];
 
-#my $komma_rule = qr{\s* , \s*}xms;
-
 my $start_rule = qr{\[ \% \s* l \(}xms;
 
 my $rules = [
@@ -23,19 +21,19 @@ my $rules = [
     $text_rule,
 ];
 
-sub _parameter_mapping_code {
-    my $parameter = shift;
+sub stack_item_mapping {
+    my ($self, $stack_item) = @_;
 
-    my $extra_parameter = shift @{$parameter};
-    @{$parameter}
+    my $extra_parameter = shift @{$stack_item};
+    @{$stack_item}
         or return;
 
     return {
         msgctxt      => $extra_parameter =~ m{p}xms
-                        ? scalar shift @{$parameter}
+                        ? scalar shift @{$stack_item}
                         : undef,
-        msgid        => scalar shift @{$parameter},
-        msgid_plural => scalar shift @{$parameter},
+        msgid        => scalar shift @{$stack_item},
+        msgid_plural => scalar shift @{$stack_item},
     };
 }
 
@@ -43,9 +41,8 @@ sub new {
     my ($class, %init) = @_;
 
     return $class->SUPER::new(
-        start_rule             => $start_rule,
-        rules                  => $rules,
-        parameter_mapping_code => \&_parameter_mapping_code,
+        start_rule => $start_rule,
+        rules      => $rules,
         %init,
     );
 }
@@ -163,7 +160,7 @@ Steffen Winkler
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2009,
+Copyright (c) 2009 - 2010,
 Steffen Winkler
 C<< <steffenw at cpan.org> >>.
 All rights reserved.
