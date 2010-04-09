@@ -161,24 +161,26 @@ sub _interpolate_escape_sequence {
 sub stack_item_mapping {
     my ($self, $stack_item) = @_;
 
-    my $extra_parameter = shift @{$stack_item};
+    my $match = $stack_item->{match};
+    my $extra_parameter = shift @{$match};
     if ( $extra_parameter =~ m{d}xms) {
-         shift @{$stack_item};
+         shift @{$match};
     }
-    @{$stack_item}
+    @{$match}
         or return;
 
     return {
+        reference    => "$stack_item->{file_name}:$stack_item->{line_number}",
         msgctxt      => $extra_parameter =~ m{p}xms
                         ? scalar $self->_interpolate_escape_sequence(
-                            shift @{$stack_item}
+                            shift @{$match}
                         )
                         : undef,
         msgid        => scalar $self->_interpolate_escape_sequence(
-                            shift @{$stack_item}
+                            shift @{$match}
                         ),
         msgid_plural => scalar $self->_interpolate_escape_sequence(
-                            shift @{$stack_item}
+                            shift @{$match}
                         ),
 
     };
