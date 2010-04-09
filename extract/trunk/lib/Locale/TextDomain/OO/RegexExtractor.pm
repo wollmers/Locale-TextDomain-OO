@@ -14,13 +14,12 @@ sub new {
 
     my $self = bless {}, $class;
 
-    # prepare the file and the encoding
     # how to find such lines
     if ( defined $init{start_rule} ) {
         $self->_set_start_rule( delete $init{start_rule} );
     }
 
-    # how to find the parameters
+    # how to match
     if ( ref $init{rules} eq 'ARRAY' ) {
         $self->_set_rules( delete $init{rules} );
     }
@@ -76,7 +75,7 @@ sub debug {
 my %debug_switch_of = (
     ':all' => ~ 0,
     parser => 2 ** 0,
-    data   => 2 ** 1,
+    stack  => 2 ** 1,
     file   => 2 ** 2,
 );
 
@@ -177,7 +176,7 @@ sub _parse_rules {
                 = my ($match, @result)
                 = ${$content_ref} =~ m{\G ($rule)}xms;
             if ($has_matched) {
-                push @{ $stack_item->{parameter} }, @result;
+                push @{ $stack_item->{match} }, @result;
                 $pos += length $match;
                 $self->_debug(
                     'parser',
@@ -201,54 +200,45 @@ sub _parse_rules {
     return $self;
 }
 
-sub _cleanup {
-    my $self = shift;
+sub _cleanup_and_calculate_reference {
+    my ($self, $file_name) = @_;
 
-    my $stack = $self->get_stack();
-    my $index = 0;
-    @{$stack} = grep {
-        exists $_->{parameter}
+    my $stack       = $self->get_stack();
+    my $content_ref = $self->get_content_ref();
+    @{$stack} = map {
+        exists $_->{match}
+        ? do {
+            # calculate reference
+            my $pre_match = substr ${$content_ref}, 0, $_->{start_pos};
+            my $newline_count = $pre_match =~ tr{\n}{\n};
+            $_->{file_name}   = $file_name;
+            $_->{line_number} = $newline_count + 1;
+            $_;
+        }
+        # cleanup
+        : ();
     } @{$stack};
 
     return $self;
 }
 
-sub _calculate_reference {
+sub _calculate_stack {
     my $self = shift;
-
-    my $content_ref = $self->get_content_ref();
-    for my $stack_item ( @{ $self->get_stack() } ) {
-        my $pre_match = substr ${$content_ref}, 0, $stack_item->{start_pos};
-        my $newline_count = $pre_match =~ tr{\n}{\n};
-        $stack_item->{line_number} = $newline_count + 1;
-    }
-
-    return $self;
-}
-
-sub _calculate_data {
-    my ($self, $file_name) = @_;
 
     if ( $self->get_run_debug() ) {
         require Data::Dumper;
         $self->_debug(
-            'data',
+            'stack',
             Data::Dumper
-                ->new([$self->get_stack()], [qw(parameters)])
+                ->new([$self->get_stack()], [qw(stack)])
                 ->Sortkeys(1)
                 ->Dump()
         );
     }
-    STACK_ITEM:
-    for my $stack_item ( @{ $self->get_stack() } ) {
-        my $parameter = $self->stack_item_mapping(
-            delete $stack_item->{parameter},
-        ) or next STACK_ITEM;
-        $stack_item->{data} = {(
-            reference => "$file_name:$stack_item->{line_number}",
-            %{$parameter},
-        )};
-    }
+    my $stack = $self->get_stack();
+    @{$stack} = map {
+        $self->stack_item_mapping($_);
+    } @{$stack};
 
     return $self;
 }
@@ -276,9 +266,8 @@ sub extract {
     }
     $self->_parse_pos();
     $self->_parse_rules();
-    $self->_cleanup();
-    $self->_calculate_reference();
-    $self->_calculate_data($source_file_name);
+    $self->_cleanup_and_calculate_reference($source_file_name);
+    $self->_calculate_stack();
     $self->store_data($file_name);
 
     return $self;
@@ -423,10 +412,10 @@ This module extracts data using regexes to store anywhere.
         run_debug => ':all !parser', # debug all but not the parser
                      # :all    - switch on all debugs
                      # parser  - switch on parser debug
-                     # data    - switch on data debug
+                     # stack   - switch on stack debug
                      # file    - switch on file debug
                      # !parser - switch off parser debug
-                     # !data   - switch off data debug
+                     # !stack  - switch off stack debug
                      # !file   - switch off file debug
 
     );

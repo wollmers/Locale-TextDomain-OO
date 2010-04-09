@@ -167,9 +167,7 @@ EO_SQL
 
     # write entrys
     STACK_ITEM:
-    for ( @{ $self->get_stack() } ) {
-        my $entry = $_->{pot_data}
-            or next STACK_ITEM;
+    for my $entry ( @{ $self->get_stack() } ) {
         $sth_select->execute(
             map {
                 defined $_ ? $_ : q{};
@@ -246,18 +244,18 @@ This module extracts internationalizations data and stores this in a pot file.
     }
 
     # how to map the stack_entry e.g. to a pot entry
-    sub stack_entry_mapping {
-        my ($self, $stack_entry) = @_;
+    sub stack_item_mapping {
+        my ($self, $stack_item) = @_;
 
         # The chars after __ were stored to make a decision now.
-        my $context_parameter = shift @{$stack_entry};
+        my $context_parameter = shift @{$stack_item};
 
         return {
             msgctxt      => $context_parameter =~ m{p}xms
                             ? $context_parameter
                             : undef,
-            msgid        => scalar shift @{$stack_entry},
-            msgid_plural => scalar shift @{$stack_entry},
+            msgid        => scalar shift @{$stack_item},
+            msgid_plural => scalar shift @{$stack_item},
         };
     }
 
