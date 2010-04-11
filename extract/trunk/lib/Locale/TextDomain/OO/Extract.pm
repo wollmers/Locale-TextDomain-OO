@@ -17,7 +17,7 @@ sub init {
     return DBD::PO->init(@more);
 }
 
-my @names = qw(pot_dir pot_charset pot_header is_append);
+my @names = qw(po_dir po_charset po_header is_append);
 
 for my $name (@names) {
     (my $data_name = $name) =~ s{\A is_}{}xms;
@@ -55,22 +55,22 @@ sub new {
 
     my $self = $class->SUPER::new(%init);
 
-    # where to store the pot file
-    if ( defined $my_init{pot_dir} ) {
-        $self->_set_pot_dir( delete $my_init{pot_dir} );
+    # where to store the po file
+    if ( defined $my_init{po_dir} ) {
+        $self->_set_po_dir( delete $my_init{po_dir} );
     }
 
-    # how to store the pot file
-    if ( defined $my_init{pot_charset} ) {
-        $self->_set_pot_charset( delete $my_init{pot_charset} );
+    # how to store the po file
+    if ( defined $my_init{po_charset} ) {
+        $self->_set_po_charset( delete $my_init{po_charset} );
     }
 
-    # how to store the pot file
-    if ( ref $my_init{pot_header} eq 'HASH' ) {
-        $self->_set_pot_header( delete $my_init{pot_header} );
+    # how to store the po file
+    if ( ref $my_init{po_header} eq 'HASH' ) {
+        $self->_set_po_header( delete $my_init{po_header} );
     }
 
-    # how write the pot file
+    # how write the po file
     if ( exists $my_init{is_append} ) {
         $self->_set_append( delete $my_init{is_append} );
     }
@@ -85,21 +85,21 @@ sub new {
 }
 
 sub store_data {
-    my ($self, $file_name) = @_;
+    my ($self, $destination_filename) = @_;
 
-    # create a new pot file
+    # create a new po file
     my $dbh = DBI->connect(
         'DBI:PO:'
         . (
             join q{;}, (
                 (
-                    defined $self->get_pot_dir()
-                    ? join q{=}, 'f_dir', $self->get_pot_dir()
+                    defined $self->get_po_dir()
+                    ? join q{=}, 'f_dir', $self->get_po_dir()
                     : ()
                 ),
                 (
-                    defined $self->get_pot_charset()
-                    ? join q{=}, 'po_charset', $self->get_pot_charset()
+                    defined $self->get_po_charset()
+                    ? join q{=}, 'po_charset', $self->get_po_charset()
                     : ()
                 ),
             )
@@ -108,13 +108,13 @@ sub store_data {
         undef,
         {RaiseError => 1},
     );
-    $dbh->{po_tables}->{pot} = {file => "$file_name.pot"};
+    $dbh->{po_tables}->{po} = {file => $destination_filename};
     if (! $self->is_append()) {
-        $dbh->do('DROP TABLE IF EXISTS pot');
+        $dbh->do('DROP TABLE IF EXISTS po');
     }
-    if (! -f ($self->get_pot_dir() || q{.}) . "/$file_name.pot") {
+    if (! -f ($self->get_po_dir() || q{.}) . "/$destination_filename") {
         $dbh->do(<<'EO_SQL');
-            CREATE TABLE pot (
+            CREATE TABLE po (
                 reference    VARCHAR,
                 msgctxt      VARCHAR,
                 msgid        VARCHAR,
@@ -123,16 +123,16 @@ sub store_data {
 EO_SQL
 
         # write the header
-        $self->_debug('file', "Write header of $file_name.pot");
+        $self->_debug('file', "Write header of $destination_filename");
         my $header_msgstr = $dbh->func(
             {(
                 'Plural-Forms' => 'nplurals=2; plural=n != 1;',
-                %{ $self->get_pot_header() || {} },
+                %{ $self->get_po_header() || {} },
             )},
             'build_header_msgstr',
         );
         $dbh->do(<<'EO_SQL', undef, $header_msgstr);
-            INSERT INTO pot
+            INSERT INTO po
             (msgstr)
             VALUES (?)
 EO_SQL
@@ -141,7 +141,7 @@ EO_SQL
     # to check if the entry is known
     my $sth_select = $dbh->prepare(<<'EO_SQL');
         SELECT reference
-        FROM pot
+        FROM po
         WHERE
             msgctxt=?
             AND msgid=?
@@ -150,14 +150,14 @@ EO_SQL
 
     # to insert a new entry
     my $sth_insert = $dbh->prepare(<<'EO_SQL');
-        INSERT INTO pot
+        INSERT INTO po
         (reference, msgctxt, msgid, msgid_plural)
         VALUES (?, ?, ?, ?)
 EO_SQL
 
     # to add the next reference to a known entry
     my $sth_update = $dbh->prepare(<<'EO_SQL');
-        UPDATE pot
+        UPDATE po
         SET reference=?
         WHERE
             msgctxt=?
@@ -232,7 +232,8 @@ This module extracts internationalizations data and stores this in a pot file.
 
     use parent qw(Locale::TextDomain::OO::Extract);
 
-    # optional method
+    # Optional method
+    # to uncomment or interpolate the file content or anything else.
     sub preprocess {
         my $self = shift;
 
@@ -243,7 +244,8 @@ This module extracts internationalizations data and stores this in a pot file.
         return $self;
     }
 
-    # how to map the stack_item e.g. to a pot entry
+    # How to map the stack_item to a po entry:
+    # Return an empty list to ignore the stack item.
     sub stack_item_mapping {
         my ($self, $stack_item) = @_;
 
@@ -260,7 +262,7 @@ This module extracts internationalizations data and stores this in a pot file.
     }
 
     sub store_data {
-        my ($self, $file_name) = @_;
+        my ($self, $destination_filename) = @_;
 
         my $stack = $self->get_stack();
         ...
@@ -275,28 +277,23 @@ This module extracts internationalizations data and stores this in a pot file.
         ],
     );
 
-    # Scan file $file_name.
-    # Call method store_data with $file_name.
-    # The reference is $file_name.
-    $extractor->extract({file_name => $file_name});
+    # Scan file $source_filename.
+    # Call method store_data with $destination_filename.
+    # The reference is $source_filename.
+    $extractor->extract({
+        source_filename      => 'dir/source.pl',
+        destination_filename => 'destination_filename',
+    });
 
     # or
-    # Scan file from open $file_handle.
-    # Call method store_date with $file_name.
-    # The reference is $file_name
-    $extractor->extract({file_name => $file_name, file_handle => $fh});
-
-    # or
-    # Scan file $file_name.
-    # Call method store_date with $file_name.
-    # The reference is $source_file_name.
-    $extractor->extract({file_name => $file_name, source_file_name => $source_file_name});
-
-    # or
-    # Scan file from open $file_handle.
-    # Call method store_date with $file_name.
-    # The reference is $source_file_name.
-    $extractor->extract({file_name => $file_name, file_handle => $fh, source_file_name => $source_file_name});
+    # Scan file from open $filehandle.
+    # Call method store_date with $destination_filename.
+    # The reference is $source_filename.
+    $extractor->extract({
+        source_filename      => 'source.pl',
+        source_filehande     => $source_filehandle,
+        destination_filename => 'destination_filename',
+    });
 
 =head1 SUBROUTINES/METHODS
 
@@ -345,18 +342,18 @@ All parameters are optional.
         ],
 
         # where to store the pot file
-        pot_dir => './',
+        po_dir => './',
 
         # how to store the pot file
         # - The meaning of undef is ISO-8859-1 but use not Perl unicode.
         # - Set 'ISO-8859-1' to have a ISO-8859-1 pot file and use Perl unicode.
         # - Set 'UTF-8' to have a UTF-8 pot file and use Perl unicode.
         # And so on.
-        pot_charset => undef,
+        po_charset => undef,
 
         # add some key value pairs to the header
         # more see documentation of DBD::PO
-        pot_header => { ... },
+        po_header => { ... },
 
         # how to write the pot file
         is_append => $boolean,
@@ -374,40 +371,57 @@ All parameters are optional.
 
 =head2 method extract
 
-The default pot_dir is "./".
+The default po_dir is "./".
 
 Call
 
-    $extractor->extract({file_name => 'dir/filename.pl'});
+    $extractor->extract({
+        source_filename      => 'dir1/filename1.pl',
+        destination_filename => 'filename2.pot',
+    });
 
-to extract "dir/filename.pl" and write "$pot_dir/dir/filename.pl.pot".
-
-Call
-
-    open my $file_handle, '<', 'dir/filename.pl'
-        or croak "Can no open file dir/filename.pl\n$OS_ERROR";
-    $extractor->extract({file_name => 'filename', file_handle => $file_handle});
-
-to extract "dir/filename.pl" and write "$pot_dir/filename.pot".
+to extract "dir1/filename1.pl" to "$po_dir/filename2.pot".
+The reference is "dir1/filename1.pl".
 
 Call
 
-    $extractor->extract({source_file_name => 'dir/filename.pl', file_name => 'file_name2'});
+    open my $filehandle, '<', 'dir1/filename1.pl'
+        or croak "Can no open file dir1/filename1.pl\n$OS_ERROR";
+    $extractor->extract({
+        source_filename      => 'filename1',
+        source_filehandle    => $filehandle,
+        destination_filename => 'filename2.pot',
+    });
 
-to extract "dir/filename.pl" and write "$pot_dir/filename2.pot".
-
-Call
-
-    open my $file_handle, '<', 'dir/filename.pl'
-        or croak "Can no open file dir/filename.pl\n$OS_ERROR";
-    $extractor->extract({source_file_name => 'dir/filename.pl', file_handle => $file_handle, file_name => 'file_name2'});
-
-to extract "dir/filename.pl" and write "$pot_dir/filename2.pot".
+to extract "dir1/filename1.pl" to "$po_dir/filename2.pot".
+The reference is "filename1".
 
 =head2 method debug
 
 Switch on the debug to see on STDERR how the rules are handled.
 Inherit of this class and write your own debug method if needed.
+
+=head2 method get_po_charset
+
+    my $charset_or_undef = $extractor->get_po_charset();
+
+=head2 method get_po_dir
+
+    my $po_dir_or_undef = $extractor->get_po_dir();
+
+=head2 method get_po_header
+
+    my $po_header or undef = $extractor->get_po_header();
+
+=head2 method is_append
+
+    my $boolean = $extractor->is_append();
+
+=head2 method store_data
+
+This method is expected from the abstact parent class.
+
+    $extractor->store_data($filename);
 
 =head1 EXAMPLE
 
@@ -420,9 +434,11 @@ Error message in case of unknown parameters at method new.
 
  Unknown parameter: ...
 
-Undef is not a filename.
+Missing parameter.
 
- No file name given
+ No source_filename given ...
+
+ No destination filename given ...
 
 There is a problem in opening the file to extract.
 

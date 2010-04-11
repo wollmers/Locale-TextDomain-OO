@@ -3,7 +3,7 @@ package Locale::TextDomain::OO::Extract::TT;
 use strict;
 use warnings;
 
-use version; our $VERSION = qv('0.05');
+use version; our $VERSION = qv('1.00');
 
 use parent qw(Locale::TextDomain::OO::Extract);
 
@@ -30,7 +30,7 @@ sub stack_item_mapping {
         or return;
 
     return {
-        reference    => "$stack_item->{file_name}:$stack_item->{line_number}",
+        reference    => "$stack_item->{source_filename}:$stack_item->{line_number}",
         msgctxt      => $extra_parameter =~ m{p}xms
                         ? scalar shift @{$match}
                         : undef,
@@ -64,7 +64,7 @@ $HeadURL: https://perl-gettext-oo.svn.sourceforge.net/svnroot/perl-gettext-oo/mo
 
 =head1 VERSION
 
-0.04
+1.00
 
 =head1 DESCRIPTION
 
@@ -89,37 +89,59 @@ See Locale::TextDomain::OO::Extract to replace the defaults.
 
     my $extractor = Locale::TextDomain::OO::Extract::TT->new(
         # where to store the pot file
-        pot_dir => './',
+        po_dir => './',
 
         # how to store the pot file
         # - The meaning of undef is ISO-8859-1 but use not Perl unicode.
         # - Set 'ISO-8859-1' to have a ISO-8859-1 pot file and use Perl unicode.
         # - Set 'UTF-8' to have a UTF-8 pot file and use Perl unicode.
         # And so on.
-        pot_charset => undef,
+        po_charset => undef,
 
         # add some key value pairs to the header
         # more see documentation of DBD::PO
-        pot_header => { ... },
+        po_header => { ... },
+
+        # how to write the pot file
+        is_append => $boolean,
+
+        # debug output for other rules than perl
+        run_debug => ':all !parser', # debug all but not the parser
+                     # :all    - switch on all debugs
+                     # parser  - switch on parser debug
+                     # stack   - switch on stack debug
+                     # file    - switch on file debug
+                     # !parser - switch off parser debug
+                     # !stack  - switch off stack debug
+                     # !file   - switch off file debug
     );
 
 =head2 method extract
 
-The default pot_dir is "./".
+The default po_dir is "./".
 
 Call
 
-    $extractor->extract('dir/filename.tt');
+    $extractor->extract({
+        source_filename      => 'dir1/filename1.tt',
+        destination_filename => 'filename2.pot',
+    });
 
-to extract "dir/filename.tt" to have a "$pot_dir/dir/filename.tt.pot".
+to extract "dir1/filename1.tt" to "$pot_dir/filename2.pot".
+The reference is "dir1/filename1.tt".
 
 Call
 
-    open my $file_handle, '<', 'dir/filename.tt'
-        or croak "Can no open file dir/filename.tt\n$OS_ERROR";
-    $extractor->extract('filename', $file_handle);
+    open my $filehandle, '<', 'dir1/filename1.tt'
+        or croak "Can no open file dir1/filename1.tt\n$OS_ERROR";
+    $extractor->extract({
+        source_filename      => 'filename1',
+        source_filehandle    => $filehandle,
+        destination_filename => 'filename2.pot',
+    });
 
-to extract "dir/filename.tt" to have a "$pot_dir/filename.pot".
+to extract "dir1/filename1.tt" to $pot_dir/filename2.pot".
+The reference is "filename1".
 
 =head1 EXAMPLE
 
@@ -128,7 +150,19 @@ Run this *.pl files.
 
 =head1 DIAGNOSTICS
 
-see Locale::TextDomain::OO::Extract
+Error message in case of unknown parameters at method new.
+
+ Unknown parameter: ...
+
+Missing parameter.
+
+ No source_filename given ...
+
+ No destination filename given ...
+
+There is a problem in opening the file to extract.
+
+ Can not open file ...
 
 =head1 CONFIGURATION AND ENVIRONMENT
 

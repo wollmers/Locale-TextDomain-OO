@@ -201,7 +201,7 @@ sub _parse_rules {
 }
 
 sub _cleanup_and_calculate_reference {
-    my ($self, $file_name) = @_;
+    my ($self, $source_filename) = @_;
 
     my $stack       = $self->get_stack();
     my $content_ref = $self->get_content_ref();
@@ -211,8 +211,8 @@ sub _cleanup_and_calculate_reference {
             # calculate reference
             my $pre_match = substr ${$content_ref}, 0, $_->{start_pos};
             my $newline_count = $pre_match =~ tr{\n}{\n};
-            $_->{file_name}   = $file_name;
-            $_->{line_number} = $newline_count + 1;
+            $_->{source_filename} = $source_filename;
+            $_->{line_number}     = $newline_count + 1;
             $_;
         }
         # cleanup
@@ -246,29 +246,29 @@ sub _calculate_stack {
 sub extract {
     my ($self, $arg_ref) = @_;
 
-    my $file_name        = $arg_ref->{file_name};
-    defined $file_name
-        or croak 'No file name given';
-    my $source_file_name = $arg_ref->{source_file_name} || $file_name;
-    my $file_handle      = $arg_ref->{file_handle};
+    my $source_filename = $arg_ref->{source_filename}
+        or croak 'No source_filename given';
+    my $destination_filename = $arg_ref->{destination_filename}
+        or croak 'No destination_filename given';
+    my $source_filehandle = $arg_ref->{source_filehandle};
 
-    if (! ref $file_handle) {
-        open $file_handle, '<', $source_file_name ## no critic (BriefOpen)
-            or croak "Can not open file $source_file_name\n$OS_ERROR";
+    if (! ref $source_filehandle) {
+        open $source_filehandle, '<', $source_filename ## no critic (BriefOpen)
+            or croak "Can not open file $source_filename\n$OS_ERROR";
     }
 
     local $INPUT_RECORD_SEPARATOR = ();
-    $self->_set_content_ref(\<$file_handle>);
-    () = close $file_handle;
+    $self->_set_content_ref(\<$source_filehandle>);
+    () = close $source_filehandle;
 
     if ( $self->can('preprocess') ) {
         $self->preprocess();
     }
     $self->_parse_pos();
     $self->_parse_rules();
-    $self->_cleanup_and_calculate_reference($source_file_name);
+    $self->_cleanup_and_calculate_reference($source_filename);
     $self->_calculate_stack();
-    $self->store_data($file_name);
+    $self->store_data($destination_filename);
 
     return $self;
 }
@@ -297,7 +297,8 @@ This module extracts data using regexes to store anywhere.
 
     use parent qw(Locale::TextDomain::OO::RegexExtractor);
 
-    # optional method
+    # Optional method
+    # to uncomment or interpolate the file content or anything else.
     sub preprocess {
         my $self = shift;
 
@@ -308,7 +309,8 @@ This module extracts data using regexes to store anywhere.
         return $self;
     }
 
-    # how to map the stack_item e.g. to a pot entry
+    # How to map the stack_item e.g. to a po entry:
+    # Return an empty list to ignore the stack item.
     sub stack_item_mapping {
         my ($self, $stack_item) = @_;
 
@@ -325,7 +327,7 @@ This module extracts data using regexes to store anywhere.
     }
 
     sub store_data {
-        my ($self, $file_name) = @_;
+        my ($self, $destination_filename) = @_;
 
         my $stack = $self->get_stack();
         ...
@@ -340,34 +342,29 @@ This module extracts data using regexes to store anywhere.
         ],
     );
 
-    # Scan file $file_name.
-    # Call method store_data with $file_name.
-    # The reference is $file_name.
-    $extractor->extract({file_name => $file_name});
+    # Scan file $source_filename.
+    # Call method store_data with $destination_filename.
+    # The reference is $source_filename.
+    $extractor->extract({
+        source_filename      => 'dir/source.pl',
+        destination_filename => 'dir/destination_filename.pot',
+    });
 
     # or
-    # Scan file from open $file_handle.
-    # Call method store_date with $file_name.
-    # The reference is $file_name
-    $extractor->extract({file_name => $file_name, file_handle => $fh});
-
-    # or
-    # Scan file $file_name.
-    # Call method store_date with $file_name.
-    # The reference is $source_file_name.
-    $extractor->extract({file_name => $file_name, source_file_name => $source_file_name});
-
-    # or
-    # Scan file from open $file_handle.
-    # Call method store_date with $file_name.
-    # The reference is $source_file_name.
-    $extractor->extract({file_name => $file_name, file_handle => $fh, source_file_name => $source_file_name});
+    # Scan file from open $filehandle.
+    # Call method store_date with $destination_filename.
+    # The reference is $source_filename.
+    $extractor->extract({
+        source_filename      => 'source.pl',
+        source_filehande     => $source_filehandle,
+        destination_filename => 'dir/destination_filename.pot',
+    });
 
 =head1 SUBROUTINES/METHODS
 
 =head2 method new
 
-    All parameters are optional.
+All parameters are optional.
 
     my $extractor = Locale::TextDomain::OO::RegexExtractor->new(
         # how to find such lines
@@ -414,31 +411,26 @@ This module extracts data using regexes to store anywhere.
 
 Call
 
-    $extractor->extract({file_name => 'dir/filename.pl'});
+    $extractor->extract({
+        source_filename      => 'dir1/filename1.pl',
+        destination_filename => 'dir2/filename2.pot',
+    });
 
-to extract "dir/filename.pl" and write using name "dir/filename.pl".
-
-Call
-
-    open my $file_handle, '<', 'dir/filename.pl'
-        or croak "Can no open file dir/filename.pl\n$OS_ERROR";
-    $extractor->extract({file_name => 'filename', file_handle => $file_handle});
-
-to extract "dir/filename.pl" and write using name "dir/filename.pl".
+to extract "dir1/filename1.pl" to "dir2/filename2.pot".
+The reference is "dir1/filename1.pl".
 
 Call
 
-    $extractor->extract({source_file_name => 'dir/filename.pl', file_name => 'file_name2'});
+    open my $filehandle, '<', 'dir1/filename1.pl'
+        or croak "Can no open file dir1/filename1.pl\n$OS_ERROR";
+    $extractor->extract({
+        source_filename      => 'filename1',
+        source_filehandle    => $filehandle,
+        destination_filename => 'dir2/filename2.pot',
+    });
 
-to extract "dir/filename.pl" and write using name "file_name2".
-
-Call
-
-    open my $file_handle, '<', 'dir/filename.pl'
-        or croak "Can no open file dir/filename.pl\n$OS_ERROR";
-    $extractor->extract({source_file_name => 'filename', file_handle => $file_handle, file_name => 'file_name2'});
-
-to extract "dir/filename.pl" and write using name "filename2".
+to extract "dir1/filename1.pl" to "dir2/filename2.pot".
+The reference is "filename1".
 
 =head2 method debug
 
@@ -487,9 +479,11 @@ Error message in case of unknown parameters at method new.
 
  Unknown parameter: ...
 
-Undef is not a filename.
+Missing parameter.
 
- No file name given
+ No source_filename given ...
+
+ No destination filename given ...
 
 There is a problem in opening the file to extract.
 

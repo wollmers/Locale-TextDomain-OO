@@ -71,6 +71,7 @@ my $rules = [
     ],
 ];
 
+# remove pod and code after __END__
 sub preprocess {
     my $self = shift;
 
@@ -101,7 +102,7 @@ sub stack_item_mapping {
         or return;
 
     return {
-        reference    => "$stack_item->{file_name}:$stack_item->{line_number}",
+        reference    => "$stack_item->{source_filename}:$stack_item->{line_number}",
         msgctxt      => $extra_parameter =~ m{p}xms
                         ? scalar shift @{$match}
                         : undef,
@@ -135,7 +136,7 @@ $HeadURL: https://perl-gettext-oo.svn.sourceforge.net/svnroot/perl-gettext-oo/mo
 
 =head1 VERSION
 
-0.04
+1.00
 
 =head1 DESCRIPTION
 
@@ -170,18 +171,18 @@ See Locale::TextDomain::OO::Extract to replace the defaults.
 
     my $extractor = Locale::TextDomain::OO::Extract::Perl->new(
         # where to store the pot file
-        pot_dir => './',
+        po_dir => './',
 
         # how to store the pot file
         # - The meaning of undef is ISO-8859-1 but use not Perl unicode.
         # - Set 'ISO-8859-1' to have a ISO-8859-1 pot file and use Perl unicode.
         # - Set 'UTF-8' to have a UTF-8 pot file and use Perl unicode.
         # And so on.
-        pot_charset => undef,
+        po_charset => undef,
 
         # add some key value pairs to the header
         # more see documentation of DBD::PO
-        pot_header => { ... },
+        po_header => { ... },
 
         # how to write the pot file
         is_append => $boolean,
@@ -199,40 +200,30 @@ See Locale::TextDomain::OO::Extract to replace the defaults.
 
 =head2 method extract
 
-The default pot_dir is "./".
+The default po_dir is "./".
 
 Call
 
-    $extractor->extract({file_name => 'dir/filename.pl'});
+    $extractor->extract({
+        source_filename      => 'dir1/filename1.pl',
+        destination_filename => 'filename2.pot',
+    });
 
-to extract "dir/filename.pl" and write "$pot_dir/dir/filename.pl.pot".
-
-Call
-
-    open my $file_handle, '<', 'dir/filename.pl'
-        or croak "Can no open file dir/filename.pl\n$OS_ERROR";
-    $extractor->extract({file_name => 'filename', file_handle => $file_handle});
-
-to extract "dir/filename.pl" and write "$pot_dir/filename.pot".
+to extract "dir1/filename1.pl" to "$po_dir/filename2.pot".
+The reference is "dir1/filename1.pl".
 
 Call
 
-    $extractor->extract({source_file_name => 'dir/filename.pl', file_name => 'file_name2'});
+    open my $filehandle, '<', 'dir1/filename1.pl'
+        or croak "Can no open file dir1/filename1.pl\n$OS_ERROR";
+    $extractor->extract({
+        source_filename      => 'filename1',
+        source_filehandle    => $filehandle,
+        destination_filename => 'filename2.pot',
+    });
 
-to extract "dir/filename.pl" and write "$pot_dir/filename2.pot".
-
-Call
-
-    open my $file_handle, '<', 'dir/filename.pl'
-        or croak "Can no open file dir/filename.pl\n$OS_ERROR";
-    $extractor->extract({source_file_name => 'dir/filename.pl', file_handle => $file_handle, file_name => 'file_name2'});
-
-to extract "dir/filename.pl" and write "$pot_dir/filename2.pot".
-
-=head2 method debug
-
-Switch on the debug to see on STDERR how the rules are handled.
-Inherit of this class and write your own debug method if needed.
+to extract "dir1/filename1.pl" to "$po_dir/filename2.pot".
+The reference is "filename1".
 
 =head1 EXAMPLE
 
@@ -241,7 +232,19 @@ Run this *.pl files.
 
 =head1 DIAGNOSTICS
 
-see Locale::TextDomain::OO::Extract
+Error message in case of unknown parameters at method new.
+
+ Unknown parameter: ...
+
+Missing parameter.
+
+ No source_filename given ...
+
+ No destination filename given ...
+
+There is a problem in opening the file to extract.
+
+ Can not open file ...
 
 =head1 CONFIGURATION AND ENVIRONMENT
 

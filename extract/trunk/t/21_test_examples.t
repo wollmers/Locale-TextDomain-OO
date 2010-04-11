@@ -26,45 +26,45 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;"
 
-#: gettext:23
+#: gettext.pl:23
 msgid "This is a text."
 msgstr ""
 
-#: gettext:26
+#: gettext.pl:26
 msgid "{name} is programming {language}."
 msgstr ""
 
-#: gettext:31
-#: gettext:36
+#: gettext.pl:31
+#: gettext.pl:36
 msgid "Singular"
 msgid_plural "Plural"
 msgstr[0] ""
 
-#: gettext:41
-#: gettext:47
+#: gettext.pl:41
+#: gettext.pl:47
 msgid "{num} shelf"
 msgid_plural "{num} shelves"
 msgstr[0] ""
 
-#: gettext:53
+#: gettext.pl:53
 msgctxt "maskulin"
 msgid "Dear"
 msgstr ""
 
-#: gettext:57
+#: gettext.pl:57
 msgctxt "maskulin"
 msgid "Dear {name}"
 msgstr ""
 
-#: gettext:62
-#: gettext:68
+#: gettext.pl:62
+#: gettext.pl:68
 msgctxt "better"
 msgid "shelf"
 msgid_plural "shelves"
 msgstr[0] ""
 
-#: gettext:74
-#: gettext:81
+#: gettext.pl:74
+#: gettext.pl:81
 msgctxt "better"
 msgid "{num} shelf"
 msgid_plural "{num} shelves"
@@ -78,38 +78,38 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;"
 
-#: maketext:23
+#: maketext.pl:23
 msgid "This is a text."
 msgstr ""
 
-#: maketext:26
+#: maketext.pl:26
 msgid "[_1] is programming [_2]."
 msgstr ""
 
-#: maketext:31
-#: maketext:35
+#: maketext.pl:31
+#: maketext.pl:35
 msgid "[quant,_1,shelf,shelves]"
 msgstr ""
 
-#: maketext:39
+#: maketext.pl:39
 msgctxt "maskulin"
 msgid "Dear"
 msgstr ""
 
-#: maketext:43
+#: maketext.pl:43
 msgctxt "maskulin"
 msgid "Dear [_1]"
 msgstr ""
 
-#: maketext:48
-#: maketext:53
+#: maketext.pl:48
+#: maketext.pl:53
 msgctxt "better"
 msgid "[*,_1,shelf,shelves]"
 msgstr ""
 
-#: maketext:58
-#: maketext:62
-#: maketext:66
+#: maketext.pl:58
+#: maketext.pl:62
+#: maketext.pl:66
 msgid "[*,_1,shelf,shelves,no shelf]"
 msgstr ""
 
@@ -127,36 +127,36 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;"
 
-#: javascript:3
-#: javascript:4
-#: javascript:5
+#: javascript.js:3
+#: javascript.js:4
+#: javascript.js:5
 msgid "some string"
 msgstr ""
 
-#: javascript:6
+#: javascript.js:6
 msgid "this will get translated"
 msgstr ""
 
-#: javascript:7
+#: javascript.js:7
 msgid "text"
 msgstr ""
 
-#: javascript:8
+#: javascript.js:8
 msgid ""
 "Hello World!\n"
 ""
 msgstr ""
 
-#: javascript:9
+#: javascript.js:9
 msgid "Hello %1"
 msgstr ""
 
-#: javascript:10
+#: javascript.js:10
 msgid "This is the %1 %2"
 msgstr ""
 
-#: javascript:11
-#: javascript:15
+#: javascript.js:11
+#: javascript.js:15
 msgid ""
 "One file deleted.\n"
 ""
@@ -165,80 +165,80 @@ msgid_plural ""
 ""
 msgstr[0] ""
 
-#: javascript:19
+#: javascript.js:19
 msgctxt "Verb: To View"
 msgid "View"
 msgstr ""
 
-#: javascript:20
+#: javascript.js:20
 msgctxt "Noun: A View"
 msgid "View"
 msgstr ""
 
-#: javascript:22
+#: javascript.js:22
 msgid "one banana"
 msgid_plural "%1 bananas"
 msgstr[0] ""
 
-#: javascript:35
+#: javascript.js:35
 msgid "MSGID 1"
 msgstr ""
 
-#: javascript:36
+#: javascript.js:36
 msgid "MSGID 2"
 msgstr ""
 
-#: javascript:37
+#: javascript.js:37
 msgid "MSGID 3"
 msgid_plural "MSGID_PLURAL"
 msgstr[0] ""
 
-#: javascript:38
+#: javascript.js:38
 msgctxt "MSGCTXT"
 msgid "MSGID 4"
 msgstr ""
 
-#: javascript:39
+#: javascript.js:39
 msgctxt "MSGCTXT"
 msgid "MSGID 5"
 msgid_plural "MSGID_PLURAL"
 msgstr[0] ""
 
-#: javascript:40
+#: javascript.js:40
 msgid "MSGID 6"
 msgstr ""
 
-#: javascript:41
+#: javascript.js:41
 msgid "MSGID 7"
 msgstr ""
 
-#: javascript:42
+#: javascript.js:42
 msgid "MSGID 8"
 msgid_plural "MSGID_PLURAL"
 msgstr[0] ""
 
-#: javascript:43
+#: javascript.js:43
 msgid "MSGID 9"
 msgid_plural "MSGID_PLURAL"
 msgstr[0] ""
 
-#: javascript:44
+#: javascript.js:44
 msgctxt "MSGCTXT"
 msgid "MSGID 10"
 msgstr ""
 
-#: javascript:45
+#: javascript.js:45
 msgctxt "MSGCTXT"
 msgid "MSGID 11"
 msgstr ""
 
-#: javascript:46
+#: javascript.js:46
 msgctxt "MSGCTXT"
 msgid "MSGID 12"
 msgid_plural "MSGID_PLURAL"
 msgstr[0] ""
 
-#: javascript:47
+#: javascript.js:47
 msgctxt "MSGCTXT"
 msgid "MSGID 13"
 msgid_plural "MSGID_PLURAL"

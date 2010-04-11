@@ -20,7 +20,7 @@ my $extractor;
 lives_ok(
     sub {
         $extractor = Locale::TextDomain::OO::Extract::TT->new(
-            pot_charset => 'UTF-8',
+            po_charset => 'UTF-8',
         );
     },
     'create extractor object',
@@ -28,11 +28,12 @@ lives_ok(
 
 lives_ok(
     sub {
-        open my $file_handle, '< :encoding(UTF-8)', './t/files_to_extract/template.tt'
+        open my $filehandle, '< :encoding(UTF-8)', './t/files_to_extract/template.tt'
             or croak $OS_ERROR;
         $extractor->extract({
-            file_name   => 'template',
-            file_handle => $file_handle,
+            source_filename      => 'template',
+            source_filehandle    => $filehandle,
+            destination_filename => 'dest_template.pot'
         });
     },
     'open template.tt and extract pot',
@@ -40,7 +41,7 @@ lives_ok(
 
 lives_ok(
     sub {
-        open my $file_handle, '< :encoding(UTF-8)', 'template.pot'
+        open my $file_handle, '< :encoding(UTF-8)', 'dest_template.pot'
             or croak $OS_ERROR;
         local $INPUT_RECORD_SEPARATOR = '__DATA__';
         (my $data = <DATA>) =~ s{__DATA__\z}{}xms;
@@ -50,10 +51,10 @@ lives_ok(
             'compare pot content',
         );
     },
-    'read pot file',
+    'read dest_template.pot',
 );
 
-unlink 'template.pot';
+unlink 'dest_template.pot';
 
 __END__
 msgid ""

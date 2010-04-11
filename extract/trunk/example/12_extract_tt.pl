@@ -11,25 +11,26 @@ use English qw(-no_match_vars $OS_ERROR);
 use Locale::TextDomain::OO::Extract::TT;
 
 my $extractor = Locale::TextDomain::OO::Extract::TT->new(
-    pot_charset => 'UTF-8',
+    po_charset => 'UTF-8',
 );
 
-my $file_name = './files_to_extract/template.tt';
-open my $file_handle, '< :encoding(UTF-8)', $file_name ## no critic (BriefOpen)
-    or croak "Can not open file $file_name\n$OS_ERROR";
+my $filename = './files_to_extract/template.tt';
+open my $filehandle, '< :encoding(UTF-8)', $filename ## no critic (BriefOpen)
+    or croak "Can not open file $filename\n$OS_ERROR";
 $extractor->extract({
-    file_name   => 'template',
-    file_handle => $file_handle,
+    source_filename      => 'template.tt',
+    source_filehandle    => $filehandle,
+    destination_filename => 'template.pot',
 });
 
 binmode STDOUT, 'encoding(UTF-8)'
     or croak "Can not binmode STDOUT\n$OS_ERROR";
 
-$file_name = 'template.pot';
-open $file_handle, '< :encoding(UTF-8)', $file_name
-    or croak "Can not open $file_name\n$OS_ERROR";
-() = print {*STDOUT} <$file_handle>;
-() = close $file_handle;
+$filename = 'template.pot';
+open $filehandle, '< :encoding(UTF-8)', $filename
+    or croak "Can not open $filename\n$OS_ERROR";
+() = print {*STDOUT} <$filehandle>;
+() = close $filehandle;
 
 # only for automatic test of example
 if ($ARGV[0] && $ARGV[0] eq 'cleanup') {
@@ -49,14 +50,14 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;"
 
-#: template:9
+#: template.tt:9
 msgid "Text Ä"
 msgstr ""
 
-#: template:13
+#: template.tt:13
 msgid "Text Ö"
 msgstr ""
 
-#: template:16
+#: template.tt:16
 msgid "Text Ü"
 msgstr ""

@@ -13,37 +13,39 @@ use Locale::TextDomain::OO::Extract::Perl;
 my $extractor = Locale::TextDomain::OO::Extract::Perl->new();
 
 {
-    my $file_name = './files_to_extract/gettext.pl';
-    open my $file_handle, '<', $file_name ## no critic (BriefOpen)
-        or croak "Can not open file $file_name\n$OS_ERROR";
+    my $filename = './files_to_extract/gettext.pl';
+    open my $filehandle, '<', $filename ## no critic (BriefOpen)
+        or croak "Can not open file $filename\n$OS_ERROR";
     $extractor->extract({
-        file_name   => 'gettext',
-        file_handle => $file_handle,
+        source_filename      => 'gettext.pl',
+        source_filehandle    => $filehandle,
+        destination_filename => 'gettext.pot',
     });
 
-    $file_name = 'gettext.pot';
-    open $file_handle, '<', $file_name
-        or croak "Can not open $file_name\n$OS_ERROR";
-    () = print {*STDOUT} <$file_handle>;
-    () = close $file_handle;
+    $filename = 'gettext.pot';
+    open $filehandle, '<', $filename
+        or croak "Can not open $filename\n$OS_ERROR";
+    () = print {*STDOUT} <$filehandle>;
+    () = close $filehandle;
 }
 
 () = print {*STDOUT} q{-} x 78, "\n"; ## no critic (MagicNumbers)
 
 {
-    my $file_name = './files_to_extract/maketext.pl';
-    open my $file_handle, '<', $file_name ## no critic (BriefOpen)
-        or croak "Can not open file $file_name\n$OS_ERROR";
+    my $filename = './files_to_extract/maketext.pl';
+    open my $filehandle, '<', $filename ## no critic (BriefOpen)
+        or croak "Can not open file $filename\n$OS_ERROR";
     $extractor->extract({
-        file_name   => 'maketext',
-        file_handle => $file_handle,
+        source_filename      => 'maketext.pl',
+        source_filehandle    => $filehandle,
+        destination_filename => 'maketext.pot',
     });
 
-    $file_name = 'maketext.pot';
-    open $file_handle, '<', $file_name
-    or croak "Can not open $file_name\n$OS_ERROR";
-    () = print {*STDOUT} <$file_handle>;
-    () = close $file_handle;
+    $filename = 'maketext.pot';
+    open $filehandle, '<', $filename
+    or croak "Can not open $filename\n$OS_ERROR";
+    () = print {*STDOUT} <$filehandle>;
+    () = close $filehandle;
 }
 
 # only for automatic test of example
@@ -64,45 +66,45 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;"
 
-#: gettext:23
+#: gettext.pl:23
 msgid "This is a text."
 msgstr ""
 
-#: gettext:26
+#: gettext.pl:26
 msgid "{name} is programming {language}."
 msgstr ""
 
-#: gettext:31
-#: gettext:36
+#: gettext.pl:31
+#: gettext.pl:36
 msgid "Singular"
 msgid_plural "Plural"
 msgstr[0] ""
 
-#: gettext:41
-#: gettext:47
+#: gettext.pl:41
+#: gettext.pl:47
 msgid "{num} shelf"
 msgid_plural "{num} shelves"
 msgstr[0] ""
 
-#: gettext:53
+#: gettext.pl:53
 msgctxt "maskulin"
 msgid "Dear"
 msgstr ""
 
-#: gettext:57
+#: gettext.pl:57
 msgctxt "maskulin"
 msgid "Dear {name}"
 msgstr ""
 
-#: gettext:62
-#: gettext:68
+#: gettext.pl:62
+#: gettext.pl:68
 msgctxt "better"
 msgid "shelf"
 msgid_plural "shelves"
 msgstr[0] ""
 
-#: gettext:74
-#: gettext:81
+#: gettext.pl:74
+#: gettext.pl:81
 msgctxt "better"
 msgid "{num} shelf"
 msgid_plural "{num} shelves"
@@ -116,37 +118,37 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;"
 
-#: maketext:23
+#: maketext.pl:23
 msgid "This is a text."
 msgstr ""
 
-#: maketext:26
+#: maketext.pl:26
 msgid "[_1] is programming [_2]."
 msgstr ""
 
-#: maketext:31
+#: maketext.pl:31
 #: maketext:35
 msgid "[quant,_1,shelf,shelves]"
 msgstr ""
 
-#: maketext:39
+#: maketext.pl:39
 msgctxt "maskulin"
 msgid "Dear"
 msgstr ""
 
-#: maketext:43
+#: maketext.pl:43
 msgctxt "maskulin"
 msgid "Dear [_1]"
 msgstr ""
 
-#: maketext:48
-#: maketext:53
+#: maketext.pl:48
+#: maketext.pl:53
 msgctxt "better"
 msgid "[*,_1,shelf,shelves]"
 msgstr ""
 
-#: maketext:58
-#: maketext:62
-#: maketext:66
+#: maketext.pl:58
+#: maketext.pl:62
+#: maketext.pl:66
 msgid "[*,_1,shelf,shelves,no shelf]"
 msgstr ""

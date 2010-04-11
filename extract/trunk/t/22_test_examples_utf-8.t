@@ -28,15 +28,15 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=n != 1;"
 
-#: template:9
+#: template.tt:9
 msgid "Text Ä"
 msgstr ""
 
-#: template:13
+#: template.tt:13
 msgid "Text Ö"
 msgstr ""
 
-#: template:16
+#: template.tt:16
 msgid "Text Ü"
 msgstr ""
 

@@ -37,11 +37,12 @@ lives_ok(
 
 lives_ok(
     sub {
-        open my $file_handle, '<', './t/files_to_extract/gettext.pl'
+        open my $filehandle, '<', './t/files_to_extract/gettext.pl'
             or croak $OS_ERROR;
         $extractor->extract({
-            file_name   => 'gettext',
-            file_handle => $file_handle,
+            source_filename      => 'gettext',
+            source_filehandle    => $filehandle,
+            destination_filename => 'dest_gettext.pot',
         });
     },
     'open gettext.pl and extract pot',
@@ -49,26 +50,27 @@ lives_ok(
 
 lives_ok(
     sub {
-        open my $file_handle, '<', 'gettext.pot'
+        open my $filehandle, '<', 'dest_gettext.pot'
             or croak $OS_ERROR;
         local $INPUT_RECORD_SEPARATOR = "__DATA__\n";
         (my $data = <DATA>) =~ s{__DATA__ .* \z}{}xms;
         eq_or_diff(
-            <$file_handle>,
+            <$filehandle>,
             $data,
             'compare pot content',
         );
     },
-    'read gettext.pot',
+    'read dest_gettext.pot',
 );
 
 lives_ok(
     sub {
-        open my $file_handle, '<', './t/files_to_extract/maketext.pl'
+        open my $filehandle, '<', './t/files_to_extract/maketext.pl'
             or croak $OS_ERROR;
         $extractor->extract({
-            file_name   => 'maketext',
-            file_handle => $file_handle,
+            source_filename      => 'maketext',
+            source_filehandle    => $filehandle,
+            destination_filename => 'dest_maketext.pot',
         });
     },
     'open maketext.pl and extract pot',
@@ -76,20 +78,20 @@ lives_ok(
 
 lives_ok(
     sub {
-        open my $file_handle, '<', 'maketext.pot'
+        open my $filehandle, '<', 'dest_maketext.pot'
             or croak $OS_ERROR;
         local $INPUT_RECORD_SEPARATOR = "__DATA__\r\n";
         (my $data = <DATA>) =~ s{__DATA__ .* \z}{}xms;
         eq_or_diff(
-            <$file_handle>,
+            <$filehandle>,
             $data,
             'compare pot content',
         );
     },
-    'read maketext.pot',
+    'read dest_maketext.pot',
 );
 
-unlink qw(gettext.pot maketext.pot);
+unlink qw(dest_gettext.pot dest_maketext.pot);
 
 __END__
 msgid ""

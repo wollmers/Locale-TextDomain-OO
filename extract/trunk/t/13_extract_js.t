@@ -19,7 +19,7 @@ my $extractor;
 lives_ok(
     sub {
         $extractor = Locale::TextDomain::OO::Extract::JavaScript->new(
-            pot_charset => 'UTF-8',
+            po_charset => 'UTF-8',
         );
     },
     'create extractor object',
@@ -72,11 +72,12 @@ EOT
 
 lives_ok(
     sub {
-        open my $file_handle, '< :encoding(UTF-8)', './t/files_to_extract/javascript.js'
+        open my $filehandle, '< :encoding(UTF-8)', './t/files_to_extract/javascript.js'
             or croak $OS_ERROR;
         $extractor->extract({
-            file_name   => 'javascript',
-            file_handle => $file_handle,
+            source_filename      => 'javascript',
+            source_filehandle    => $filehandle,
+            destination_filename => 'dest_javascript.pot',
         });
     },
     'open javascript.js and extract pot',
@@ -84,20 +85,20 @@ lives_ok(
 
 lives_ok(
     sub {
-        open my $file_handle, '< :encoding(UTF-8)', 'javascript.pot'
+        open my $filehandle, '< :encoding(UTF-8)', 'dest_javascript.pot'
             or croak $OS_ERROR;
         local $INPUT_RECORD_SEPARATOR = '__DATA__';
         (my $data = <DATA>) =~ s{__DATA__\z}{}xms;
         eq_or_diff(
-            <$file_handle>,
+            <$filehandle>,
             $data,
             'compare pot content',
         );
     },
-    'read pot file',
+    'read dest_javascript.pot',
 );
 
-unlink 'javascript.pot';
+unlink 'dest_javascript.pot';
 
 __END__
 msgid ""
