@@ -205,7 +205,7 @@ __END__
 Locale::TextDomain::OO::Extract::JavaScript
 - Extracts internationalization data from JavaScript code
 
-$Id: JavaScript.pm 271 2010-01-16 07:37:06Z steffenw $
+$Id$
 
 $HeadURL: https://perl-gettext-oo.svn.sourceforge.net/svnroot/perl-gettext-oo/module/trunk/lib/Locale/TextDomain/OO/Extract/JavaScript.pm $
 

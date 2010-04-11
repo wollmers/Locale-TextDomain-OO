@@ -131,7 +131,7 @@ __END__
 Locale::TextDomain::OO::Extract::Perl
 - Extracts internationalization data from Perl source code
 
-$Id: Perl.pm 271 2010-01-16 07:37:06Z steffenw $
+$Id$
 
 $HeadURL: https://perl-gettext-oo.svn.sourceforge.net/svnroot/perl-gettext-oo/module/trunk/lib/Locale/TextDomain/OO/Extract/Perl.pm $
 
