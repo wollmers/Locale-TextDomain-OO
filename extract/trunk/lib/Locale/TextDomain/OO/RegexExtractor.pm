@@ -1,4 +1,4 @@
-package Locale::TextDomain::OO::RegexExtractor;
+package Locale::TextDomain::OO::RegexBasedExtractor;
 
 use strict;
 use warnings;
@@ -279,7 +279,7 @@ __END__
 
 =head1 NAME
 
-Locale::TextDomain::OO::RegexExtractor - Abstract class to extract data using regexes
+Locale::TextDomain::OO::RegexBasedExtractor - Abstract class to extract data using regexes
 
 $Id: Extract.pm 271 2010-01-16 07:37:06Z steffenw $
 
@@ -295,7 +295,7 @@ This module extracts data using regexes to store anywhere.
 
 =head1 SYNOPSIS
 
-    use parent qw(Locale::TextDomain::OO::RegexExtractor);
+    use parent qw(Locale::TextDomain::OO::RegexBasedExtractor);
 
     # Optional method
     # to uncomment or interpolate the file content or anything else.
@@ -339,7 +339,7 @@ This module extracts data using regexes to store anywhere.
         return $self;
     }
 
-    my $extractor = Locale::TextDomain::OO::RegexExtractor->new(
+    my $extractor = Locale::TextDomain::OO::RegexBasedExtractor->new(
         start_rule => qr{...}xms,
         rules      => [
             ...
@@ -370,7 +370,7 @@ This module extracts data using regexes to store anywhere.
 
 All parameters are optional.
 
-    my $extractor = Locale::TextDomain::OO::RegexExtractor->new(
+    my $extractor = Locale::TextDomain::OO::RegexBasedExtractor->new(
         # how to find such lines
         start_rule => qr{__ n?p?x? \(}xms
 

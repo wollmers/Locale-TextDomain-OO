@@ -5,7 +5,7 @@ use warnings;
 
 our $VERSION = '1.00';
 
-use parent qw(Locale::TextDomain::OO::RegexExtractor);
+use parent qw(Locale::TextDomain::OO::RegexBasedExtractor);
 
 use Carp qw(croak);
 require DBI;
@@ -457,7 +457,7 @@ DBI
 
 DBD::PO
 
-L<Locale::TextDomain::OO:RegexExtractor>
+L<Locale::TextDomain::OO:RegexBesedExtractor>
 
 =head1 INCOMPATIBILITIES
 
