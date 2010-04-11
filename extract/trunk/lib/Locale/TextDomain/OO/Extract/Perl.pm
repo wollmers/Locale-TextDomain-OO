@@ -3,7 +3,7 @@ package Locale::TextDomain::OO::Extract::Perl;
 use strict;
 use warnings;
 
-use version; our $VERSION = qv('0.05');
+use version; our $VERSION = qv('1.00');
 
 use parent qw(Locale::TextDomain::OO::Extract);
 
@@ -182,6 +182,19 @@ See Locale::TextDomain::OO::Extract to replace the defaults.
         # add some key value pairs to the header
         # more see documentation of DBD::PO
         pot_header => { ... },
+
+        # how to write the pot file
+        is_append => $boolean,
+
+        # debug output for other rules than perl
+        run_debug => ':all !parser', # debug all but not the parser
+                     # :all    - switch on all debugs
+                     # parser  - switch on parser debug
+                     # stack   - switch on stack debug
+                     # file    - switch on file debug
+                     # !parser - switch off parser debug
+                     # !stack  - switch off stack debug
+                     # !file   - switch off file debug
     );
 
 =head2 method extract
@@ -190,17 +203,36 @@ The default pot_dir is "./".
 
 Call
 
-    $extractor->extract('dir/filename.pl');
+    $extractor->extract({file_name => 'dir/filename.pl'});
 
-to extract "dir/filename.pl" to have a "$pot_dir/dir/filename.pl.pot".
+to extract "dir/filename.pl" and write "$pot_dir/dir/filename.pl.pot".
 
 Call
 
     open my $file_handle, '<', 'dir/filename.pl'
         or croak "Can no open file dir/filename.pl\n$OS_ERROR";
-    $extractor->extract('filename', $file_handle);
+    $extractor->extract({file_name => 'filename', file_handle => $file_handle});
 
-to extract "dir/filename.pl" to have a "$pot_dir/filename.pot".
+to extract "dir/filename.pl" and write "$pot_dir/filename.pot".
+
+Call
+
+    $extractor->extract({source_file_name => 'dir/filename.pl', file_name => 'file_name2'});
+
+to extract "dir/filename.pl" and write "$pot_dir/filename2.pot".
+
+Call
+
+    open my $file_handle, '<', 'dir/filename.pl'
+        or croak "Can no open file dir/filename.pl\n$OS_ERROR";
+    $extractor->extract({source_file_name => 'dir/filename.pl', file_handle => $file_handle, file_name => 'file_name2'});
+
+to extract "dir/filename.pl" and write "$pot_dir/filename2.pot".
+
+=head2 method debug
+
+Switch on the debug to see on STDERR how the rules are handled.
+Inherit of this class and write your own debug method if needed.
 
 =head1 EXAMPLE
 

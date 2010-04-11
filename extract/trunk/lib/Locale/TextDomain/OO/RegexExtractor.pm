@@ -3,7 +3,7 @@ package Locale::TextDomain::OO::RegexExtractor;
 use strict;
 use warnings;
 
-our $VERSION = '0.01';
+use version; our $VERSION = qv('1.00');
 
 use Carp qw(croak);
 use English qw(-no_match_vars $OS_ERROR $INPUT_RECORD_SEPARATOR);
@@ -287,7 +287,7 @@ $HeadURL: https://perl-gettext-oo.svn.sourceforge.net/svnroot/perl-gettext-oo/mo
 
 =head1 VERSION
 
-0.01
+1.00
 
 =head1 DESCRIPTION
 
@@ -370,15 +370,6 @@ This module extracts data using regexes to store anywhere.
     All parameters are optional.
 
     my $extractor = Locale::TextDomain::OO::RegexExtractor->new(
-        # prepare the file and the encoding
-        preprocess_code => sub {
-            my $content_ref = shift;
-
-            ...
-
-            return;
-        },
-
         # how to find such lines
         start_rule => qr{__ n?p?x? \(}xms
 
@@ -417,26 +408,37 @@ This module extracts data using regexes to store anywhere.
                      # !parser - switch off parser debug
                      # !stack  - switch off stack debug
                      # !file   - switch off file debug
-
     );
 
 =head2 method extract
 
-The default dir is "./".
-
 Call
 
-    $extractor->extract('dir/filename.pl');
+    $extractor->extract({file_name => 'dir/filename.pl'});
 
-to extract "dir/filename.pl" to have a "$pot_dir/dir/filename.pl.pot".
+to extract "dir/filename.pl" and write using name "dir/filename.pl".
 
 Call
 
     open my $file_handle, '<', 'dir/filename.pl'
         or croak "Can no open file dir/filename.pl\n$OS_ERROR";
-    $extractor->extract('filename', $file_handle);
+    $extractor->extract({file_name => 'filename', file_handle => $file_handle});
 
-to extract "dir/filename.pl" to have a "$pot_dir/filename.pot".
+to extract "dir/filename.pl" and write using name "dir/filename.pl".
+
+Call
+
+    $extractor->extract({source_file_name => 'dir/filename.pl', file_name => 'file_name2'});
+
+to extract "dir/filename.pl" and write using name "file_name2".
+
+Call
+
+    open my $file_handle, '<', 'dir/filename.pl'
+        or croak "Can no open file dir/filename.pl\n$OS_ERROR";
+    $extractor->extract({source_file_name => 'filename', file_handle => $file_handle, file_name => 'file_name2'});
+
+to extract "dir/filename.pl" and write using name "filename2".
 
 =head2 method debug
 

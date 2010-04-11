@@ -3,7 +3,7 @@ package Locale::TextDomain::OO::Extract;
 use strict;
 use warnings;
 
-our $VERSION = '0.05';
+our $VERSION = '1.00';
 
 use parent qw(Locale::TextDomain::OO::RegexExtractor);
 
@@ -222,7 +222,7 @@ $HeadURL: https://perl-gettext-oo.svn.sourceforge.net/svnroot/perl-gettext-oo/mo
 
 =head1 VERSION
 
-0.05
+1.00
 
 =head1 DESCRIPTION
 
@@ -243,7 +243,7 @@ This module extracts internationalizations data and stores this in a pot file.
         return $self;
     }
 
-    # how to map the stack_entry e.g. to a pot entry
+    # how to map the stack_item e.g. to a pot entry
     sub stack_item_mapping {
         my ($self, $stack_item) = @_;
 
@@ -298,6 +298,8 @@ This module extracts internationalizations data and stores this in a pot file.
     # The reference is $source_file_name.
     $extractor->extract({file_name => $file_name, file_handle => $fh, source_file_name => $source_file_name});
 
+=head1 SUBROUTINES/METHODS
+
 =head2 method init
 
 This method is for initializing DBD::PO.
@@ -313,15 +315,6 @@ Normally you have not to do this, because the defult is:
 All parameters are optional.
 
     my $extractor = Locale::TextDomain::OO::Extract->new(
-        # prepare the file and the encoding
-        preprocess_code => sub {
-            my $content_ref = shift;
-
-            ...
-
-            return;
-        },
-
         # how to find such lines
         start_rule => qr{__ n?p?x? \(}xms
 
@@ -351,32 +344,6 @@ All parameters are optional.
             ],
         ],
 
-        # debug output for other rules than perl
-        run_debug => ':all !parser', # debug all but not the parser
-                     # :all    - switch on all debugs
-                     # parser  - switch on parser debug
-                     # data    - switch on data debug
-                     # file    - switch on file debug
-                     # !parser - switch off parser debug
-                     # !data   - switch off data debug
-                     # !file   - switch off file debug
-
-        # how to map the parameters to pot file
-        parameter_mapping_code => sub {
-            my $parameter = shift;
-
-            # The chars after __ were stored to make a decision now.
-            my $context_parameter = shift @{$parameter};
-
-            return {
-                msgctxt      => $context_parameter =~ m{p}xms
-                                ? $context_parameter
-                                : undef,
-                msgid        => scalar shift @{$parameter},
-                msgid_plural => scalar shift @{$parameter},
-            };
-        },
-
         # where to store the pot file
         pot_dir => './',
 
@@ -394,19 +361,15 @@ All parameters are optional.
         # how to write the pot file
         is_append => $boolean,
 
-        # write your own code to store pot file
-        store_pot_code => sub {
-            my $attr_ref = shift;
-
-            my $pot_dir     = $sttr_ref->{pot_dir};     # undef or string
-            my $pot_charset = $sttr_ref->{pot_charset}; # undef or string
-            my $is_append   = $sttr_ref->{is_append};   # boolean
-            my $pot_header  = $sttr_ref->{pot_header};  # hashref
-            my $stack       = $sttr_ref->{stack};       # arrayref
-            my $file_name   = $sttr_ref->{file_name};   # undef or string
-
-            ...
-        },
+        # debug output for other rules than perl
+        run_debug => ':all !parser', # debug all but not the parser
+                     # :all    - switch on all debugs
+                     # parser  - switch on parser debug
+                     # stack   - switch on stack debug
+                     # file    - switch on file debug
+                     # !parser - switch off parser debug
+                     # !stack  - switch off stack debug
+                     # !file   - switch off file debug
     );
 
 =head2 method extract
@@ -415,17 +378,31 @@ The default pot_dir is "./".
 
 Call
 
-    $extractor->extract('dir/filename.pl');
+    $extractor->extract({file_name => 'dir/filename.pl'});
 
-to extract "dir/filename.pl" to have a "$pot_dir/dir/filename.pl.pot".
+to extract "dir/filename.pl" and write "$pot_dir/dir/filename.pl.pot".
 
 Call
 
     open my $file_handle, '<', 'dir/filename.pl'
         or croak "Can no open file dir/filename.pl\n$OS_ERROR";
-    $extractor->extract('filename', $file_handle);
+    $extractor->extract({file_name => 'filename', file_handle => $file_handle});
 
-to extract "dir/filename.pl" to have a "$pot_dir/filename.pot".
+to extract "dir/filename.pl" and write "$pot_dir/filename.pot".
+
+Call
+
+    $extractor->extract({source_file_name => 'dir/filename.pl', file_name => 'file_name2'});
+
+to extract "dir/filename.pl" and write "$pot_dir/filename2.pot".
+
+Call
+
+    open my $file_handle, '<', 'dir/filename.pl'
+        or croak "Can no open file dir/filename.pl\n$OS_ERROR";
+    $extractor->extract({source_file_name => 'dir/filename.pl', file_handle => $file_handle, file_name => 'file_name2'});
+
+to extract "dir/filename.pl" and write "$pot_dir/filename2.pot".
 
 =head2 method debug
 
@@ -459,19 +436,17 @@ none
 
 version
 
+parent
+
 Carp
 
 English
-
-Clone
 
 DBI
 
 DBD::PO
 
-=head2 dynamic require
-
-L<Data::Dumper>
+L<Locale::TextDomain::OO:RegexExtractor>
 
 =head1 INCOMPATIBILITIES
 
