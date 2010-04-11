@@ -314,6 +314,18 @@ Call
 to extract "dir1/filename1.js" to $pot_dir/filename2.pot".
 The reference is "filename1".
 
+=head2 method preprocess
+
+If this method exits the abstract parent class will call this.
+
+    $self->preprocess();
+
+=head2 method stack_item_mapping
+
+This method is expected from the abstact parent class.
+
+    @stck_items = $self->stack_item_mapping($destination_filename);
+
 =head1 EXAMPLE
 
 Inside of this distribution is a directory named example.

@@ -249,25 +249,20 @@ This module extracts internationalizations data and stores this in a pot file.
     sub stack_item_mapping {
         my ($self, $stack_item) = @_;
 
+        my $match = $stack_item->{match};
         # The chars after __ were stored to make a decision now.
-        my $context_parameter = shift @{$stack_item};
+        my $extra_parameter = shift @{$match};
+        @{$match}
+            or return;
 
         return {
-            msgctxt      => $context_parameter =~ m{p}xms
-                            ? $context_parameter
+            reference    => "$stack_item->{source_filename}:$stack_item->{line_number}",
+            msgctxt      => $extra_parameter =~ m{p}xms
+                            ? shift @{$match}
                             : undef,
-            msgid        => scalar shift @{$stack_item},
-            msgid_plural => scalar shift @{$stack_item},
+            msgid        => scalar shift @{$match},
+            msgid_plural => scalar shift @{$match},
         };
-    }
-
-    sub store_data {
-        my ($self, $destination_filename) = @_;
-
-        my $stack = $self->get_stack();
-        ...
-
-        return $self;
     }
 
     my $extractor = Locale::TextDomain::OO::Extract->new(
@@ -421,7 +416,7 @@ Inherit of this class and write your own debug method if needed.
 
 This method is expected from the abstact parent class.
 
-    $extractor->store_data($filename);
+    $extractor->store_data($destination_filename);
 
 =head1 EXAMPLE
 

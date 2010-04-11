@@ -97,6 +97,7 @@ sub stack_item_mapping {
     my ($self, $stack_item) = @_;
 
     my $match = $stack_item->{match};
+    # The chars after __ were stored to make a decision now.
     my $extra_parameter = shift @{$match};
     @{$match}
         or return;
@@ -104,7 +105,7 @@ sub stack_item_mapping {
     return {
         reference    => "$stack_item->{source_filename}:$stack_item->{line_number}",
         msgctxt      => $extra_parameter =~ m{p}xms
-                        ? scalar shift @{$match}
+                        ? shift @{$match}
                         : undef,
         msgid        => scalar shift @{$match},
         msgid_plural => scalar shift @{$match},
@@ -224,6 +225,18 @@ Call
 
 to extract "dir1/filename1.pl" to "$po_dir/filename2.pot".
 The reference is "filename1".
+
+=head2 method preprocess
+
+If this method exits the abstract parent class will call this.
+
+    $self->preprocess();
+
+=head2 method stack_item_mapping
+
+This method is expected from the abstact parent class.
+
+    @stck_items = $self->stack_item_mapping($destination_filename);
 
 =head1 EXAMPLE
 

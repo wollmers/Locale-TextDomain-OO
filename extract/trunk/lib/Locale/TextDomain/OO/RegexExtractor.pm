@@ -310,19 +310,23 @@ This module extracts data using regexes to store anywhere.
     }
 
     # How to map the stack_item e.g. to a po entry:
-    # Return an empty list to ignore the stack item.
+    # Return an empty list to ignore a stack item.
     sub stack_item_mapping {
         my ($self, $stack_item) = @_;
 
+        my $match = $stack_item->{match};
         # The chars after __ were stored to make a decision now.
-        my $context_parameter = shift @{$stack_item};
+        my $extra_parameter = shift @{$match};
+        @{$match}
+            or return;
 
         return {
-            msgctxt      => $context_parameter =~ m{p}xms
-                            ? $context_parameter
+            reference    => "$stack_item->{source_filename}:$stack_item->{line_number}",
+            msgctxt      => $extra_parameter =~ m{p}xms
+                            ? shift @{$match}
                             : undef,
-            msgid        => scalar shift @{$stack_item},
-            msgid_plural => scalar shift @{$stack_item},
+            msgid        => scalar shift @{$match},
+            msgid_plural => scalar shift @{$match},
         };
     }
 
