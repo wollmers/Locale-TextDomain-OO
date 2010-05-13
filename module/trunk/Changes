@@ -1,5 +1,9 @@
 Revision history for Perl extension Locale::Text::Domain:OO.
 
+0.07  Thu May 13 10:21:15 2010
+- Problem with UTF-8 Environment $ENV{LANG} is 'en_GB.UTF-8' or 'en_US.UTF-8' 
+  https://rt.cpan.org/Public/Bug/Display.html?id=53931
+
 0.06  Wed Jan 20 07:15:00 2010
 - repair Makefile.PL
 
