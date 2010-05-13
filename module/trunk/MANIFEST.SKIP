@@ -71,3 +71,6 @@
 
 # Avoid archives of this distribution
 \bLocale-TextDomain-OO-[\d\.\_]+
+
+# Avoid Windows test startup
+\.bat$
