@@ -11,6 +11,7 @@ use English qw(-no_match_vars $OS_ERROR);
 use Encode qw(encode decode);
 require Locale::TextDomain::OO;
 
+local $ENV{LANG} = (); # for author test only
 local $ENV{LANGUAGE}
     = Locale::TextDomain::OO
     ->get_default_language_detect()

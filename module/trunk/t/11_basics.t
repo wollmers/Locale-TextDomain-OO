@@ -12,6 +12,7 @@ BEGIN {
     require_ok('Locale::TextDomain::OO');
 }
 
+local $ENV{LANG} = ();
 local $ENV{LANGUAGE}
     = Locale::TextDomain::OO
     ->get_default_language_detect()

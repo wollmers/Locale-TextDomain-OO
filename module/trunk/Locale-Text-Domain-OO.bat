@@ -6,6 +6,8 @@ echo -- AUTHOR_DIST=tar.gz --
 set AUTHOR_DIST=tar.gz
 perl Build.PL
 
+set LANG=en_GB.UTF-8
+
 echo -- test --
 pause
 set TEST_EXAMPLE=1
