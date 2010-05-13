@@ -29,6 +29,7 @@ find(
         if ( m{\.pl \z}xms ) {
             if ( $content =~ s{\A \xEF \xBB \xBF (\#!perl)}{$1}xms ) {
                 $write = 1;
+                print "LTR deleted at file $File::Find::name\n";
             }
         }
         if ( m{\.js \z}xms || m{\.tt \z}xms ) {
@@ -37,6 +38,7 @@ find(
             }
             if ( $content =~ s{\t}{}xmsg ) {
 #                $write = 1;
+                print "Tab detected at file $File::Find::name\n";
             }
         }
         if ($write) {
