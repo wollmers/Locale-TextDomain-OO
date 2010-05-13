@@ -1,4 +1,4 @@
-Locale-Text-Domain-OO version 0.06
+Locale-Text-Domain-OO version 0.07
 ==================================
 
 Perl OO Interface to Uniforum Message Translation
@@ -26,8 +26,15 @@ This module requires these other modules and libraries:
     version
     parent
     Safe
+    Carp
+    Cwd
+    Encode
+    DBI
+    DBD::PO
     Perl6::Export::Attrs
     I18N::LangTags
+    I18N::LangTagsDetect
+    Tie::Sub
     Locale::Messages
 
 COPYRIGHT AND LICENCE

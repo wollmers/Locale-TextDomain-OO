@@ -1,17 +1,17 @@
-<SOFTPKG NAME="Locale-TextDomain-OO" VERSION="0,06,0,0">
-    <TITLE>Locale-TextDomain-OO</TITLE>
+<SOFTPKG NAME="Locale-TextDomain-OO" VERSION="0.07">
     <ABSTRACT>Locale::TextDomain::OO - Perl OO Interface to Uniforum Message Translation</ABSTRACT>
     <AUTHOR>Steffen Winkler &lt;steffenw at cpan.org&gt;</AUTHOR>
     <IMPLEMENTATION>
-        <DEPENDENCY NAME="Perl6-Export-Attrs" VERSION="0,0,0,0" />
-        <DEPENDENCY NAME="parent" VERSION="0,0,0,0" />
-        <DEPENDENCY NAME="libintl-perl" VERSION="1,2,0,0" />
-        <DEPENDENCY NAME="DBD-PO" VERSION="2,09,0,0" />
-        <DEPENDENCY NAME="version" VERSION="0,0,0,0" />
-        <DEPENDENCY NAME="Tie-Sub" VERSION="0,09,0,0" />
-        <DEPENDENCY NAME="I18N-LangTags" VERSION="0,0,0,0" />
-        <DEPENDENCY NAME="Safe" VERSION="0,0,0,0" />
-        <DEPENDENCY NAME="DBI" VERSION="0,0,0,0" />
-        <CODEBASE HREF="PPM-Locale-TextDomain-OO-0.06.tar.gz" />
+        <REQUIRE NAME="parent::" VERSION="0" />
+        <REQUIRE NAME="version::" VERSION="0" />
+        <REQUIRE NAME="Tie::Sub" VERSION="0.09" />
+        <REQUIRE NAME="Perl6::Export::Attrs" VERSION="0" />
+        <REQUIRE NAME="libintl-perl::" VERSION="1.2" />
+        <REQUIRE NAME="DBD::PO" VERSION="2.09" />
+        <REQUIRE NAME="Locale::PO::Utils" VERSION="0.02" />
+        <REQUIRE NAME="I18N::LangTags" VERSION="0" />
+        <REQUIRE NAME="Safe::" VERSION="0" />
+        <REQUIRE NAME="DBI::" VERSION="0" />
+        <CODEBASE HREF="PPM-Locale-TextDomain-OO-0.07.tar.gz" />
     </IMPLEMENTATION>
 </SOFTPKG>

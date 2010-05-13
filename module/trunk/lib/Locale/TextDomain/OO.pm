@@ -3,7 +3,7 @@ package Locale::TextDomain::OO;
 use strict;
 use warnings;
 
-our $VERSION = '0.06';
+our $VERSION = '0.07';
 
 use Carp qw(croak);
 use Cwd qw(abs_path);
@@ -105,7 +105,7 @@ sub _set_gettext_package {
     if ( ! $gettext_package ) {
         # Try to load the XS version first.
         my $version_ok = eval <<'EOC';  ## no critic (StringyEval)
-            require 'Locale::gettext_xs';
+            # require 'Locale::gettext_xs'; # is damaged at the moment
             Locale::gettext_xs::__gettext_xs_version() >= 1.20;
 EOC
         $EVAL_ERROR
@@ -476,7 +476,7 @@ $HeadURL$
 
 =head1 VERSION
 
-0.06
+0.07
 
 =head1 DESCRIPTION
 

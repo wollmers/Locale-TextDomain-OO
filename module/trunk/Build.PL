@@ -30,7 +30,6 @@ Module::Build->new(
         'DBD::PO'              => 2.09,
         'Perl6::Export::Attrs' => 0,
         'I18N::LangTags'       => 0,
-        'Locale::PO::Utils'    => 0.02,
         'Tie::Sub'             => 0.09,
         $is_ppm
         ? (
