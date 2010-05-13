@@ -42,4 +42,5 @@
 \bbuild.com$
 
 # Avoid archives of this distribution
-\bLocale-TextDomain-OO-[\d\.\_]+
+\bLocale-TextDomain-OO-[\d\.\_]+^MYMETA.yml$
+^MYMETA.yml$
