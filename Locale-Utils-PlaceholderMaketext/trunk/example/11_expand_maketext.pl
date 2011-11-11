@@ -5,6 +5,7 @@ use warnings;
 
 our $VERSION = 0;
 
+use charnames qw(:full); # for \N{...}
 require Locale::Utils::PlaceholderMaketext;
 
 # code to format numeric values
@@ -68,7 +69,17 @@ for (undef, 0 .. 2, '3234567.890', 4_234_567.890) { ## no critic (MagicNumbers)
         "\n";
 }
 
-# $Id:$
+# space
+$obj->space("\N{NO-BREAK SPACE}");
+() = print
+    $obj->expand_maketext("unicode space [quant,_1,singular,plural]\n", 1),
+    $obj->expand_maketext("unicode space [quant,_1,singular,plural]\n", 2);
+$obj->reset_space();
+() = print
+    $obj->expand_maketext("default space [quant,_1,singular,plural]\n", 1),
+    $obj->expand_maketext("default space [quant,_1,singular,plural]\n", 2);
+
+# $Id$
 
 __END__
 
@@ -88,3 +99,7 @@ foo 1 bar 1 singular baz
 foo 2 bar 2 plural baz
 foo 3.234.567,890 bar 3.234.567,890 plural baz
 foo 4.234.567,89 bar 4.234.567,89 plural baz
+unicode space 1\N{NO-BREAK SPACE}singular
+unicode space 2\N{NO-BREAK SPACE}plural
+default space 1 singular
+default space 2 plural

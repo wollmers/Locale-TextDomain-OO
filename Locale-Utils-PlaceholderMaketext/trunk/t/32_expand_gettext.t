@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 28 + 1;
+use Test::More tests => 29 + 1;
 use Test::NoWarnings;
 use Test::Differences;
 BEGIN {
@@ -30,21 +30,75 @@ eq_or_diff(
     'no strict',
 );
 
-$obj->strict(1);
+$obj->space(q{x});
 
 eq_or_diff(
     $obj->expand_gettext(
-        '%1;%2;%3;%4;%quant(%5,s);%quant(%6,s)',
+        '%quant(%1,s);%quant(%2,s,p)',
+        1,
+        2,
+    ),
+    '1xs;2xp',
+    'space is x',
+);
+
+$obj->reset_space();
+$obj->strict(1);
+
+$obj->formatter_code(
+    sub {
+        my ($value, $type) = @_;
+
+        $type eq 'numeric'
+            or return $value;
+        while ( $value =~ s{(\d+) (\d{3})}{$1,$2}xms ) {}
+        $value =~ tr{.,}{,.};
+
+        return $value;
+    }
+);
+
+eq_or_diff(
+    $obj->expand_gettext(
+        <<'EOT',
+%1
+%2
+%3
+%4
+%5
+%quant(%6,s)
+%quant(%7,s)
+%quant(%8,s)
+%quant(%9,s)
+%quant(%10,s)
+EOT
         undef,
         'a',
-        3,
+        '3',
         '4234567.890',
+        5234567.890,
         undef,
         'b',
+        8,
+        '9234567.890',
+        10_234_567.890,
     ),
-    '%1;a;3;4234567.890;%quant(%5,s);%quant(%6,s)',
-    'strict',
+    <<'EOT',
+%1
+a
+3
+4.234.567,890
+5.234.567,89
+%quant(%6,s)
+%quant(%7,s)
+8 s
+9.234.567,890 s
+10.234.567,89 s
+EOT
+    'strict, numeric',
 );
+
+$obj->clear_formatter_code();
 
 my @data = (
     {

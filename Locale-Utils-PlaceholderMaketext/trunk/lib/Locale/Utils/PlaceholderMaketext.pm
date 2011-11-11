@@ -15,6 +15,13 @@ has strict => (
     isa    => 'Bool',
 );
 
+has space => (
+    is      => 'rw',
+    isa     => 'Str',
+    default => q{ },
+);
+method reset_space () { $self->space(q{ }) }
+
 has formatter_code => (
     is      => 'rw',
     isa     => 'CodeRef',
@@ -77,20 +84,21 @@ method _replace ($arg_ref, $text, $index_quant, $singular, $plural, $zero, $inde
             = $self->formatter_code
             ? $self->formatter_code->($number, 'numeric', 'quant')
             : $number;
+        my $space = $self->space;
         return
             +( defined $zero && $number == 0 )
             ? $zero
             : $number == 1
             ? (
                 defined $singular
-                ? "$formatted $singular"
+                ? "$formatted$space$singular"
                 : return $text
             )
             : (
                 defined $plural
-                ? "$formatted $plural"
+                ? "$formatted$space$plural"
                 : defined $singular
-                ? "$formatted $singular"
+                ? "$formatted$space$singular"
                 : return $text
             );
     }
@@ -166,9 +174,9 @@ __END__
 
 Locale::Utils::PlaceholderMaketext - Utils to expand maketext palaceholders
 
-$Id:$
+$Id$
 
-$HeadURL:$
+$HeadURL$
 
 =head1 VERSION
 
@@ -182,7 +190,9 @@ $HeadURL:$
         # optional strict switch
         strict         => 1,
         # optional fromatter code
-        formatter_code = sub { ... },
+        formatter_code => sub { ... },
+        # space between number and singular/plural at function quant
+        space          => "\N{NO-BREAK SPACE}",
     );
 
     $expanded = $obj->expand_maketext($text, @args);
@@ -195,6 +205,8 @@ Utils to expand placeholders in maketext or gettext style.
 Locale::Maketext encapsulates the expander.
 To use the expander in other modules it is not possible.
 Use this module instead.
+Use method formatter_code and feel free how to format numerics.
+Use method sapce to prevent the linebreak bitween number and singular/plural.
 
 =head1 SUBROUTINES/METHODS
 
@@ -239,6 +251,15 @@ This method can called as class method too.
 
     $maketext_string
         = Locale::Utils::PlaceholderMaketext->gettext_to_maketext($gettext_string);
+
+=head2 method space, reset_space
+
+Set the space bitween number and singular/plural.
+Prevent the linebreak after the number using no-break space.
+The default of space is C<q{ }>.
+
+    $obj->space( "\N{NO-BREAK SPACE}" ); # unicode example
+    $obj->reset_space; # to reset to the default q{ }
 
 =head2 method strict
 

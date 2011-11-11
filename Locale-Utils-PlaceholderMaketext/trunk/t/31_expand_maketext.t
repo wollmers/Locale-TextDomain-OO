@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 28 + 1;
+use Test::More tests => 29 + 1;
 use Test::NoWarnings;
 use Test::Differences;
 BEGIN {
@@ -31,6 +31,19 @@ eq_or_diff(
     'no strict',
 );
 
+$obj->space(q{x});
+
+eq_or_diff(
+    $obj->expand_maketext(
+        '[quant,_1,s];[quant,_2,s,p]',
+        1,
+        2,
+    ),
+    '1xs;2xp',
+    'space is x',
+);
+
+$obj->reset_space();
 $obj->strict(1);
 
 $obj->formatter_code(
@@ -83,7 +96,7 @@ a
 9.234.567,890 s
 10.234.567,89 s
 EOT
-    'numeric',
+    'strict, numeric',
 );
 
 $obj->clear_formatter_code();
