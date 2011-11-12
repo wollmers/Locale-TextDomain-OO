@@ -18,7 +18,7 @@ my $is_ppm
 Module::Build->new(
     module_name       => 'Locale::Utils::PlaceholderMaketext',
     license           => 'perl',
-    dist_abstract     => 'Locale::Utils::PlaceholderMaketext - Utils to expand maketext palaceholders',
+    dist_abstract     => 'Locale::Utils::PlaceholderMaketext - Utils to expand maketext placeholders',
     dist_author       => 'Steffen Winkler <steffenw at cpan.org>',
     dist_version_from => 'lib/Locale/Utils/PlaceholderMaketext.pm',
     requires          => {

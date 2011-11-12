@@ -1,5 +1,5 @@
-Locale::Utils::PlaceholdersMaketext version 0.001
-=================================================
+Locale::Utils::PlaceholderMaketext version 0.001
+================================================
 
 Utils to transform text from maketext to gettext style and reverse.
 Utils to expand placeholders in maketext or gettext style.
