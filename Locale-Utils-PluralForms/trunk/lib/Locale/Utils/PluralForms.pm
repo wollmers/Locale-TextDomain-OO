@@ -66,12 +66,6 @@ has plural_code => (
     writer   => '_plural_code',
 );
 
-has strict => (
-    is      => 'rw',
-    isa     => 'Bool',
-    clearer => 'clear_strict',
-);
-
 method _get_all_plural_forms_html () {
     my $url = $self->_all_plural_forms_url;
     my $ua  = LWP::UserAgent->new;
@@ -126,35 +120,29 @@ method _calculate_plural_forms () {
     my $plural_forms = $self->plural_forms;
     $plural_forms =~ s{\b ( nplurals | plural | n ) \b}{\$$1}xmsg;
     my $safe = Safe->new;
-    {
-        my $code = <<"EOC";
-            my \$n = 0;
+    my $nplurals_code = <<"EOC";
+        my \$n = 0;
+        my (\$nplurals, \$plural);
+        $plural_forms;
+        \$nplurals;
+EOC
+    $self->_nplurals(
+        $safe->reval($nplurals_code)
+        or confess
+            "Code of Plural-Forms $plural_forms is not safe, $EVAL_ERROR"
+    );
+    my $plural_code = <<"EOC";
+        sub {
+            my \$n = shift;
             my (\$nplurals, \$plural);
             $plural_forms;
-            \$nplurals;
+            return \$plural || 0;
+        }
 EOC
-        $self->_nplurals(
-            $safe->reval($code)
-            or confess
-                "Code of Plural-Forms $plural_forms is not safe, $EVAL_ERROR"
-        );
-    }
-    {
-        my $code = <<"EOC";
-            sub {
-                my \$n = shift;
-
-                my (\$nplurals, \$plural);
-                $plural_forms;
-
-                return \$plural || 0;
-            }
-EOC
-        $self->_plural_code(
-            $safe->reval($code)
-            or confess "Code $plural_forms is not safe, $EVAL_ERROR"
-        );
-    }
+    $self->_plural_code(
+        $safe->reval($plural_code)
+        or confess "Code $plural_forms is not safe, $EVAL_ERROR"
+    );
 
     return $self;
 }
@@ -169,9 +157,9 @@ __END__
 
 Locale::Utils::PluralForms - Utils to use plural forms
 
-$Id:$
+$Id$
 
-$HeadURL:$
+$HeadURL$
 
 =head1 VERSION
 
@@ -179,84 +167,145 @@ $HeadURL:$
 
 =head1 SYNOPSIS
 
-    use Locale::Utils::PlaceholderNamed;
+    use Locale::Utils::PluralForms;
 
-    $obj = Locale::Utils::PlaceholderNamed->new;
+    my $obj = Locale::Utils::PluralForms->new;
+
+Data downloaded from web
+
+    $obj = Locale::Utils::PluralForms->new(
+        language => 'en_GB', # fallbacks from given en_GB to en
+    );
+
+Data of given data structure
+
+    $obj = Locale::Utils::PluralForms->new(
+        all_plural_forms => {
+            'en' => {
+                english_name => 'English',
+                plural_forms => 'nplurals=2; plural=(n != 1)',
+            },
+            # next languages
+        },
+    );
+
+Getter
+
+    my $language         = $obj->language;
+    my $all_plural_forms = $obj->all_plural_forms;
+    my $plural_forms     = $obj->plural_forms;
+    my $nplurals         = $obj->nplurals;
+    my $plural_code      = $obj->plural_code;
+    my $plural           = $obj->plural_code->($number);
 
 =head1 DESCRIPTION
 
-Utils to calculate the plural forms and expand named placeholders.
+=head2 Find plural forms for the language
 
-The header of a PO file is quite complex.
-This module helps to build the header and extract.
+This module helps to find the plural forms for all languages.
+It downloads the plural forms for all languages from web.
+Then it stores the extracted data
+into a data structure named "all_plural_forms".
 
-In this header, an entry is called "Plural-Forms".
-How many plural forms the language has, is described there.
-The second Information in "Plural-Forms" describes as a code,
-how to choose the correct plural form.
+It is possible to fill that data structure
+before method "language" is called first time
+or to cache after first method call "language".
 
-Some phrases contain placeholders.
-Here are the methods to replace these.
+=head2 "plural" as subroutine
+
+In the header of a PO- or MO-File
+is an entry is called "Plural-Forms".
+How many plural forms the language has, is described there in "nplurals".
+The second Information in "Plural-Forms" describes as a formula,
+how to choose the "plural".
+
+This module compiles plural forms
+to a code references in a secure way.
 
 =head1 SUBROUTINES/METHODS
 
-=head2 Calculate the plural forms
+=head2 Find plural forms for the language
 
-All attributes are optional.
-The attribute values are the defaults to show them.
+=head3 method language
 
-    $obj = Locale::PO::Utils->new(
-        plural_forms => 'nplurals=1; plural=0',
-    );
+Set the language to switch to the plural forms of that language.
+"plural_forms" is set then and "nplurals" and "plural_code" will be calculated.
 
-The defaults for nplural and plural_code is:
+    $obj->language('de_AT'); # A fallback finds plural forms of language de
+                             # because de_AT is not different.
 
-    $obj->nplurals    # returns: 1
-    $obj->plural_code # returns: sub { return 0 }
+Read the language back.
 
-The attribute setter is named plural_forms.
-There are no public setter for attributes nplurals and plural_code
+    $obj->language eq 'de_AT';
+
+=head3 method all_plural_forms
+
+Set the data structure.
+
+    $obj->all_plural_forms({
+        'de' => {
+            english_name => 'German',
+            plural_forms => 'nplurals=2; plural=(n != 1)',
+        },
+        # next languages
+    });
+
+Read the data structure back.
+
+    my $hash_ref = $obj->all_plural_forms;
+
+=head2 executable plural forms
+
+=head3 method plural_forms
+
+Set "plural_forms" if no "language" is set.
+After that "nplurals" and "plural_code" will be calculated in a safe way.
+
+    $obj->plural_forms('nplurals=1; plural=0');
+
+Or read it back.
+
+    my $plural_forms = $obj->plural_forms;
+
+=head3 method nplurals
+
+This method get back the calculated count of plurals.
+
+If no "language" and no "plural_forms" is set,
+the defaults for "nplurals" is:
+
+    my $count = $obj->nplurals # returns: 1
+
+There is no public setter for "nplurals"
 and it is not possible to set them in the constructor.
-Call method plural_forms or set attribute plural_forms in the constructor.
-After that nplurals and plual_code will be calculated automaticly and safe.
-
-The attribute getter are named plural_forms, nplurals and plural_code.
-
-=head2 method plural_forms
-
-Plural forms are defined like this for English:
-
-    $obj->plural_forms('nplurals=2; plural=(n != 1)');
-
-After that this method calculates and set
-nplurals and the plural_code safe.
-
-=head2 method nplurals
-
-This method get back the calculated count of plural forms.
-The default value before any calculation is C<1>.
-
-    $nplurals = $obj->nplurals;
+Call method "language" or "plural_forms"
+or set attribute "language" or "plural_forms" in the constructor.
+After that "nplurals" will be calculated automaticly and safe.
 
 =head2 method plural_code
 
-This method get back the calculated code for the calculaded plural form
-to choose the correct plural.
-The default value before any calculation is C<sub {return 0}>.
+This method get back the calculated code for the "plural"
+to choose the correct "plural".
 
-For the example C<'nplurals=2; plural=(n != 1)'>:
+If no "language" and no "plural_forms" is set,
+the defaults for plural_code is:
+
+    my $code_ref = $obj->plural_code # returns: sub { return 0 }
+    my $plural   = $obj->plural_code->($number); # returns 0
+
+There is no public setter for "plural_code"
+and it is not possible to set them in the constructor.
+Call method "language" or "plural_forms"
+or set attribute "language" or "plural_forms" in the constructor.
+After that "plural_code" will be calculated automaticly and safe.
+
+For the example plural forms C<'nplurals=2; plural=(n != 1)'>:
 
     $plural = $obj->plural_code->(0), # $plural is 1
     $plural = $obj->plural_code->(1), # $plural is 0
     $plural = $obj->plural_code->(2), # $plural is 1
     $plural = $obj->plural_code->(3), # $plural is 1
     ...
-
-=head2 method expand_text
-
-Expands strings containing gettext placeholders like C<{name}>.
-
-    $expanded = $obj->expand_text($text, %args);
 
 =head1 EXAMPLE
 
