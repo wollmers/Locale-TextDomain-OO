@@ -1,0 +1,15 @@
+<SOFTPKG NAME="Locale-Utils-PluralForms" VERSION="0.001">
+    <ABSTRACT>Locale::Utils::PluralForms - Utils to use plural forms</ABSTRACT>
+    <AUTHOR>Steffen Winkler &lt;steffenw at cpan.org&gt;</AUTHOR>
+    <IMPLEMENTATION>
+        <REQUIRE NAME="MooseX::StrictConstructor" VERSION="0" />
+        <REQUIRE NAME="namespace::autoclean" VERSION="0" />
+        <REQUIRE NAME="libwww-perl::" VERSION="0" />
+        <REQUIRE NAME="HTML::Parser" VERSION="0" />
+        <REQUIRE NAME="HTML::Entities" VERSION="0" />
+        <REQUIRE NAME="Syntax::Feature::Method" VERSION="0" />
+        <REQUIRE NAME="syntax::" VERSION="0" />
+        <REQUIRE NAME="Moose::" VERSION="0" />
+        <CODEBASE HREF="PPM-Locale-Utils-PluralForms-0.001.tar.gz" />
+    </IMPLEMENTATION>
+</SOFTPKG>
