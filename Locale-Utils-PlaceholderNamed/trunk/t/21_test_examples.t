@@ -17,7 +17,7 @@ my @data = (
     {
         test   => '01_expand_named',
         path   => 'example',
-        script => '-I../lib -T 11_expand_named.pl',
+        script => '-I../lib -T 01_expand_named.pl',
         result => <<'EOT',
 foo + bar + baz = {num} items
 foo + bar + baz = 0 items
