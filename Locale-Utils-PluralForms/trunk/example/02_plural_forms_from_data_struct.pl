@@ -51,7 +51,7 @@ for (0 .. 2, 5, 100 .. 102, 105, 110 .. 112, 115, 120 .. 122, 125) { ## no criti
         $plural_code->($_),
 }
 
-# $Id: 11_calculate_plural_forms.pl 375 2011-11-13 06:50:50Z steffenw $
+# $Id$
 
 __END__
 
