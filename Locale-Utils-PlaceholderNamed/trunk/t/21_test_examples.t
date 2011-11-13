@@ -15,7 +15,7 @@ plan(tests => 1);
 
 my @data = (
     {
-        test   => '11_expand_named',
+        test   => '01_expand_named',
         path   => 'example',
         script => '-I../lib -T 11_expand_named.pl',
         result => <<'EOT',
