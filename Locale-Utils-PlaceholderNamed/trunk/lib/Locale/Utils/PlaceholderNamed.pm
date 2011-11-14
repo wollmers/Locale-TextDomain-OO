@@ -47,9 +47,9 @@ __END__
 
 Locale::Utils::PlaceholderNamed - Utils to expand named placeholders
 
-$Id:$
+$Id$
 
-$HeadURL:$
+$HeadURL$
 
 =head1 VERSION
 
@@ -104,7 +104,7 @@ none
 
 =head1 DEPENDENCIES
 
-Moose
+L<Moose|Moose>
 
 L<MooseX::StrictConstructor|MooseX::StrictConstructor>
 
