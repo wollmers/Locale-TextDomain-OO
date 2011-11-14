@@ -1,4 +1,4 @@
-perl -w -e "unlink qw(./MANIFEST ./Debian_CPANTS.txt), glob './*.ppd'"
+perl -w -e "unlink qw(./Debian_CPANTS.txt ./MANIFEST ./META.json), glob './*.ppd'"
 perl Build.PL
 call ./Build realclean
 
