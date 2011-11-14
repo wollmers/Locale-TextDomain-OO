@@ -340,7 +340,7 @@ none
 
 =head1 DEPENDENCIES
 
-Moose
+L<Moose|Moose>
 
 L<MooseX::StrictConstructor|MooseX::StrictConstructor>
 
