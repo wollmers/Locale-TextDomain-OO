@@ -1,0 +1,12 @@
+<SOFTPKG NAME="Locale-Utils-PlaceholderNamed" VERSION="0.002">
+    <ABSTRACT>Locale::Utils::PlaceholderNamed - Utils to expand named placeholders</ABSTRACT>
+    <AUTHOR>Steffen Winkler &lt;steffenw at cpan.org&gt;</AUTHOR>
+    <IMPLEMENTATION>
+        <REQUIRE NAME="MooseX::StrictConstructor" VERSION="0" />
+        <REQUIRE NAME="namespace::autoclean" VERSION="0" />
+        <REQUIRE NAME="Syntax::Feature::Method" VERSION="0" />
+        <REQUIRE NAME="syntax::" VERSION="0" />
+        <REQUIRE NAME="Moose::" VERSION="0" />
+        <CODEBASE HREF="PPM-Locale-Utils-PlaceholderNamed-0.002.tar.gz" />
+    </IMPLEMENTATION>
+</SOFTPKG>
