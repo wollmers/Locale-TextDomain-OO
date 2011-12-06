@@ -3,18 +3,6 @@ use warnings;
 
 use Module::Build;
 
-my $is_ppm
-    = (
-        # install using ppm
-        ! $ENV{AUTHOR_DIST}
-        && eval 'require ActivePerl::PPM::Package'
-    )
-    || (
-        # build ppm and ppd
-        $ENV{AUTHOR_DIST}
-        && $ENV{AUTHOR_DIST} eq 'ppm'
-    );
-
 Module::Build->new(
     module_name       => 'Locale::Utils::PlaceholderNamed',
     license           => 'perl',
@@ -33,13 +21,7 @@ Module::Build->new(
         'Test::NoWarnings'  => 0,
         'Test::Exception'   => 0,
         'Test::Differences' => 0,
-        $is_ppm
-        ? (
-            'Test::Simple' => 0,
-        )
-        : (
-            'Test::More' => 0, # dist Test-Simple
-        )
+        'Test::More'        => 0, # dist Test-Simple
     },
     recommends => {
         # build

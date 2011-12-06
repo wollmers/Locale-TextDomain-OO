@@ -6,7 +6,7 @@ use MooseX::StrictConstructor;
 use namespace::autoclean;
 use syntax qw(method);
 
-our $VERSION = '0.001';
+our $VERSION = '0.002';
 
 has strict => (
     is      => 'rw',
@@ -53,7 +53,7 @@ $HeadURL$
 
 =head1 VERSION
 
-0.001
+0.002
 
 =head1 SYNOPSIS
 

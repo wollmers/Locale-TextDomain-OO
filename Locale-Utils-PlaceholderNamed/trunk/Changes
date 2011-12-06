@@ -1,4 +1,7 @@
 Revision history for Perl extension Locale::Utils::PlaceholderNamed.
 
+0.002  Tue Dec  6 13:00:00 2011
+- removed ppm specials
+
 0.001  Sun Nov 13 08:00:00 2011
 - first version
