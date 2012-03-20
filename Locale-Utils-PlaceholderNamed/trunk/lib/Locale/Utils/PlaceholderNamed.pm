@@ -1,16 +1,16 @@
-package Locale::Utils::PlaceholderNamed;
+package Locale::Utils::PlaceholderNamed; ## no critic (TidyCode)
 
 use Moose;
 use MooseX::StrictConstructor;
-
+use MooseX::Types::Moose qw(Bool);
 use namespace::autoclean;
 use syntax qw(method);
 
-our $VERSION = '0.002';
+our $VERSION = '0.003';
 
 has strict => (
     is      => 'rw',
-    isa     => 'Bool',
+    isa     => Bool,
 );
 
 method _mangle_value ($placeholder, $value) {
@@ -53,7 +53,7 @@ $HeadURL$
 
 =head1 VERSION
 
-0.002
+0.003
 
 =head1 SYNOPSIS
 
@@ -61,7 +61,7 @@ $HeadURL$
 
     my $obj = Locale::Utils::PlaceholderNamed->new(
         # optional strict switch
-        strict         => 1,
+        strict => 1,
     );
 
     $expanded = $obj->expand_named($text, %args);
@@ -83,9 +83,10 @@ If strict is false: no replacement.
 
 Expands strings containing named placeholders like C<{name}>.
 
-named style:
-
- {name_is_key_of_args_hash}
+    $text = 'foo {name} baz';
+    %args = (
+        name => 'bar',
+    );
 
     $expanded = $obj->expand_text($text, %args);
 
@@ -107,6 +108,8 @@ none
 L<Moose|Moose>
 
 L<MooseX::StrictConstructor|MooseX::StrictConstructor>
+
+L<MooseX::Types::Moose|MooseX::Types::Moose>
 
 L<namespace::autoclean|namespace::autoclean>
 
@@ -134,7 +137,7 @@ Steffen Winkler
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2011,
+Copyright (c) 2011 - 2012,
 Steffen Winkler
 C<< <steffenw at cpan.org> >>.
 All rights reserved.
@@ -142,5 +145,3 @@ All rights reserved.
 This module is free software;
 you can redistribute it and/or modify it
 under the same terms as Perl itself.
-
-=cut

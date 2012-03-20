@@ -1,4 +1,4 @@
-Locale::Utils::PlaceholderNamed version 0.002
+Locale::Utils::PlaceholderNamed version 0.003
 =============================================
 
 Utils to expand placeholders in named style.
@@ -25,13 +25,14 @@ This module requires these other modules and libraries:
 
     Moose
     MooseX::StrictConstructor
+    MooseX::Types::Moose
     namespace::autoclean
     syntax
     Syntax-Feature-Method
 
 COPYRIGHT AND LICENCE
 
-Copyright (c) 2011,
+Copyright (c) 2011 - 2012,
 Steffen Winkler
 steffenw at cpan.org.
 All rights reserved.
