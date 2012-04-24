@@ -1,4 +1,4 @@
-Locale::Utils::PlaceholderMaketext version 0.001
+Locale::Utils::PlaceholderMaketext version 0.002
 ================================================
 
 Utils to transform text from maketext to gettext style and reverse.
@@ -26,6 +26,7 @@ This module requires these other modules and libraries:
 
     Moose
     MooseX::StrictConstructor
+    MooseX::Types::Moose
     namespace::autoclean
     syntax
     Syntax-Feature-Method
@@ -33,7 +34,7 @@ This module requires these other modules and libraries:
 
 COPYRIGHT AND LICENCE
 
-Copyright (c) 2011,
+Copyright (c) 2011 - 2012,
 Steffen Winkler
 steffenw at cpan.org.
 All rights reserved.

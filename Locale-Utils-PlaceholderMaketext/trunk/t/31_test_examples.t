@@ -21,6 +21,7 @@ my @data = (
         script => '-I../lib -T 01_maketext_to_gettext.pl',
         result => <<'EOT',
 foo %1 bar
+~ %% foo [%1] bar
 foo %1 bar %quant(%2,singluar,plural,zero) baz
 bar %*(%2,singluar,plural) baz
 EOT
@@ -31,6 +32,7 @@ EOT
         script => '-I../lib -T 02_gettext_to_maketext.pl',
         result => <<'EOT',
 foo [_1] bar
+~~ % foo ~[[_1]~] bar
 foo [_1] bar [quant,_2,singluar,plural,zero] baz
 bar [*,_2,singluar,plural] baz
 EOT
@@ -42,12 +44,12 @@ EOT
         result => <<"EOT",
 foo  bar
 bar zero baz
-foo [_1] bar [quant,_2,singular,plural,zero] baz
-foo 0 bar zero baz
-foo 1 bar 1 singular baz
-foo 2 bar 2 plural baz
-foo 3234567.890 bar 3234567.890 plural baz
-foo 4234567.89 bar 4234567.89 plural baz
+~ foo [[_1]] bar [quant,_2,singular,plural,zero] baz
+~ foo [0] bar zero baz
+~ foo [1] bar 1 singular baz
+~ foo [2] bar 2 plural baz
+~ foo [3234567.890] bar 3234567.890 plural baz
+~ foo [4234567.89] bar 4234567.89 plural baz
 foo [_1] bar [*,_2,singular,plural,zero] baz
 foo 0 bar zero baz
 foo 1 bar 1 singular baz
@@ -65,7 +67,7 @@ EOT
         path   => 'example',
         script => '-I../lib -T 12_expand_gettext.pl',
         result => <<"EOT",
-foo  bar
+% foo  bar
 bar zero baz
 foo and bar %quant(%2,singular,plural,zero) baz
 foo and bar zero baz
@@ -82,7 +84,7 @@ EOT
 );
 
 for my $data (@data) {
-    my $dir = getcwd();
+    my $dir = getcwd;
     chdir("$dir/$data->{path}");
     my $result = qx{perl $data->{script} 2>&3};
     chdir($dir);

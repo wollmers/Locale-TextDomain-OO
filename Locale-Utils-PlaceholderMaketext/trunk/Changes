@@ -1,4 +1,8 @@
 Revision history for Perl extension Locale::Utils::PlaceholderMaketext.
 
-0.01  Sat Nov 12 19:00:00 2011
+0.002  Wed Apr 24 17:30:00 2012
+- handle escapes
+- repaired Build.PL
+
+0.001  Sat Nov 12 19:00:00 2011
 - first version

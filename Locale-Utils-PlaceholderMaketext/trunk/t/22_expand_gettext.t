@@ -42,7 +42,7 @@ eq_or_diff(
     'space is x',
 );
 
-$obj->reset_space();
+$obj->reset_space;
 $obj->strict(1);
 
 $obj->formatter_code(
@@ -98,7 +98,7 @@ EOT
     'strict, numeric',
 );
 
-$obj->clear_formatter_code();
+$obj->clear_formatter_code;
 
 my @data = (
     {

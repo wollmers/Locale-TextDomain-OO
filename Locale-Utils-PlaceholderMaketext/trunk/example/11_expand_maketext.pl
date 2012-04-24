@@ -1,4 +1,4 @@
-#!perl -T
+#!perl -T ## no critic (TidyCode)
 
 use strict;
 use warnings;
@@ -47,7 +47,7 @@ $obj->strict(1);
 for (undef, 0 .. 2, '3234567.890', 4_234_567.890) { ## no critic (MagicNumbers)
     () = print
         $obj->expand_maketext(
-            'foo [_1] bar [quant,_2,singular,plural,zero] baz',
+            '~~ foo ~[[_1]~] bar [quant,_2,singular,plural,zero] baz',
             # same placeholder for _1 and _2
             $_,
             $_,
@@ -74,7 +74,7 @@ $obj->space("\N{NO-BREAK SPACE}");
 () = print
     $obj->expand_maketext("unicode space [quant,_1,singular,plural]\n", 1),
     $obj->expand_maketext("unicode space [quant,_1,singular,plural]\n", 2);
-$obj->reset_space();
+$obj->reset_space;
 () = print
     $obj->expand_maketext("default space [quant,_1,singular,plural]\n", 1),
     $obj->expand_maketext("default space [quant,_1,singular,plural]\n", 2);
@@ -87,12 +87,12 @@ Output:
 
 foo  bar
 bar zero baz
-foo [_1] bar [quant,_2,singular,plural,zero] baz
-foo 0 bar zero baz
-foo 1 bar 1 singular baz
-foo 2 bar 2 plural baz
-foo 3234567.890 bar 3234567.890 plural baz
-foo 4234567.89 bar 4234567.89 plural baz
+~ foo [[_1]] bar [quant,_2,singular,plural,zero] baz
+~ foo [0] bar zero baz
+~ foo [1] bar 1 singular baz
+~ foo [2] bar 2 plural baz
+~ foo [3234567.890] bar 3234567.890 plural baz
+~ foo [4234567.89] bar 4234567.89 plural baz
 foo [_1] bar [*,_2,singular,plural,zero] baz
 foo 0 bar zero baz
 foo 1 bar 1 singular baz

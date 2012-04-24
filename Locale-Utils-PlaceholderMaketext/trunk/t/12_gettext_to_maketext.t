@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 7 + 1;
+use Test::More tests => 11 + 1;
 use Test::NoWarnings;
 use Test::Differences;
 BEGIN {
@@ -19,10 +19,10 @@ is_deeply(
 );
 
 my @data = (
-    [ 
-        q{}, 
-        q{}, 
-        'empty sting',
+    [
+        q{},
+        q{},
+        'empty string',
     ],
     [
         'foo %1 bar',
@@ -30,9 +30,19 @@ my @data = (
         'placeholder',
     ],
     [
+        '~ %% foo [_1] bar [%1] baz [%%1]',
+        '~~ % foo ~[_1~] bar ~[[_1]~] baz ~[%1~]',
+        'escaped placeholder',
+    ],
+    [
         'foo %1 bar %quant(%2,singluar,plural,zero) baz %#(%3)',
         'foo [_1] bar [quant,_2,singluar,plural,zero] baz [#,_3]',
         'function quant',
+    ],
+    [
+        'foo [_1] bar [quant,_2,singluar,plural,zero] baz [#,_3]',
+        'foo ~[_1~] bar ~[quant,_2,singluar,plural,zero~] baz ~[#,_3~]',
+        'escaped function quant',
     ],
     [
         'bar %*(%2,singluar,plural) baz',
@@ -40,9 +50,19 @@ my @data = (
         'function *',
     ],
     [
+        'bar [*,_2,singluar,plural] baz',
+        'bar ~[*,_2,singluar,plural~] baz',
+        'escaped function *',
+    ],
+    [
         'baz %#(%3)',
         'baz [#,_3]',
         'function #',
+    ],
+    [
+        'baz [#,_3]',
+        'baz ~[#,_3~]',
+        'escaped function #',
     ],
 );
 

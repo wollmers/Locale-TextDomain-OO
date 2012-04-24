@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 29 + 1;
+use Test::More tests => 30 + 1;
 use Test::NoWarnings;
 use Test::Differences;
 BEGIN {
@@ -20,7 +20,7 @@ is_deeply(
 
 eq_or_diff(
     $obj->expand_maketext(
-        '[_1];[quant,_2,s];[quant,_3,s,p];[quant,_3,s,p,n]',
+        '[_1];[quant,_2,s];[quant,_3,s,p];[quant,_4,s,p,n]',
         undef,
         undef,
         'three',
@@ -29,6 +29,15 @@ eq_or_diff(
     ),
     ';0 s;0 p;n',
     'no strict',
+);
+
+eq_or_diff(
+    $obj->expand_maketext(
+        '~~;~[_1~];~[quant,_2,s~];~[*,_3,s,p~];~[#,4~]',
+        1 .. 4,
+    ),
+    '~;[_1];[quant,_2,s];[*,_3,s,p];[#,4]',
+    'escaped',
 );
 
 $obj->space(q{x});
@@ -43,7 +52,7 @@ eq_or_diff(
     'space is x',
 );
 
-$obj->reset_space();
+$obj->reset_space;
 $obj->strict(1);
 
 $obj->formatter_code(
@@ -99,7 +108,7 @@ EOT
     'strict, numeric',
 );
 
-$obj->clear_formatter_code();
+$obj->clear_formatter_code;
 
 my @data = (
     {

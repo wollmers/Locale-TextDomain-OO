@@ -1,50 +1,59 @@
-package Locale::Utils::PlaceholderMaketext;
+package Locale::Utils::PlaceholderMaketext; ## no critic (TidyCode)
 
 use Moose;
 use MooseX::StrictConstructor;
-
+use MooseX::Types::Moose qw(Bool Str CodeRef);
 use namespace::autoclean;
 use syntax qw(method);
-
 use Scalar::Util qw(looks_like_number);
 
-our $VERSION = '0.001';
+our $VERSION = '0.002';
 
 has strict => (
     is     => 'rw',
-    isa    => 'Bool',
+    isa    => Bool,
 );
 
 has space => (
     is      => 'rw',
-    isa     => 'Str',
+    isa     => Str,
     default => q{ },
 );
-method reset_space () { $self->space(q{ }) }
+method reset_space { $self->space(q{ }) }
 
 has formatter_code => (
     is      => 'rw',
-    isa     => 'CodeRef',
+    isa     => CodeRef,
     clearer => 'clear_formatter_code',
 );
 
 method maketext_to_gettext ($string) {
     defined $string
         or return $string;
-    $string =~ s{ ## no critic (ComplexRegexes, EscapedMetacharacter, EnumeratedClasses)
+    $string =~ s{ ## no critic (ComplexRegexes EscapedMetacharacter EnumeratedClasses)
+        ~ ( [~\[\]] )                  # $1 - unescape
+        |
+        ( % )                          # $2 - escape
+        |
         \[
         (?:
-            ( [A-Za-z*\#] [A-Za-z_]* ) # $1 - function name
+            ( [A-Za-z*\#] [A-Za-z_]* ) # $3 - function name
             ,
-            _ ( [1-9]\d* )             # $2 - variable
-            ( [^\]]* )                 # $3 - arguments
-            |                          # or
             _ ( [1-9]\d* )             # $4 - variable
+            ( [^\]]* )                 # $5 - arguments
+            |                          # or
+            _ ( [1-9]\d* )             # $6 - variable
         )
         \]
     }
     {
-        $4 ? "%$4" : "%$1(%$2$3)"
+        $1
+        ? $1
+        : $2
+        ? "%$2"
+        : $6
+        ? "%$6"
+        : "%$3(%$4$5)"
     }xmsge;
 
     return $string;
@@ -53,20 +62,30 @@ method maketext_to_gettext ($string) {
 method gettext_to_maketext ($string) {
     defined $string
         or return $string;
-    $string =~ s{ ## no critic (ComplexRegexes, EscapedMetacharacter, EnumeratedClasses)
+    $string =~ s{ ## no critic (ComplexRegexes EscapedMetacharacter EnumeratedClasses)
+        % ( % )                        # $1 - unescape
+        |
+        ( [~\[\]] )                    # $2 - escape
+        |
         %
         (?:
-            ( [A-Za-z*\#] [A-Za-z_]* ) # $1 - function name
+            ( [A-Za-z*\#] [A-Za-z_]* ) # $3 - function name
             [(]
-            % ( [1-9]\d* )             # $2 - variable
-            ( [^\)]* )                 # $3 - arguments
+            % ( [1-9]\d* )             # $4 - variable
+            ( [^\)]* )                 # $5 - arguments
             [)]
             |                          # or
-            ( [1-9]\d* )               # $4 - variable
+            ( [1-9]\d* )               # $6 - variable
         )
     }
     {
-        $4 ? "[_$4]" : "[$1,_$2$3]"
+        $1
+        ? $1
+        : $2
+        ? "~$2"
+        : $6
+        ? "[_$6]"
+        : "[$3,_$4$5]"
     }xmsge;
 
     return $string;
@@ -75,7 +94,7 @@ method gettext_to_maketext ($string) {
 # Expand the placeholders
 
 method _replace ($arg_ref, $text, $index_quant, $singular, $plural, $zero, $index_string) {
-    if (defined $2) { # quant
+    if (defined $index_quant) { # quant
         my $number = $arg_ref->[$index_quant - 1];
         if ( ! looks_like_number($number) ) {
             $number = $self->strict ? return $text : 0;
@@ -121,20 +140,24 @@ method expand_maketext ($text, @args) {
         or return $text;
 
     $text =~ s{ ## no critic (ComplexRegexes)
-        (                              # $1: text
+        ~ ( [~\[\]] )                  # $1: escaped
+        |
+        (                              # $2: text
             \[ (?:
                 (?: quant | [*] )
-                , _ ( \d+ )            # $2: n
-                , ( [^,\]]* )          # $3: singular
-                (?: , ( [^,\]]* ) )?   # $4: plural
-                (?: , ( [^,\]]* ) )?   # $5: zero
+                , _ ( \d+ )            # $3: n
+                , ( [^,\]]* )          # $4: singular
+                (?: , ( [^,\]]* ) )?   # $5: plural
+                (?: , ( [^,\]]* ) )?   # $6: zero
                 |
-                _ ( \d+ )              # $6: n
+                _ ( \d+ )              # $7: n
             ) \]
         )
     }
     {
-        $self->_replace(\@args, $1, $2, $3, $4, $5, $6)
+        $1
+        ? $1
+        : $self->_replace(\@args, $2, $3, $4, $5, $6, $7)
     }xmsge;
 
     return $text;
@@ -145,20 +168,24 @@ method expand_gettext ($text, @args) {
         or return $text;
 
     $text =~ s{ ## no critic (ComplexRegexes)
-        (                           # $1: text
+        % ( % )                     # $1: escaped
+        |
+        (                           # $2: text
             % (?: quant | [*] )
             [(]
-            % ( \d+ )               # $2: n
-            , ( [^,\)]* )           # $3: singular
-            (?: , ( [^,\)]* ) )?    # $4: plural
-            (?: , ( [^,\)]* ) )?    # $5: zero
+            % ( \d+ )               # $3: n
+            , ( [^,\)]* )           # $4: singular
+            (?: , ( [^,\)]* ) )?    # $5: plural
+            (?: , ( [^,\)]* ) )?    # $6: zero
             [)]
             |
-            % ( \d+ )               # $6: n
+            % ( \d+ )               # $7: n
         )
     }
     {
-        $self->_replace(\@args, $1, $2, $3, $4, $5, $6)
+        $1
+        ? $1
+        : $self->_replace(\@args, $2, $3, $4, $5, $6, $7)
     }xmsge;
 
     return $text;
@@ -344,6 +371,8 @@ L<Moose|Moose>
 
 L<MooseX::StrictConstructor|MooseX::StrictConstructor>
 
+L<MooseX::Types::Moose|MooseX::Types::Moose>
+
 L<namespace::autoclean|namespace::autoclean>
 
 L<syntax|syntax>
@@ -370,7 +399,7 @@ Steffen Winkler
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2011,
+Copyright (c) 2011 - 2012,
 Steffen Winkler
 C<< <steffenw at cpan.org> >>.
 All rights reserved.
