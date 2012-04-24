@@ -1,12 +1,14 @@
-<SOFTPKG NAME="Locale-Utils-PlaceholderMaketext" VERSION="0.001">
-    <ABSTRACT>Locale::Utils::PlaceholderMaketext - Utils to expand maketext palaceholders</ABSTRACT>
+<SOFTPKG NAME="Locale-Utils-PlaceholderMaketext" VERSION="0.002">
+    <ABSTRACT>Locale::Utils::PlaceholderMaketext - Utils to expand maketext placeholders</ABSTRACT>
     <AUTHOR>Steffen Winkler &lt;steffenw at cpan.org&gt;</AUTHOR>
     <IMPLEMENTATION>
+        <REQUIRE NAME="MooseX::Types::Moose" VERSION="0" />
+        <REQUIRE NAME="Scalar::Util" VERSION="0" />
         <REQUIRE NAME="MooseX::StrictConstructor" VERSION="0" />
         <REQUIRE NAME="namespace::autoclean" VERSION="0" />
         <REQUIRE NAME="Syntax::Feature::Method" VERSION="0" />
         <REQUIRE NAME="syntax::" VERSION="0" />
         <REQUIRE NAME="Moose::" VERSION="0" />
-        <CODEBASE HREF="PPM-Locale-Utils-PlaceholderMaketext-0.001.tar.gz" />
+        <CODEBASE HREF="PPM-Locale-Utils-PlaceholderMaketext-0.002.tar.gz" />
     </IMPLEMENTATION>
 </SOFTPKG>
