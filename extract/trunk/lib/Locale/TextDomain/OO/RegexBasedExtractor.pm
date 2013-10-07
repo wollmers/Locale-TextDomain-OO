@@ -509,7 +509,7 @@ Clone
 
 =head2 dynamic require
 
-L<Data::Dumper>
+L<Data::Dumper|Data::Dumper>
 
 =head1 INCOMPATIBILITIES
 
@@ -521,7 +521,7 @@ none
 
 =head1 SEE ALSO
 
-L<Locale::TextDoamin::OO>
+L<Locale::TextDoamin::OO|Locale::TextDoamin::OO>
 
 =head1 AUTHOR
 
@@ -537,5 +537,3 @@ All rights reserved.
 This module is free software;
 you can redistribute it and/or modify it
 under the same terms as Perl itself.
-
-=cut

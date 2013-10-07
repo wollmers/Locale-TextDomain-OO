@@ -295,7 +295,7 @@ This module extracts internationalizations data and stores this in a pot file.
 =head2 method init
 
 This method is for initializing DBD::PO.
-How to initialize, see L<DBD::PO>.
+How to initialize, see DBD::PO.
 Normally you have not to do this, because the defult is:
 
     BEGIN {
@@ -455,9 +455,9 @@ English
 
 DBI
 
-DBD::PO
+L<DBD::PO|DBD::PO>
 
-L<Locale::TextDomain::OO:RegexBesedExtractor>
+L<Locale::TextDomain::OO:RegexBesedExtractor|Locale::TextDomain::OO:RegexBesedExtractor>
 
 =head1 INCOMPATIBILITIES
 
@@ -469,7 +469,7 @@ none
 
 =head1 SEE ALSO
 
-L<Locale::TextDoamin::OO>
+L<Locale::TextDoamin::OO|Locale::TextDoamin::OO>
 
 =head1 AUTHOR
 
@@ -485,5 +485,3 @@ All rights reserved.
 This module is free software;
 you can redistribute it and/or modify it
 under the same terms as Perl itself.
-
-=cut

@@ -181,7 +181,7 @@ version
 
 parent
 
-L<Locale::TextDomain::OO::Extract>
+L<Locale::TextDomain::OO::Extract|Locale::TextDomain::OO::Extract>
 
 =head1 INCOMPATIBILITIES
 
@@ -193,7 +193,7 @@ none
 
 =head1 SEE ALSO
 
-L<Locale::TextDoamin::OO>
+L<Locale::TextDoamin::OO|Locale::TextDoamin::OO>
 
 Template
 
@@ -211,5 +211,3 @@ All rights reserved.
 This module is free software;
 you can redistribute it and/or modify it
 under the same terms as Perl itself.
-
-=cut
