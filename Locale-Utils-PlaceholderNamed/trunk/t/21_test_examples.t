@@ -35,7 +35,7 @@ EOT
 );
 
 for my $data (@data) {
-    my $dir = getcwd();
+    my $dir = getcwd;
     chdir("$dir/$data->{path}");
     my $result = qx{perl $data->{script} 2>&3};
     chdir($dir);

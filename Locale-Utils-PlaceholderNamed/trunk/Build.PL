@@ -24,7 +24,6 @@ Module::Build->new(
         'Test::More'        => 0, # dist Test-Simple
     },
     recommends => {
-        # build
         'Test::Pod'            => '1.14',
         'Test::Pod::Coverage'  => '1.04',
         'Pod::Coverage::Moose' => 0,

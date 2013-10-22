@@ -76,6 +76,7 @@ $HeadURL$
     );
 
     $expanded = $obj->expand_named($text, %args);
+    $expanded = $obj->expand_named($text, \%args);
 
 =head1 DESCRIPTION
 
@@ -126,9 +127,9 @@ L<MooX::StrictConstructor|MooX::StrictConstructor>
 
 L<MooX::Types::MooseLike|MooX::Types::MooseLike>
 
-L<namespace::autoclean|namespace::autoclean>
+L<Carp|Carp>
 
-L<syntax|syntax>
+L<namespace::autoclean|namespace::autoclean>
 
 =head1 INCOMPATIBILITIES
 
