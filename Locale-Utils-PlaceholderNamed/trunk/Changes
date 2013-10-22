@@ -1,5 +1,9 @@
 Revision history for Perl extension Locale::Utils::PlaceholderNamed.
 
+0.004  Tue Oct 22 18:10:13 2013
+- use Moo
+- removed Build.PL from distribution
+
 0.003  Mon Mar 20 20:35:26 2012
 - repared Makefile.PL
 

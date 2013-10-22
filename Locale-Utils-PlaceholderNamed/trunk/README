@@ -1,4 +1,4 @@
-Locale::Utils::PlaceholderNamed version 0.003
+Locale::Utils::PlaceholderNamed version 0.004
 =============================================
 
 Utils to expand placeholders in named style.
@@ -12,27 +12,18 @@ To install this module, run the following commands:
     make test
     make install
 
-Alternatively, to install with Module::Build, you can use the following commands:
-
-    perl Build.PL
-    ./Build
-    ./Build test
-    ./Build install
-
 DEPENDENCIES
 
 This module requires these other modules and libraries:
 
-    Moose
-    MooseX::StrictConstructor
-    MooseX::Types::Moose
+    Moo
+    MooX::StrictConstructor
+    MooX::Types::MooseLike
     namespace::autoclean
-    syntax
-    Syntax-Feature-Method
 
 COPYRIGHT AND LICENCE
 
-Copyright (c) 2011 - 2012,
+Copyright (c) 2011 - 2013,
 Steffen Winkler
 steffenw at cpan.org.
 All rights reserved.

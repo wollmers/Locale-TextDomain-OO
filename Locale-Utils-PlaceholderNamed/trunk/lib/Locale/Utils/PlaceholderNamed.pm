@@ -1,19 +1,21 @@
 package Locale::Utils::PlaceholderNamed; ## no critic (TidyCode)
 
-use Moose;
-use MooseX::StrictConstructor;
-use MooseX::Types::Moose qw(Bool);
+use Moo;
+use MooX::StrictConstructor;
+use MooX::Types::MooseLike::Base qw(Bool);
+use Carp qw(confess);
 use namespace::autoclean;
-use syntax qw(method);
 
-our $VERSION = '0.003';
+our $VERSION = '0.004';
 
 has strict => (
-    is      => 'rw',
-    isa     => Bool,
+    is  => 'rw',
+    isa => Bool,
 );
 
-method _mangle_value ($placeholder, $value) {
+sub _mangle_value {
+    my ($self, $placeholder, $value) = @_;
+
     return
         defined $value
         ? $value
@@ -22,16 +24,25 @@ method _mangle_value ($placeholder, $value) {
         : q{};
 }
 
-method expand_named ($text, %args) {
+sub expand_named {
+    my ($self, $text, @args) = @_;
+
     defined $text
         or return $text;
+    my $arg_ref = @args == 1
+        ? $args[0]
+        : {
+            @args % 2
+            ? confess 'Arguments expected pairwise'
+            : @args
+        };
 
-    my $regex = join q{|}, map { quotemeta $_ } keys %args;
+    my $regex = join q{|}, map { quotemeta $_ } keys %{$arg_ref};
     $text =~ s{ ## no critic (ComplexRegexes)
         ( [{] ( $regex ) [}] )
     }
     {
-        $self->_mangle_value($1, $args{$2})
+        $self->_mangle_value($1, $arg_ref->{$2})
     }xmsge;
 
     return $text;
@@ -53,7 +64,7 @@ $HeadURL$
 
 =head1 VERSION
 
-0.003
+0.004
 
 =head1 SYNOPSIS
 
@@ -74,12 +85,12 @@ Utils to expand named placeholders.
 
 =head2 method strict
 
-If strict is true: undef will be converted to q{}.
-If strict is false: no replacement.
+If strict is false: undef will be converted to q{}.
+If strict is true: no replacement.
 
     $obj->strict(1); # boolean true or false;
 
-=head2 method expand_text
+=head2 method expand_named
 
 Expands strings containing named placeholders like C<{name}>.
 
@@ -88,7 +99,11 @@ Expands strings containing named placeholders like C<{name}>.
         name => 'bar',
     );
 
-    $expanded = $obj->expand_text($text, %args);
+    $expanded = $obj->expand_named($text, %args);
+
+or
+
+    $expanded = $obj->expand_text($text, \%args);
 
 =head1 EXAMPLE
 
@@ -105,11 +120,11 @@ none
 
 =head1 DEPENDENCIES
 
-L<Moose|Moose>
+L<Moo|Moo>
 
-L<MooseX::StrictConstructor|MooseX::StrictConstructor>
+L<MooX::StrictConstructor|MooX::StrictConstructor>
 
-L<MooseX::Types::Moose|MooseX::Types::Moose>
+L<MooX::Types::MooseLike|MooX::Types::MooseLike>
 
 L<namespace::autoclean|namespace::autoclean>
 
@@ -127,9 +142,7 @@ not known
 
 L<http://en.wikipedia.org/wiki/Gettext>
 
-L<http://translate.sourceforge.net/wiki/l10n/pluralforms>
-
-L<Locele::TextDomain|Locele::TextDomain>
+L<Locale::TextDomain|Locale::TextDomain>
 
 =head1 AUTHOR
 
@@ -137,7 +150,7 @@ Steffen Winkler
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2011 - 2012,
+Copyright (c) 2011 - 2013,
 Steffen Winkler
 C<< <steffenw at cpan.org> >>.
 All rights reserved.

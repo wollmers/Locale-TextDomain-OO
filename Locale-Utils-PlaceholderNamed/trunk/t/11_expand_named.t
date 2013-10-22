@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 6 + 1;
+use Test::More tests => 10;
 use Test::NoWarnings;
 use Test::Differences;
 
@@ -13,13 +13,15 @@ BEGIN {
 
 my $obj = Locale::Utils::PlaceholderNamed->new;
 
-is_deeply(
-    [ $obj->expand_named() ],
+is_deeply
+    [ $obj->expand_named ],
     [ undef ],
-    'undef',
-);
-
-eq_or_diff(
+    'undef';
+eq_or_diff
+    $obj->expand_named('{a} {b} {c} {d}'),
+    '{a} {b} {c} {d}',
+    'expand empty';
+eq_or_diff
     $obj->expand_named(
         '{a} {b} {c} {d}',
         a => 'a',
@@ -28,35 +30,49 @@ eq_or_diff(
         d => 4234567.890,
     ),
     'a 2 3234567.890 4234567.89',
-    'expand',
-);
-
-eq_or_diff(
+    'expand hash';
+eq_or_diff
+    $obj->expand_named(
+        '{a} {b} {c} {d}',
+        {
+            a => 'a',
+            b => 2,
+            c => '3234567.890',
+            d => 4234567.890,
+        },
+    ),
+    'a 2 3234567.890 4234567.89',
+    'expand hash_ref';
+eq_or_diff
+    $obj->expand_named(
+        '{a} {b} {c} {d}',
+        {},
+    ),
+    '{a} {b} {c} {d}',
+    'expand empty hash_ref';
+eq_or_diff
     $obj->expand_named(
         'foo {plus} bar {plus} baz = {num} items',
         plus  => q{+},
         num   => 3,
     ),
     'foo + bar + baz = 3 items',
-    'same placeholder double',
-);
+    'same placeholder double';
 
 $obj->strict(1);
-eq_or_diff(
+eq_or_diff
     $obj->expand_named(
         'foo {name}',
         name => undef,
     ),
     'foo {name}',
-    'undef, strict',
-);
-$obj->strict(0);
+    'undef, strict';
 
-eq_or_diff(
+$obj->strict(0);
+eq_or_diff
     $obj->expand_named(
         'foo {name}',
         name => undef,
     ),
     'foo ',
-    'undef, no strict',
-);
+    'undef, no strict';
