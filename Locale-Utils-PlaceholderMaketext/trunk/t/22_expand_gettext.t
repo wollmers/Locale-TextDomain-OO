@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 29 + 1;
+use Test::More tests => 31;
 use Test::NoWarnings;
 use Test::Differences;
 BEGIN {
@@ -27,9 +27,22 @@ eq_or_diff(
         '4_234_567.890',
     ),
     ';0 s;0 p;z',
-    'no strict',
+    'no strict array',
 );
 
+eq_or_diff(
+    $obj->expand_gettext(
+        '%1;%quant(%2,s);%quant(%3,s,p);%quant(%4,s,p,z)',
+        [
+            undef,
+            undef,
+            'three',
+            '4_234_567.890',
+        ],
+    ),
+    ';0 s;0 p;z',
+    'no strict array_ref',
+);
 $obj->space(q{x});
 
 eq_or_diff(

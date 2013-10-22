@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 30 + 1;
+use Test::More tests => 32;
 use Test::NoWarnings;
 use Test::Differences;
 BEGIN {
@@ -20,15 +20,30 @@ is_deeply(
 
 eq_or_diff(
     $obj->expand_maketext(
-        '[_1];[quant,_2,s];[quant,_3,s,p];[quant,_4,s,p,n]',
+        '[_1];[quant,_2,s];[quant,_3,s,p];[quant,_4,s,p,z]',
         undef,
         undef,
         'three',
         '4_234_567.890',
         4234567.890,
     ),
-    ';0 s;0 p;n',
-    'no strict',
+    ';0 s;0 p;z',
+    'no strict array',
+);
+
+eq_or_diff(
+    $obj->expand_maketext(
+        '[_1];[quant,_2,s];[quant,_3,s,p];[quant,_4,s,p,z]',
+        [
+            undef,
+            undef,
+            'three',
+            '4_234_567.890',
+            4234567.890,
+        ],
+    ),
+    ';0 s;0 p;z',
+    'no strict array_ref',
 );
 
 eq_or_diff(

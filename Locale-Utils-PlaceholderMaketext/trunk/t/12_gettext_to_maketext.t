@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 11 + 1;
+use Test::More tests => 21;
 use Test::NoWarnings;
 use Test::Differences;
 BEGIN {
@@ -67,6 +67,10 @@ my @data = (
 );
 
 for my $data (@data) {
+    eq_or_diff(
+        Locale::Utils::PlaceholderMaketext->gettext_to_maketext( $data->[0] ),
+        @{$data}[ 1, 2 ],
+    );
     eq_or_diff(
         $obj->gettext_to_maketext( $data->[0] ),
         @{$data}[ 1, 2 ],

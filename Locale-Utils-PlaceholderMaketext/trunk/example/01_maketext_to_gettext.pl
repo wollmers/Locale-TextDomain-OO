@@ -9,7 +9,10 @@ require Locale::Utils::PlaceholderMaketext;
 
 my $obj = Locale::Utils::PlaceholderMaketext->new;
 
-() = print
+() = print {*STDOUT}
+    Locale::Utils::PlaceholderMaketext
+        ->maketext_to_gettext('foo [_1] bar'),
+    "\n",
     $obj->maketext_to_gettext('foo [_1] bar'),
     "\n",
     $obj->maketext_to_gettext('~~ % foo ~[[_1]~] bar'),
@@ -25,6 +28,7 @@ __END__
 
 Output:
 
+foo %1 bar
 foo %1 bar
 ~ %% foo [%1] bar
 foo %1 bar %quant(%2,singluar,plural,zero) baz

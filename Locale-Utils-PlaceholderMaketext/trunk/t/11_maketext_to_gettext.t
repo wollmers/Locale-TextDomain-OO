@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 11 + 1;
+use Test::More tests => 21;
 use Test::NoWarnings;
 use Test::Differences;
 BEGIN {
@@ -19,9 +19,9 @@ is_deeply(
 );
 
 my @data = (
-    [ 
-        q{}, 
-        q{}, 
+    [
+        q{},
+        q{},
         'empty string',
     ],
     [
@@ -67,6 +67,10 @@ my @data = (
 );
 
 for my $data (@data) {
+    eq_or_diff(
+        Locale::Utils::PlaceholderMaketext->maketext_to_gettext( $data->[0] ),
+        @{$data}[ 1, 2 ],
+    );
     eq_or_diff(
         $obj->maketext_to_gettext( $data->[0] ),
         @{$data}[ 1, 2 ],

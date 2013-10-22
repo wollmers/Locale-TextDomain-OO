@@ -1,17 +1,17 @@
 package Locale::Utils::PlaceholderMaketext; ## no critic (TidyCode)
 
-use Moose;
-use MooseX::StrictConstructor;
-use MooseX::Types::Moose qw(Bool Str CodeRef);
-use namespace::autoclean;
-use syntax qw(method);
+use Moo;
+use MooX::StrictConstructor;
+use MooX::Types::MooseLike::Base qw(Bool Str CodeRef);
+use Carp qw(confess);
 use Scalar::Util qw(looks_like_number);
+use namespace::autoclean;
 
-our $VERSION = '0.002';
+our $VERSION = '0.003';
 
 has strict => (
-    is     => 'rw',
-    isa    => Bool,
+    is  => 'rw',
+    isa => Bool,
 );
 
 has space => (
@@ -19,7 +19,7 @@ has space => (
     isa     => Str,
     default => q{ },
 );
-method reset_space { $self->space(q{ }) }
+sub reset_space { return shift->space(q{ }) }
 
 has formatter_code => (
     is      => 'rw',
@@ -27,22 +27,24 @@ has formatter_code => (
     clearer => 'clear_formatter_code',
 );
 
-method maketext_to_gettext ($string) {
+sub maketext_to_gettext {
+    my (undef, $string) = @_;
+
     defined $string
         or return $string;
-    $string =~ s{ ## no critic (ComplexRegexes EscapedMetacharacter EnumeratedClasses)
-        ~ ( [~\[\]] )                  # $1 - unescape
+    $string =~ s{ ## no critic (ComplexRegexes)
+        [~] ( [~\[\]] )                      # $1 - unescape
         |
-        ( % )                          # $2 - escape
+        ( [%] )                              # $2 - escape
         |
         \[
         (?:
-            ( [A-Za-z*\#] [A-Za-z_]* ) # $3 - function name
-            ,
-            _ ( [1-9]\d* )             # $4 - variable
-            ( [^\]]* )                 # $5 - arguments
-            |                          # or
-            _ ( [1-9]\d* )             # $6 - variable
+            ( [[:alpha:]*\#] [[:alpha:]_]* ) # $3 - function name
+            [,]
+            [_] ( [1-9] \d* )                # $4 - variable
+            ( [^\]]* )                       # $5 - arguments
+            |                                # or
+            [_] ( [1-9] \d* )                # $6 - variable
         )
         \]
     }
@@ -57,25 +59,27 @@ method maketext_to_gettext ($string) {
     }xmsge;
 
     return $string;
-};
+}
 
-method gettext_to_maketext ($string) {
+sub gettext_to_maketext {
+    my (undef, $string) = @_;
+
     defined $string
         or return $string;
-    $string =~ s{ ## no critic (ComplexRegexes EscapedMetacharacter EnumeratedClasses)
-        % ( % )                        # $1 - unescape
+    $string =~ s{ ## no critic (ComplexRegexes)
+        [%] ( [%] )                          # $1 - unescape
         |
-        ( [~\[\]] )                    # $2 - escape
+        ( [~\[\]] )                          # $2 - escape
         |
-        %
+        [%]
         (?:
-            ( [A-Za-z*\#] [A-Za-z_]* ) # $3 - function name
+            ( [[:alpha:]*\#] [[:alpha:]_]* ) # $3 - function name
             [(]
-            % ( [1-9]\d* )             # $4 - variable
-            ( [^\)]* )                 # $5 - arguments
+            [%] ( [1-9] \d* )                # $4 - variable
+            ( [^\)]* )                       # $5 - arguments
             [)]
-            |                          # or
-            ( [1-9]\d* )               # $6 - variable
+            |                                # or
+            ( [1-9] \d* )                    # $6 - variable
         )
     }
     {
@@ -89,11 +93,13 @@ method gettext_to_maketext ($string) {
     }xmsge;
 
     return $string;
-};
+}
 
 # Expand the placeholders
 
-method _replace ($arg_ref, $text, $index_quant, $singular, $plural, $zero, $index_string) {
+sub _replace { ## no critic (ManyArgs)
+    my ($self, $arg_ref, $text, $index_quant, $singular, $plural, $zero, $index_string) = @_;
+
     if (defined $index_quant) { # quant
         my $number = $arg_ref->[$index_quant - 1];
         if ( ! looks_like_number($number) ) {
@@ -133,59 +139,69 @@ method _replace ($arg_ref, $text, $index_quant, $singular, $plural, $zero, $inde
             looks_like_number($string) ? 'numeric' : 'string',
         )
         : $string;
-};
+}
 
-method expand_maketext ($text, @args) {
+sub expand_maketext {
+    my ($self, $text, @args) = @_;
+
     defined $text
         or return $text;
+    my $arg_ref = ( @args == 1 && ref $args[0] eq 'ARRAY' )
+        ? $args[0]
+        : [ @args ];
 
     $text =~ s{ ## no critic (ComplexRegexes)
-        ~ ( [~\[\]] )                  # $1: escaped
+        [~] ( [~\[\]] )                # $1: escaped
         |
         (                              # $2: text
             \[ (?:
                 (?: quant | [*] )
-                , _ ( \d+ )            # $3: n
-                , ( [^,\]]* )          # $4: singular
-                (?: , ( [^,\]]* ) )?   # $5: plural
-                (?: , ( [^,\]]* ) )?   # $6: zero
+                [,] [_] ( \d+ )        # $3: n
+                [,] ( [^,\]]* )        # $4: singular
+                (?: [,] ( [^,\]]* ) )? # $5: plural
+                (?: [,] ( [^,\]]* ) )? # $6: zero
                 |
-                _ ( \d+ )              # $7: n
+                [_] ( \d+ )            # $7: n
             ) \]
         )
     }
     {
         $1
         ? $1
-        : $self->_replace(\@args, $2, $3, $4, $5, $6, $7)
+        : $self->_replace($arg_ref, $2, $3, $4, $5, $6, $7)
     }xmsge;
 
     return $text;
 }
 
-method expand_gettext ($text, @args) {
+sub expand_gettext {
+    my ($self, $text, @args) = @_;
+
     defined $text
         or return $text;
+    my $arg_ref = ( @args == 1 && ref $args[0] eq 'ARRAY' )
+        ? $args[0]
+        : [ @args ];
 
     $text =~ s{ ## no critic (ComplexRegexes)
-        % ( % )                     # $1: escaped
+        [%] ( % )                  # $1: escaped
         |
-        (                           # $2: text
-            % (?: quant | [*] )
+        (                          # $2: text
+            [%] (?: quant | [*] )
             [(]
-            % ( \d+ )               # $3: n
-            , ( [^,\)]* )           # $4: singular
-            (?: , ( [^,\)]* ) )?    # $5: plural
-            (?: , ( [^,\)]* ) )?    # $6: zero
+            [%] ( \d+ )            # $3: n
+            [,] ( [^,\)]* )        # $4: singular
+            (?: [,] ( [^,\)]* ) )? # $5: plural
+            (?: [,] ( [^,\)]* ) )? # $6: zero
             [)]
             |
-            % ( \d+ )               # $7: n
+            [%] ( \d+ )            # $7: n
         )
     }
     {
         $1
         ? $1
-        : $self->_replace(\@args, $2, $3, $4, $5, $6, $7)
+        : $self->_replace($arg_ref, $2, $3, $4, $5, $6, $7)
     }xmsge;
 
     return $text;
@@ -207,7 +223,7 @@ $HeadURL$
 
 =head1 VERSION
 
-0.001
+0.003
 
 =head1 SYNOPSIS
 
@@ -223,6 +239,7 @@ $HeadURL$
     );
 
     $expanded = $obj->expand_maketext($text, @args);
+    $expanded = $obj->expand_maketext($text, \@args);
 
 =head1 DESCRIPTION
 
@@ -336,6 +353,10 @@ maketext style:
 
     $expanded = $obj->expand_maketext($maketext_text, @args);
 
+or
+
+    $expanded = $obj->expand_maketext($maketext_text, \@args);
+
 =head2 method expand_gettext
 
 Expands strings containing gettext placeholders.
@@ -352,6 +373,10 @@ gettext style:
 
     $expanded = $obj->expand_maketext($gettext_text, @args);
 
+or
+
+    $expanded = $obj->expand_maketext($gettext_text, \@args);
+
 =head1 EXAMPLE
 
 Inside of this distribution is a directory named example.
@@ -367,17 +392,19 @@ none
 
 =head1 DEPENDENCIES
 
-L<Moose|Moose>
+L<Moo|Moo>
 
-L<MooseX::StrictConstructor|MooseX::StrictConstructor>
+L<MooX::StrictConstructor|MooX::StrictConstructor>
 
-L<MooseX::Types::Moose|MooseX::Types::Moose>
+L<MooX::Types::MooseLike|MooX::Types::MooseLike>
+
+L<Carp|Carp>
+
+L<Scalar::Util|Scalar::Util>
 
 L<namespace::autoclean|namespace::autoclean>
 
 L<syntax|syntax>
-
-L<Scalar::Util|Scalar::Util>
 
 =head1 INCOMPATIBILITIES
 
@@ -399,7 +426,7 @@ Steffen Winkler
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2011 - 2012,
+Copyright (c) 2011 - 2013,
 Steffen Winkler
 C<< <steffenw at cpan.org> >>.
 All rights reserved.

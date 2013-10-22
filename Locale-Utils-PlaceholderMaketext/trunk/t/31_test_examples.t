@@ -8,11 +8,10 @@ use Test::Differences;
 use charnames qw(:full);
 use Cwd qw(getcwd chdir);
 
-$ENV{TEST_EXAMPLE} or plan(
-    skip_all => 'Set $ENV{TEST_EXAMPLE} to run this test.'
-);
+$ENV{AUTHOR_TESTING} 
+    or plan skip_all => 'Set $ENV{AUTHOR_TESTING} to run this test.';
 
-plan(tests => 4);
+plan tests => 4;
 
 my @data = (
     {
@@ -20,6 +19,7 @@ my @data = (
         path   => 'example',
         script => '-I../lib -T 01_maketext_to_gettext.pl',
         result => <<'EOT',
+foo %1 bar
 foo %1 bar
 ~ %% foo [%1] bar
 foo %1 bar %quant(%2,singluar,plural,zero) baz
@@ -31,6 +31,7 @@ EOT
         path   => 'example',
         script => '-I../lib -T 02_gettext_to_maketext.pl',
         result => <<'EOT',
+foo [_1] bar
 foo [_1] bar
 ~~ % foo ~[[_1]~] bar
 foo [_1] bar [quant,_2,singluar,plural,zero] baz
@@ -84,7 +85,7 @@ EOT
 );
 
 for my $data (@data) {
-    my $dir = getcwd;
+    my $dir = getcwd();
     chdir("$dir/$data->{path}");
     my $result = qx{perl $data->{script} 2>&3};
     chdir($dir);
