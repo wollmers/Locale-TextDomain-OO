@@ -119,9 +119,9 @@ __END__
 
 Locale::TextDomain::OO::Lexicon::Role::ExtractHeader - Gettext header extractor
 
-$Id: Maketext.pm 255 2009-12-29 14:01:31Z steffenw $
+$Id$
 
-$HeadURL: https://perl-gettext-oo.svn.sourceforge.net/svnroot/perl-gettext-oo/module/trunk/lib/Locale/TextDomain/OO/Maketext.pm $
+$HeadURL$
 
 =head1 VERSION
 

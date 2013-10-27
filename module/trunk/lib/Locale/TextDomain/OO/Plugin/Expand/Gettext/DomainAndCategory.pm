@@ -295,9 +295,9 @@ __END__
 
 Locale::TextDomain::OO::Plugin::Expand::Gettext::DomainAndCategory - Methods for dynamic domain and/or category
 
-$Id: MessagesStruct.pm 252 2009-12-29 13:55:33Z steffenw $
+$Id$
 
-$HeadURL: https://perl-gettext-oo.svn.sourceforge.net/svnroot/perl-gettext-oo/module/trunk/lib/Locale/TextDomain/OO/MessagesStruct.pm $
+$HeadURL$
 
 =head1 VERSION
 
