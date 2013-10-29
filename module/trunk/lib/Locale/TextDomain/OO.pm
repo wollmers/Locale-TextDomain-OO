@@ -2,148 +2,18 @@ package Locale::TextDomain::OO; ## no critic (TidyCode)
 
 use strict;
 use warnings;
-use Carp qw(confess);
-use Locale::TextDomain::OO::Singleton::Lexicon;
-use Moo '1.003001';
-#use MooX::StrictConstructor; # not possible with BUILDARGS
-use MooX::Types::MooseLike::Base qw(Str);
-use namespace::autoclean;
 
 our $VERSION = '1.000';
 
-with qw(
-    Locale::TextDomain::OO::Lexicon::Role::Constants
-    Locale::TextDomain::OO::Role::Logger
-);
+use Locale::TextDomain::OO::Translator;
 
-sub BUILDARGS {
-    my ( $class, %args ) = @_;
+sub new {
+    my ($class, @args) = @_;
 
-    my $plugins = delete $args{plugins};
-    if ( $plugins ) {
-        ref $plugins eq 'ARRAY'
-            or confess 'Attribute plugins expected as ArrayRef';
-        for my $plugin ( @{$plugins} ) {
-            my $package = ( 0 == index $plugin, q{+} )
-                ? $plugin
-                : "Locale::TextDomain::OO::Plugin::$plugin";
-            with $package;
-        }
-    }
-
-    return \%args;
-}
-
-has language => (
-    is      => 'rw',
-    isa     => Str,
-    default => 'i-default',
-);
-
-has category => (
-    is      => 'rw',
-    isa     => Str,
-    default => q{},
-);
-
-has domain => (
-    is      => 'rw',
-    isa     => Str,
-    default => q{},
-);
-
-has filter => (
-    is  => 'rw',
-    isa => sub {
-        my $arg = shift;
-        # Undef
-        defined $arg
-            or return;
-        # CodeRef
-        ref $arg eq 'CODE'
-            and return;
-        confess "$arg is not Undef or CodeRef";
-    },
-);
-
-sub translate { ## no critic (ExcessComplexity ManyArgs)
-    my ($self, $msgctxt, $msgid, $msgid_plural, $count, $is_n) = @_;
-
-    my $lexicon_key = join $self->lexicon_key_separator, (
-        $self->language,
-        $self->category,
-        $self->domain,
+    return Locale::TextDomain::OO::Translator->new(
+        Locale::TextDomain::OO::Translator->load_plugins(@args),
     );
-    my $lexicon = Locale::TextDomain::OO::Singleton::Lexicon->instance->data;
-    $lexicon = exists $lexicon->{$lexicon_key}
-        ? $lexicon->{$lexicon_key}
-        : ();
-
-    my $msg_key = join $self->msg_key_separator, (
-        ( defined $msgctxt      ? $msgctxt      : q{} ),
-        ( defined $msgid        ? $msgid        : q{} ),
-        ( defined $msgid_plural ? $msgid_plural : ()  ),
-    );
-    if ( $is_n ) {
-        my $index
-            = $lexicon->{ $self->msg_key_separator }->{plural_code}->($count);
-        my $msgstr_plural = exists $lexicon->{$msg_key}
-            ? $lexicon->{$msg_key}->{msgstr_plural}->[$index]
-            : ();
-        if ( ! defined $msgstr_plural ) { # fallback
-            $msgstr_plural = $index
-                ? $msgid_plural
-                : $msgid;
-            my $text = $lexicon
-                ? qq{Using lexicon "$lexicon_key".}
-                : qq{Lexicon "$lexicon_key" not found.};
-            $self->logger
-                and $lexicon
-                    ? $self->logger->( qq{Using lexicon "$lexicon_key".} )
-                    : $self->logger->( qq{Lexicon "$lexicon_key" not found.} );
-            $self->logger
-                and $self->logger->(
-                    sprintf
-                        'msgstr_plural not found for for msgctxt=%s, msgid=%s, msgid_plural=%s.',
-                        ( defined $msgctxt      ? qq{"$msgctxt"}      : 'undef' ),
-                        ( defined $msgid        ? qq{"$msgid"}        : 'undef' ),
-                        ( defined $msgid_plural ? qq{"$msgid_plural"} : 'undef' ),
-                );
-        }
-        return $msgstr_plural;
-    }
-    my $msgstr = exists $lexicon->{$msg_key}
-        ? $lexicon->{$msg_key}->{msgstr}
-        : ();
-    if ( ! defined $msgstr ) { # fallback
-        $msgstr = $msgid;
-        my $text = $lexicon
-            ? qq{Using lexicon "$lexicon_key".}
-            : qq{Lexicon "$lexicon_key" not found.};
-        $self->logger
-            and $self->logger->(
-                sprintf
-                    '%s msgstr not found for msgctxt=%s, msgid=%s.',
-                    $text,
-                    ( defined $msgctxt ? qq{"$msgctxt"} : 'undef' ),
-                    ( defined $msgid   ? qq{"$msgid"}   : 'undef' ),
-            );
-    }
-
-    return $msgstr;
 }
-
-sub run_filter {
-    my ( $self, $translation_ref ) = @_;
-
-    $self->filter
-        or return $self;
-    $self->filter->($self, \$translation_ref);
-
-    return $self;
-}
-
-__PACKAGE__->meta->make_immutable;
 
 1;
 
@@ -338,10 +208,6 @@ That lexicon should be filled with data.
 
 =head1 SUBROUTINES/METHODS
 
-=head2 method BUILDARGS
-
-load the plugins
-
 =head2 method new
 
 see SYNOPSIS
@@ -423,15 +289,7 @@ none
 
 =head1 DEPENDENCIES
 
-L<Moo|Moo> version 1.003001
-
-L<MooX::Types::MooseLike::Base|MooX::Types::MooseLike::Base>
-
-L<Carp|Carp>
-
-L<Locale::TextDomain::OO::Singleton::Lexicon|Locale::TextDomain::OO::Singleton::Lexicon>
-
-L<namespace::autoclean|namespace::autoclean>
+L<Locale::TextDomain::OO::Translator|Locale::TextDomain::OO::Translator>
 
 =head1 INCOMPATIBILITIES
 
