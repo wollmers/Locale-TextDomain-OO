@@ -1,13 +1,15 @@
 package Locale::Utils::PlaceholderMaketext; ## no critic (TidyCode)
 
+use strict;
+use warnings;
+use Carp qw(confess);
 use Moo;
 use MooX::StrictConstructor;
 use MooX::Types::MooseLike::Base qw(Bool Str CodeRef);
-use Carp qw(confess);
 use Scalar::Util qw(looks_like_number);
 use namespace::autoclean;
 
-our $VERSION = '0.003';
+our $VERSION = '0.004';
 
 has strict => (
     is  => 'rw',
@@ -32,7 +34,8 @@ sub maketext_to_gettext {
 
     defined $string
         or return $string;
-    $string =~ s{ ## no critic (ComplexRegexes)
+    ## no critic (ComplexRegexes)
+    $string =~ s{
         [~] ( [~\[\]] )                      # $1 - unescape
         |
         ( [%] )                              # $2 - escape
@@ -57,6 +60,7 @@ sub maketext_to_gettext {
         ? "%$6"
         : "%$3(%$4$5)"
     }xmsge;
+    ## use critic (ComplexRegexes)
 
     return $string;
 }
@@ -66,7 +70,8 @@ sub gettext_to_maketext {
 
     defined $string
         or return $string;
-    $string =~ s{ ## no critic (ComplexRegexes)
+    ## no critic (ComplexRegexes)
+    $string =~ s{
         [%] ( [%] )                          # $1 - unescape
         |
         ( [~\[\]] )                          # $2 - escape
@@ -91,6 +96,7 @@ sub gettext_to_maketext {
         ? "[_$6]"
         : "[$3,_$4$5]"
     }xmsge;
+    ## use critic (ComplexRegexes)
 
     return $string;
 }
@@ -150,7 +156,8 @@ sub expand_maketext {
         ? $args[0]
         : [ @args ];
 
-    $text =~ s{ ## no critic (ComplexRegexes)
+    ## no critic (ComplexRegexes)
+    $text =~ s{
         [~] ( [~\[\]] )                # $1: escaped
         |
         (                              # $2: text
@@ -170,6 +177,7 @@ sub expand_maketext {
         ? $1
         : $self->_replace($arg_ref, $2, $3, $4, $5, $6, $7)
     }xmsge;
+    ## use critic (ComplexRegexes)
 
     return $text;
 }
@@ -183,7 +191,8 @@ sub expand_gettext {
         ? $args[0]
         : [ @args ];
 
-    $text =~ s{ ## no critic (ComplexRegexes)
+    ## no critic (ComplexRegexes)
+    $text =~ s{
         [%] ( % )                  # $1: escaped
         |
         (                          # $2: text
@@ -203,6 +212,7 @@ sub expand_gettext {
         ? $1
         : $self->_replace($arg_ref, $2, $3, $4, $5, $6, $7)
     }xmsge;
+    ## use critic (ComplexRegexes)
 
     return $text;
 }
@@ -223,7 +233,7 @@ $HeadURL$
 
 =head1 VERSION
 
-0.003
+0.004
 
 =head1 SYNOPSIS
 
@@ -392,19 +402,17 @@ none
 
 =head1 DEPENDENCIES
 
+L<Carp|Carp>
+
 L<Moo|Moo>
 
 L<MooX::StrictConstructor|MooX::StrictConstructor>
 
 L<MooX::Types::MooseLike|MooX::Types::MooseLike>
 
-L<Carp|Carp>
-
 L<Scalar::Util|Scalar::Util>
 
 L<namespace::autoclean|namespace::autoclean>
-
-L<syntax|syntax>
 
 =head1 INCOMPATIBILITIES
 
@@ -434,5 +442,3 @@ All rights reserved.
 This module is free software;
 you can redistribute it and/or modify it
 under the same terms as Perl itself.
-
-=cut
