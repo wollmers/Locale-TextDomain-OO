@@ -154,9 +154,9 @@ __END__
 
 Locale::TextDomain::OO::Translator - Translator class
 
-$Id: OO.pm 413 2013-10-27 13:12:20Z steffenw $
+$Id$
 
-$HeadURL: svn+ssh://steffenw@svn.code.sf.net/p/perl-gettext-oo/code/module/trunk/lib/Locale/TextDomain/OO.pm $
+$HeadURL$
 
 =head1 VERSION
 
