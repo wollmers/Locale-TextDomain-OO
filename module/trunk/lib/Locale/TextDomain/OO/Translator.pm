@@ -180,8 +180,21 @@ This is the translator class. Extend that class with plugins (Roles).
 
 =head2 class method load_plugins
 
-Called before new to load the plugins
+Called before new to load the plugins.
+
     $hash_ref = Locale::TextDomain::OO::Translator->load_plugins;
+
+=head2 method translate
+
+Called from Plugins only.
+
+    $translation = $self->translate(... lots of parameters ...);
+
+=head2 method run_filter
+
+Called from plugins only.
+
+    $self->run_filter(\$translation);
 
 =head1 EXAMPLE
 

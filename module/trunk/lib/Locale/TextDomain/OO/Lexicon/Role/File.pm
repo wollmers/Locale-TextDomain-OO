@@ -21,6 +21,10 @@ with qw(
     Locale::TextDomain::OO::Role::Logger
 );
 
+requires qw(
+    read_messages
+);
+
 has decode_code => (
     is      => 'ro',
     isa     => CodeRef,

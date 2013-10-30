@@ -45,12 +45,12 @@ This role provides lexicon constants.
 =head1 SUBROUTINES/METHODS
 
 =head2 method lexicon_key_separator
-    
+
     $separator = $self->lexicon_key_separator;
 
-=head2 method key_separator
+=head2 method msg_key_separator
 
-    $separator = $self->key_separator;
+    $separator = $self->msg_key_separator;
 
 =head1 EXAMPLE
 

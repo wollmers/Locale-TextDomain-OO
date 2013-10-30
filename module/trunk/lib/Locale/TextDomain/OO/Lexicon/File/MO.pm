@@ -82,6 +82,13 @@ This module reads a gettext mo file into the lexicon.
 
 See SYNOPSIS.
 
+=head2 method read_messages
+
+Called from Locale::TextDomain::OO::Lexicon::Role::File
+to run the mo file specific code.
+
+    $messages_ref = $self->read_messages($filename);
+
 =head1 EXAMPLE
 
 Inside of this distribution is a directory named example.
