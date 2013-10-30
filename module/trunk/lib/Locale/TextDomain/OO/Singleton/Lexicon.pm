@@ -9,13 +9,25 @@ use namespace::autoclean;
 our $VERSION = '1.000';
 
 with qw(
+    Locale::TextDomain::OO::Lexicon::Role::Constants
     MooX::Singleton
 );
 
 has data => (
     is       => 'ro',
     init_arg => undef,
-    default  => sub { {} },
+    default  => sub {
+        my $self = shift;    
+        return {
+            # empty lexicon of developer English
+            'i-default::' => {
+                $self->msg_key_separator => {
+                    nplurals    => 2,
+                    plural_code => sub { return shift != 1 },
+                },
+            },
+        };
+    },
 );
 
 __PACKAGE__->meta->make_immutable;

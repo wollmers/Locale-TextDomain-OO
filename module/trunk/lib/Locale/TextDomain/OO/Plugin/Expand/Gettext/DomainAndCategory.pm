@@ -19,30 +19,14 @@ requires qw(
 );
 
 has _shadow_domains => (
-    is => 'rw',
-    # default => sub { [] }, # is not working, so created that clear method
+    is      => 'rw',
+    default => sub { [] },
 );
 
 has _shadow_categories => (
-    is => 'rw',
-    # default => sub { [] }, # is not working, so created that clear method
+    is      => 'rw',
+    default => sub { [] },
 );
-
-sub _clear_shadow_domains {
-    my $self = shift;
-
-    $self->_shadow_domains( \my @default );
-
-    return \@default;
-}
-
-sub _clear_shadow_categories {
-    my $self = shift;
-
-    $self->_shadow_categories( \my @default );
-
-    return \@default;
-}
 
 sub __begin_d {
     my ($self, $domain) = @_;
@@ -50,7 +34,7 @@ sub __begin_d {
     defined $domain
         or confess 'Domain is not defined';
     push
-        @{ $self->_shadow_domains || $self->_clear_shadow_domains },
+        @{ $self->_shadow_domains },
         $self->domain;
     $self->domain($domain);
 
@@ -63,7 +47,7 @@ sub __begin_c {
     defined $category
         or confess 'Category is not defined';
     push
-        @{ $self->_shadow_categories || $self->_clear_shadow_categories },
+        @{ $self->_shadow_categories },
         $self->category;
     $self->category($category);
 
@@ -238,7 +222,7 @@ BEGIN {
     # Dummy methods for string marking.
     my $dummy = sub {
         my (undef, @more) = @_;
-        return @more;
+        return wantarray ? @more : $more[0];
     };
 
     *__d   = \&__dx;

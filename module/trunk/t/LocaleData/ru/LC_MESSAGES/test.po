@@ -18,3 +18,10 @@ msgstr "книга"
 msgid "§ book"
 msgstr "§ книга"
 
+# plural
+msgid "{count} book"
+msgid_plural "{count} books"
+msgstr[0] "{count} книга"
+msgstr[1] "{count} книги"
+msgstr[2] "{count} книг"
+

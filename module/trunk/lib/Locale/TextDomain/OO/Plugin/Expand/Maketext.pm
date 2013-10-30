@@ -50,7 +50,7 @@ BEGIN {
     # Dummy methods for string marking.
     my $dummy = sub {
         my (undef, @more) = @_;
-        return @more;
+        return wantarray ? @more : $more[0];
     };
     *Nmaketext   = $dummy;
     *Nmaketext_p = $dummy;
