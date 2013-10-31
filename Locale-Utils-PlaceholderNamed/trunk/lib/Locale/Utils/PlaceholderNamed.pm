@@ -1,9 +1,11 @@
 package Locale::Utils::PlaceholderNamed; ## no critic (TidyCode)
 
+use strict;
+use warnings;
+use Carp qw(confess);
 use Moo;
 use MooX::StrictConstructor;
 use MooX::Types::MooseLike::Base qw(Bool);
-use Carp qw(confess);
 use namespace::autoclean;
 
 our $VERSION = '0.004';
@@ -121,13 +123,13 @@ none
 
 =head1 DEPENDENCIES
 
+L<Carp|Carp>
+
 L<Moo|Moo>
 
 L<MooX::StrictConstructor|MooX::StrictConstructor>
 
 L<MooX::Types::MooseLike|MooX::Types::MooseLike>
-
-L<Carp|Carp>
 
 L<namespace::autoclean|namespace::autoclean>
 
