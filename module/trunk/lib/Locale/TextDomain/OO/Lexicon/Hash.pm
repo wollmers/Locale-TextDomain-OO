@@ -26,6 +26,19 @@ sub lexicon_ref {
         my $header_msgstr = $header->{msgstr}
             or confess 'msgstr of header not found';
         $lexicon_value->[0] = $self->extract_header_msgstr($header_msgstr);
+        my $nplurals = $lexicon_value->[0]->{nplurals};
+        VALUE:
+        for my $value ( @{$lexicon_value} ) {
+            exists $value->{msgstr_plural}
+                or next VALUE;
+            my $plural_count = @{ $value->{msgstr_plural} };
+            $plural_count == $nplurals or confess sprintf
+                'Count of msgstr_plural=%s but nplurals=%s for msgid="%s" msgid_plural="%s"',
+                $plural_count,
+                $nplurals,
+                ( exists $value->{msgid}        ? $value->{msgid}        : q{} ),
+                ( exists $value->{msgid_plural} ? $value->{msgid_plural} : q{} );
+        }
         $lexicon->data->{$lexicon_key}
             = $self->message_array_to_hash($lexicon_value);
         $self->logger

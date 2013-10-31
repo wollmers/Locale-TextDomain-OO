@@ -86,9 +86,8 @@ sub translate { ## no critic (ExcessComplexity ManyArgs)
         ( defined $msgid_plural ? $msgid_plural : ()  ),
     );
     if ( $is_n ) {
-        my $plural_code
-            = $lexicon->{ $self->msg_key_separator }->{plural_code}
-            || confess qq{Plural-Forms not found in lexicon "$lexicon_key"};
+        my $plural_code = $lexicon->{ $self->msg_key_separator }->{plural_code}
+            or confess qq{Plural-Forms not found in lexicon "$lexicon_key"};
         my $index
             = $plural_code->($count);
         my $msgstr_plural = exists $lexicon->{$msg_key}

@@ -13,6 +13,7 @@ with qw(
     Locale::TextDomain::OO::Lexicon::Role::Constants
     Locale::TextDomain::OO::Role::Logger
 );
+
 requires qw(
     language
     category

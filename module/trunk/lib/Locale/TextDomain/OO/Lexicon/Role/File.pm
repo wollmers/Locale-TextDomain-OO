@@ -55,6 +55,14 @@ sub _decode_messages {
             }
         }
         if ( exists $value->{msgstr_plural} ) {
+            my $got      = @{ $value->{msgstr_plural} };
+            my $expected = $messages->[0]->{nplurals};
+            $got == $expected or confess sprintf
+                'Count of msgstr_plural=%s but nplurals=%s for msgid="%s" msgid_plural="%s"',
+                $got,
+                $expected,
+                ( exists $value->{msgid}        ? $value->{msgid}        : q{} ),
+                ( exists $value->{msgid_plural} ? $value->{msgid_plural} : q{} );
             for my $text ( @{ $value->{msgstr_plural} } ) {
                 $text = $self->decode_code->($charset, $text);
             }
