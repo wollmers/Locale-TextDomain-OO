@@ -3,10 +3,10 @@ package Locale::Utils::PlaceholderMaketext; ## no critic (TidyCode)
 use strict;
 use warnings;
 use Carp qw(confess);
+use Scalar::Util qw(looks_like_number);
 use Moo;
 use MooX::StrictConstructor;
 use MooX::Types::MooseLike::Base qw(Bool Str CodeRef);
-use Scalar::Util qw(looks_like_number);
 use namespace::autoclean;
 
 our $VERSION = '0.004';
@@ -404,13 +404,13 @@ none
 
 L<Carp|Carp>
 
+L<Scalar::Util|Scalar::Util>
+
 L<Moo|Moo>
 
 L<MooX::StrictConstructor|MooX::StrictConstructor>
 
 L<MooX::Types::MooseLike|MooX::Types::MooseLike>
-
-L<Scalar::Util|Scalar::Util>
 
 L<namespace::autoclean|namespace::autoclean>
 
