@@ -29,17 +29,17 @@ msgstr "%quant(%1,Regal,Regale)"
 # __p
 msgctxt "maskulin"
 msgid "Dear"
-msgstr "Sehr geehrter Herr"
+msgstr "Sehr geehrter"
 
 # __px
 msgctxt "maskulin"
 msgid "Dear %1"
-msgstr "Sehr geehrter Herr %1"
+msgstr "Sehr geehrter %1"
 
 # __npx
-msgctxt "better"
-msgid "%*(%1,shelf,shelves)"
-msgstr "%*(%1,gutes Regal,gute Regale)"
+msgctxt "appointment"
+msgid "This is/are %*(%1,date,dates)."
+msgstr "Das ist/sind %*(%1,Date,Dates)."
 
 # zero
 msgid "%*(%1,shelf,shelves,no shelf)"

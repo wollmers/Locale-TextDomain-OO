@@ -37,24 +37,24 @@ msgstr[1] "{num} Regale"
 # __p
 msgctxt "maskulin"
 msgid "Dear"
-msgstr "Sehr geehrter Herr"
+msgstr "Sehr geehrter"
 
 # __px
 msgctxt "maskulin"
-msgid "Dear {name}"
-msgstr "Sehr geehrter Herr {name}"
+msgid "Dear {full name}"
+msgstr "Sehr geehrter {full name}"
 
 # __np
-msgctxt "better"
-msgid "shelf"
-msgid_plural "shelves"
-msgstr[0] "gutes Regal"
-msgstr[1] "gute Regale"
+msgctxt "appointment"
+msgid "date"
+msgid_plural "dates"
+msgstr[0] "Date"
+msgstr[1] "Dates"
 
 # __npx
-msgctxt "better"
-msgid "{num} shelf"
-msgid_plural "{num} shelves"
-msgstr[0] "{num} gutes Regal"
-msgstr[1] "{num} gute Regale"
+msgctxt "appointment"
+msgid "This is {num} date."
+msgid_plural "This are {num} dates."
+msgstr[0] "Das ist {num} Date."
+msgstr[1] "Das sind {num} Dates."
 

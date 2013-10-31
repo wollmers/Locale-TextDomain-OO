@@ -53,8 +53,8 @@ msgstr[1] "Dates"
 
 # __npx
 msgctxt "appointment"
-msgid "{num} date"
-msgid_plural "{num} dates"
-msgstr[0] "{num} Date"
-msgstr[1] "{num} Dates"
+msgid "This is {num} date."
+msgid_plural "This are {num} dates."
+msgstr[0] "Das ist {num} Date."
+msgstr[1] "Das sind {num} Dates."
 

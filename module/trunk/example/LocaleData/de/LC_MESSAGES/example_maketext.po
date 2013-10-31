@@ -29,17 +29,17 @@ msgstr "[quant,_1,Regal,Regale]"
 # __p
 msgctxt "maskulin"
 msgid "Dear"
-msgstr "Sehr geehrter Herr"
+msgstr "Sehr geehrter"
 
 # __px
 msgctxt "maskulin"
 msgid "Dear [_1]"
-msgstr "Sehr geehrter Herr [_1]"
+msgstr "Sehr geehrter [_1]"
 
 # __npx
-msgctxt "better"
-msgid "[*,_1,shelf,shelves]"
-msgstr "[*,_1,gutes Regal,gute Regale]"
+msgctxt "appointment"
+msgid "This is/are [*,_1,date,dates]."
+msgstr "Das ist/sind [*,_1,Date,Dates]."
 
 # zero
 msgid "[*,_1,shelf,shelves,no shelf]"

@@ -38,8 +38,8 @@ msgstr "Sehr geehrter [_1]"
 
 # __npx
 msgctxt "appointment"
-msgid "[*,_1,date,dates]"
-msgstr "[*,_1,Date,Dates]"
+msgid "This is/are [*,_1,date,dates]."
+msgstr "Das ist/sind [*,_1,Date,Dates]."
 
 # zero
 msgid "[*,_1,shelf,shelves,no shelf]"

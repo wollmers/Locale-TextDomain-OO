@@ -10,28 +10,31 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=3; plural=n%10==1 && n%100!=11 ? 0 : n%10>=2 && n%10<=4 && (n%100<10 || n%100>=20) ? 1 : 2;\n"
 
-# utf-8 msgstr
+# utf-8 at msgstr only
 msgid "book"
 msgstr "книга"
 
-# utf-8 msgid + msgstr
+# utf-8 at msgid + msgstr
 msgid "§ book"
 msgstr "§ книга"
 
-# utf-8 msgid + msgid_plural, msgstr[n]
-msgid "§§ book"
-msgid_plural "§§ books"
-msgstr[0] "§§ книга"
-msgstr[1] "§§ книги"
-msgstr[2] "§§ книг"
+# plural
+msgid "{count} book"
+msgid_plural "{count} books"
+msgstr[0] "{count} книга"
+msgstr[1] "{count} книги"
+msgstr[2] "{count} книг"
 
 # context
-msgctxt "c"
-msgid "c book"
-msgstr "c книга"
+msgctxt "appointment"
+msgid "date"
+msgstr "книга"
 
-# utf-8 context
-msgctxt "c§"
-msgid "c§ book"
-msgstr "c§ книга"
+# context, plural
+msgctxt "appointment"
+msgid "This is {count} date."
+msgid_plural "This are {num} dates."
+msgstr[0] "Это {num} воссоединение."
+msgstr[1] "Это {num} воссоединения."
+msgstr[2] "Эти {num} воссоединения."
 
