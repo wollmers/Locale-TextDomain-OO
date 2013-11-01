@@ -37,8 +37,8 @@ Locale::TextDomain::OO::Lexicon::Hash
             },
             {
                 # __ umlaut
-                msgid  => "ง book",
-                msgstr => "ง Buch",
+                msgid  => "ยง book",
+                msgstr => "ยง Buch",
             },
             {
                 # __x
@@ -88,11 +88,11 @@ Locale::TextDomain::OO::Lexicon::Hash
             {
                 # __npx
                 msgctxt       => "appointment",
-                msgid         => "{num} date",
-                msgid_plural  => "{num} dates",
+                msgid         => "This is {num} date.",
+                msgid_plural  => "This are {num} dates.",
                 msgstr_plural => [
-                    "{num} Date",
-                    "{num} Dates",
+                    "Das ist {num} Date.",
+                    "Das sind {num} Dates.",
                 ],
             },
         ],
@@ -113,9 +113,9 @@ is
     '__';
 is
     $loc->__(
-        'ง book',
+        'ยง book',
     ),
-    'ง Buch',
+    'ยง Buch',
     '__ umlaut';
 is
     $loc->__x(
@@ -202,20 +202,20 @@ is
 is
     $loc->__npx(
         'appointment',
-        '{num} date',
-        '{num} dates',
+        'This is {num} date.',
+        'This are {num} dates.',
         1,
         num => 1,
     ),
-    '1 Date',
+    'Das ist 1 Date.',
     '__npx 1';
 is
     $loc->__npx(
         'appointment',
-        '{num} date',
-        '{num} dates',
+        'This is {num} date.',
+        'This are {num} dates.',
         2,
         num => 2,
     ),
-    '2 Dates',
+    'Das sind 2 Dates.',
     '__npx 2';

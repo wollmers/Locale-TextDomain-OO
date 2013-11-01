@@ -90,18 +90,18 @@ is
 is
     $loc->loc_p(
         'appointment',
-        '[*,_1,date,dates]',
+        'This is/are [*,_1,date,dates].',
         1,
     ),
-    '1 Date',
+    'Das ist/sind 1 Date.',
     'loc_p, * 1';
 is
     $loc->loc_p(
         'appointment',
-        '[*,_1,date,dates]',
+        'This is/are [*,_1,date,dates].',
         2,
     ),
-    '2 Dates',
+    'Das ist/sind 2 Dates.',
     'loc_p, * 2';
 is
     $loc->loc(

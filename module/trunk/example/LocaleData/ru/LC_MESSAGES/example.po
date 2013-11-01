@@ -28,11 +28,11 @@ msgstr[2] "{count} книг"
 # context
 msgctxt "appointment"
 msgid "date"
-msgstr "книга"
+msgstr "воссоединение"
 
 # context, plural
 msgctxt "appointment"
-msgid "This is {count} date."
+msgid "This is {num} date."
 msgid_plural "This are {num} dates."
 msgstr[0] "Это {num} воссоединение."
 msgstr[1] "Это {num} воссоединения."
