@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 27;
+use Test::More tests => 20;
 use Test::NoWarnings;
 use Test::Exception;
 use Test::Differences;
@@ -11,28 +11,22 @@ use Test::Differences;
 BEGIN {
     require_ok('Locale::TextDomain::OO');
     require_ok('Locale::TextDomain::OO::Lexicon::File::MO');
-    require_ok('Locale::TextDomain::OO::TiedInterface');
-    Locale::TextDomain::OO::TiedInterface->import;
+    require_ok('Locale::TextDomain::OO::FunctionalInterface');
+    Locale::TextDomain::OO::FunctionalInterface->import;
 }
 
 throws_ok
     sub {
-        Locale::TextDomain::OO::TiedInterface->import(undef);
+        Locale::TextDomain::OO::FunctionalInterface->import(undef);
     },
-    qr{\A \QAn undefined value is not a variable name}xms,
-    'tie object method with an undefined method name';
+    qr{\A \QAn undefined value is not a function name}xms,
+    'undefined function name';
 throws_ok
     sub {
-        Locale::TextDomain::OO::TiedInterface->import('__');
+        Locale::TextDomain::OO::FunctionalInterface->import('__y');
     },
-    qr{\A \Q"__" is not a hash or a hash reference}xms,
-    'tie __ failed';
-throws_ok
-    sub {
-        Locale::TextDomain::OO::TiedInterface->import('$__y');
-    },
-    qr{\A "\$__y"\Q is not exported}xms,
-    'tie $__y failed';
+    qr{\A \Q"__y" is not exported}xms,
+    'function __y failed';
 
 ${$loc_ref} = Locale::TextDomain::OO->new(
     language => 'de',
@@ -60,72 +54,48 @@ Locale::TextDomain::OO::Lexicon::File::MO
 
 # gettext
 is
-    $__{'This is a text.'},
+    __('This is a text.'),
     'Das ist ein Text.',
-    '%__';
+    '__';
 is
-    $__->{'This is a text.'},
-    'Das ist ein Text.',
-    '$__';
-is
-    $__{['This is a text.']},
-    'Das ist ein Text.',
-    '%__ []';
-is
-    $__->{['This is a text.']},
-    'Das ist ein Text.',
-    '$__ []';
-is
-    $__npx{[
+    __npx(
         'appointment',
         'This is {num} date.',
         'This are {num} dates.',
         1,
         num => 1,
-    ]},
+    ),
     'Das ist 1 Date.',
-    '%__npx 1';
+    '__npx 1';
 is
-    $__npx->{[
+    __npx(
         'appointment',
         'This is {num} date.',
         'This are {num} dates.',
         2,
         num => 2,
-    ]},
+    ),
     'Das sind 2 Dates.',
     '$__npx 2';
-eq_or_diff
-    $N__{'text'},
+is
+    N__('text'),
     'text',
-    '%N__ scalar';
+    '%N__';
 eq_or_diff
-    $N__{['text']},
-    'text',
-    '%N__ arrayref';
-eq_or_diff
-    $N__->{'text'},
-    'text',
-    '$N__';
-eq_or_diff
-    $N__n{['singular', 'plural', 1]},
+    [ N__n('singular', 'plural', 1) ],
     [ qw( singular plural 1 ) ],
-    '%N__n';
-eq_or_diff
-    $N__n{['singular', 'plural', 2]},
-    [ qw( singular plural 2 ) ],
-    '$N__';
-() = $__begin_dc{[ qw( my_domain my_category ) ]};
+    'N__n';
+__begin_dc( qw( my_domain my_category ) );
 is
     ${$loc_ref}->domain,
     'my_domain',
-    '%__begin_dc domain';
+    '__begin_dc domain';
 is
     ${$loc_ref}->category,
     'my_category',
-    '%__begin_dc category';
+    '__begin_dc category';
 is
-    $__dcnpx{[
+    __dcnpx(
         'test',
         'appointment',
         'This is {num} date.',
@@ -133,47 +103,49 @@ is
         3,
         'LC_MESSAGES',
         num => 3,
-    ]},
+    ),
     'Das sind 3 Dates.',
-    '%__dcnpx 3';
+    '__dcnpx 3';
 is
     ${$loc_ref}->domain,
     'my_domain',
-    '%__begin_dc domain unchanged';
+    '__begin_dc domain unchanged';
 is
     ${$loc_ref}->category,
     'my_category',
     '%__begin_dc category unchanged';
-() = $__end_dc{[]};
+__end_dc;
 is
     ${$loc_ref}->domain,
     'test',
-    '%__end_dc domain';
+    '__end_dc domain';
 is
     ${$loc_ref}->category,
     'LC_MESSAGES',
-    '%__end_dc category';
+    '__end_dc category';
 
 # maketext
-() = $__begin_d->{test_maketext};
+__begin_d('test_maketext');
 is
-    $maketext_p{[
+    maketext_p(
         'appointment',
         'This is/are [*,_1,date,dates].',
         1,
-    ]},
+    ),
     'Das ist/sind 1 Date.',
-    '%maketext_p';
+    'maketext_p';
 eq_or_diff
-    $Nmaketext_p->{[
-        'appointment',
-        'This is/are [*,_1,date,dates].',
-        2,
-    ]},
+    [
+        Nmaketext_p(
+            'appointment',
+            'This is/are [*,_1,date,dates].',
+            2,
+        ),
+    ],
     [
         'appointment',
         'This is/are [*,_1,date,dates].',
         2,
     ],
     '$Nmaketext_p';
-() = $__end_d->{[]};
+__end_d;

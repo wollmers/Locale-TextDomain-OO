@@ -17,7 +17,7 @@ has data => (
     is       => 'ro',
     init_arg => undef,
     default  => sub {
-        my $self = shift;    
+        my $self = shift;
         return {
             # empty lexicon of developer English
             'i-default::' => {

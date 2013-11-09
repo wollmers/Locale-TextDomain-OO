@@ -101,7 +101,7 @@ sub import {
     if (! @imports) {
         @imports = (
             qw($loc_ref),
-            map { ("\%$_", "\$$_") } keys %method_name
+            map { ("\%$_", "\$$_") } keys %method_name,
         );
     }
 
@@ -122,7 +122,7 @@ sub import {
             or confess qq{"$import" is not a hash or a hash reference};
         my $is_ref = $1;
         exists $method_name{$method}
-            or confess qq{Method "$method" is not exported};
+            or confess qq{"$import" is not exported};
         {
             no strict qw(refs);       ## no critic (NoStrict)
             no warnings qw(redefine); ## no critic (NoWarnings)
@@ -172,7 +172,7 @@ $HeadURL: https://perl-gettext-oo.svn.sourceforge.net/svnroot/perl-gettext-oo/mo
 
 =head1 VERSION
 
-0.03
+1.000
 
 =head1 DESCRIPTION
 
@@ -358,7 +358,7 @@ or import only the given variables, as example all
         $Nlocalize
         $Nlocalize_p
     );
-    $loc = Locale::TextDomain::OO->new(
+    ${loc_ref} = Locale::TextDomain::OO->new(
         ...
     );
 
@@ -373,18 +373,7 @@ Run this *.pl files.
 
 =head1 DIAGNOSTICS
 
-Can not import an undef as variable name.
-
- An undefined value is not a variable name
-
-Can not import an unknown variable.
-
- "..." is not a hash or a hash reference
-
-Can not import a variable that has not a name like a translating methods.
-
- Method "..." is not a translation method
-
+confess
 
 =head1 CONFIGURATION AND ENVIRONMENT
 
