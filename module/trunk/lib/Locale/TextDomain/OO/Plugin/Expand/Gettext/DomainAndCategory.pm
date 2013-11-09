@@ -99,9 +99,9 @@ sub __end_dc { ## no critic (UnusedPrivateSubroutines)
 sub __dx {
     my ( $self, $domain, @more ) = @_;
 
-    $self->__d($domain);
+    $self->__begin_d($domain);
     my $translation = $self->__x(@more);
-    $self->__rd;
+    $self->__end_d;
 
     return $translation;
 }
@@ -109,9 +109,9 @@ sub __dx {
 sub __cx {
     my ($self, @more) = @_;
 
-    $self->__c( splice @more, 1, 1 );
+    $self->__begin_c( splice @more, 1, 1 );
     my $translation = $self->__x(@more);
-    $self->__rc;
+    $self->__end_c;
 
     return $translation;
 }
@@ -119,9 +119,9 @@ sub __cx {
 sub __dcx {
     my ( $self, $domain, @more ) = @_;
 
-    $self->__d($domain);
+    $self->__begin_d($domain);
     my $translation = $self->__cx(@more);
-    $self->__rd;
+    $self->__end_d;
 
     return $translation;
 }
@@ -129,9 +129,9 @@ sub __dcx {
 sub __dnx {
     my ( $self, $domain, @more ) = @_;
 
-    $self->__d($domain);
+    $self->__begin_d($domain);
     my $translation = $self->__nx(@more);
-    $self->__rd;
+    $self->__end_d;
 
     return $translation;
 }
@@ -139,9 +139,9 @@ sub __dnx {
 sub __cnx {
     my ( $self, @more ) = @_;
 
-    $self->__c( splice @more, 3, 1 ); ## no critic (MagicNumbers)
+    $self->__begin_c( splice @more, 3, 1 ); ## no critic (MagicNumbers)
     my $translation = $self->__nx(@more);
-    $self->__rc;
+    $self->__end_c;
 
     return $translation;
 }
@@ -149,9 +149,9 @@ sub __cnx {
 sub __dcnx {
     my ( $self, $domain, @more ) = @_;
 
-    $self->__d($domain);
+    $self->__begin_d($domain);
     my $translation = $self->__cnx(@_);
-    $self->__rd;
+    $self->__end_d;
 
     return $translation;
 }
@@ -159,9 +159,9 @@ sub __dcnx {
 sub __dpx {
     my ( $self, $domain, @more ) = @_;
 
-    $self->__d($domain);
+    $self->__begin_d($domain);
     my $translation = $self->__px(@_);
-    $self->__rd;
+    $self->__end_d;
 
     return $translation;
 }
@@ -169,9 +169,9 @@ sub __dpx {
 sub __cpx {
     my ( $self, @more ) = @_;
 
-    $self->__c( splice @more, 2, 1 );
+    $self->__begin_c( splice @more, 2, 1 );
     my $translation = $self->__px(@more);
-    $self->__rc;
+    $self->__end_c;
 
     return $translation;
 }
@@ -179,9 +179,9 @@ sub __cpx {
 sub __dcpx {
     my ( $self, $domain, @more ) = @_;
 
-    $self->__d($domain);
+    $self->__begin_d($domain);
     my $translation = $self->__cpx(@more);
-    $self->__rd;
+    $self->__end_d;
 
     return $translation;
 }
@@ -189,9 +189,9 @@ sub __dcpx {
 sub __dnpx {
     my ( $self, $domain, @more ) = @_;
 
-    $self->__d($domain);
+    $self->__begin_d($domain);
     my $translation = $self->__npx(@more);
-    $self->__rd;
+    $self->__end_d;
 
     return $translation;
 }
@@ -199,9 +199,9 @@ sub __dnpx {
 sub __cnpx {
     my ($self, @more) = @_;
 
-    $self->__c( splice @more, 4, 1 ); ## no critic (MagicNumbers)
+    $self->__begin_c( splice @more, 4, 1 ); ## no critic (MagicNumbers)
     my $translation = $self->__npx(@more);
-    $self->__rc;
+    $self->__end_c;
 
     return $translation;
 }
@@ -209,9 +209,9 @@ sub __cnpx {
 sub __dcnpx {
     my ( $self, $domain, @more ) = @_;
 
-    $self->__d($domain);
+    $self->__begin_d($domain);
     my $translation = $self->__cnpx(@more);
-    $self->__rd;
+    $self->__end_d;
 
     return $translation;
 }
