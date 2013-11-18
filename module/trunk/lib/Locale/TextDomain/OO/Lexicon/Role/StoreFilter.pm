@@ -89,7 +89,7 @@ has _domain_category_regex => (
 );
 
 sub data {
-    my $self = shift;
+    my ( $self, $arg_ref ) = @_;
 
     my $data  = Locale::TextDomain::OO::Singleton::Lexicon->instance->data;
     my $regex = $self->_domain_category_regex;
@@ -97,6 +97,10 @@ sub data {
         map { ## no critic (ComplexMappings)
             my $value = { %{ $data->{$_} } };
             delete $value->{ $self->msg_key_separator }->{plural_code};
+            if ( $arg_ref->{msg_key_separator} ) {
+                $value->{ $arg_ref->{msg_key_separator} }
+                    = delete $value->{ $self->msg_key_separator };
+            }
             $_ => $value;
         }
         grep {
@@ -193,6 +197,10 @@ Usage of that optional filter
 Get back that filtered lexicon data.
 
     $data = $self->data;
+
+or for special cases without control chars
+
+    $data = $self->data({ msg_key_separator => '{MSG_KEY_SEPARATOR}' });
 
 =head1 EXAMPLE
 
