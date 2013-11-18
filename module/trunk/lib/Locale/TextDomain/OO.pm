@@ -144,43 +144,66 @@ Run the examples of this distribution (folder example).
 
 =head2 Overview
 
- Application calls    Application calls      Application calls
- TextDomain methods   TextDomain method      Maketext methods
-         |            and Maketext methods           |
-         |                    |                      |
-         v                    v                      v
- .----------------------------------------------------------------.
- | Locale::TextDomain::OO                                         |
- | with plugins Locale::TextDomain::OO::Plugin::Expand::...       |
- |----------------------------------------------------------------|
- | TextDomain       |  TextDomain          |  Maketext            |
- |                  |  Maketext            |  Maketext::Loc       |
- |                  |  Maketext::Loc       |  Maketext::Localize  |
- |                  |  Maketext::Localize  |                      |
- `----------------------------------------------------------------'
-                              ^
+ Application calls   Application calls   Application calls
+ gettext methods     getext and          maketext methods
+         |           maketext methods            |
+         |                         |             |
+         v                         v             v
+ .-----------------------------------------------------------.
+ | Locale::TextDomain::OO                                    |
+ | with plugin LanguagesOfLanguage                           |
+ | with plugins Locale::TextDomain::OO::Plugin::Expand::...  |
+ |-----------------------------------------------------------|
+ | Gettext                    |\       /| Maketext           |
+ | Gettext::DomainAndCategory | > and < | Maketext::Loc      |
+ |                            |/       \| Maketext::Localize |
+ `-----------------------------------------------------------'
+                            ^
+                            |
+ .--------------------------'-------------------.
+ | Locale::Text::Domain::OO::Singleton::Lexicon |---------------.
+ `----------------------------------------------'               |
+                            ^                                   |
+                            |                                   |
+ .--------------------------'-------------------------------.   |
+ | build lexicon using Locale::TextDomain::OO::Lexicon::... |   |
+ |----------------------------------------------------------|   |
+ |           Hash              |   File::MO       | ...     |   |
+ `----------------------------------------------------------'   |
+       ^               ^               ^                        |
+       |               |               |                        |
+ .-----'-----.    _____|_____    .-----'----.                   |
+ | Perl      |   /_ _ _ _ _ _\   | mo files |-.                 |
+ | data      |   |           |   `----------' |-.               |
+ | structure |   | Database  |     `----------' |               |
+ `-----------'   `-----------'       `----------'               |
+                                       ^                        |
+                                       |                        |
+                                  build using                   |
+                                  gettext tools                 |
+                                                                |
+                              .---------------------------------´
                               |
- .----------------------------'-----------------------------------.
- |          Locale::Text::Domain::OO::Singleton::Lexicon          |
- `----------------------------------------------------------------'
-                              ^
+                              v
+ .------------------------------------------------------------------.
+ | build JSON lexicon using Locale::TextDomain::OO::Lexicon::ToJSON |
+ `------------------------------------------------------------------'
                               |
- .----------------------------'-----------------------------------.
- |    build Lexicon using Locale::TextDomain::OO::Lexicon::...    |
- |----------------------------------------------------------------|
- |           Hash              |   File::MO       |               |
- `----------------------------------------------------------------'
-       ^               ^               ^
-       |               |               |
- .-----'-----.    _____|_____    .-----'----.
- | Perl      |   /_ _ _ _ _ _\   | mo files |-.
- | data      |   |           |   `----------' |-.
- | structure |   | Database  |     `----------' |
- `-----------'   `-----------'       `----------'
-                                       ^
-                                       |
-                                  build using
-                                  gettext tools
+                              v
+                      .--------------.
+                      | lexicon.json |
+                      `-------.------'
+                              |
+ .--- not yet implemented ----------------------------------------------.
+ | js/jquery/locale/text/domain/oo.js                                   |
+ | with plugins with plugins js/jquery/locale/text/domain/oo/expand/... |
+ |----------------------------------------------------------------------|
+ | gettext.js                                                           |
+ | gettext/domain_and_category.js                                       |
+ | maketext.js                                                          |
+ | maketext/loc.js                                                      |
+ | maketext/localize.js                                                 |
+ `----------------------------------------------------------------------'
 
 =head1 SYNOPSIS
 
