@@ -38,6 +38,12 @@ EOC
     return $nplurals;
 }
 
+sub _plural {
+    my ($self, $plural_forms) = @_;
+
+    return $plural_forms =~ m{ \b plural= ( [^;\n] ) }xms;
+}
+
 sub _plural_code {
     my ($self, $plural_forms) = @_;
 
@@ -89,6 +95,7 @@ sub extract_header_msgstr {
 
     return {
         nplurals    => $self->_nplurals($plural_forms),
+        plural      => $self->_plural($plural_forms),
         plural_code => $self->_plural_code($plural_forms),
         charset     => $charset,
     };
@@ -146,6 +153,7 @@ This module is extracting charset and plural date from gettext header.
 That hash_ref contains:
 
     nplurals    => $count_of_plural_forms,
+    plural      => $the_original_formula,
     plural_code => $code_ref_to_select_the_right_plural_form,
     charset     => $charset,
 

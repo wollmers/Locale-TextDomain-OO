@@ -23,6 +23,7 @@ has data => (
             'i-default::' => {
                 $self->msg_key_separator => {
                     nplurals    => 2,
+                    plural      => 'n != 1',
                     plural_code => sub { return shift != 1 },
                 },
             },
@@ -55,7 +56,7 @@ for L<Locale::TextDomain:OO|Locale::TextDomain:OO>.
 
 =head1 SYNOPSIS
 
-    Locale::TextDomain::OO::Singleton::Lexicon;
+    use Locale::TextDomain::OO::Singleton::Lexicon;
 
     $lexicon_data = Locale::TextDomain::OO::Singleton::Lexicon->instance->data;
 
