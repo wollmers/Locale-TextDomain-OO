@@ -31,6 +31,8 @@ $HeadURL$
 
 1.000
 
+Starting with version 1.000 the interface has changed.
+
 =head1 DESCRIPTION
 
 This module provides a high-level interface to Perl message translation.
@@ -55,8 +57,8 @@ Locale::TextDomain::OO has a flexible object oriented interface
 based on L<Moo|Moo>.
 
 Creating the Lexicon and translating are two splitted things.
-So it is possible to crete the lexicon in a initialisation phase.
-The connection between both is the singleton mechanimsm of the Lexicon module.
+So it is possible to create the lexicon during the initialisation phase.
+The connection between both is the singleton mechanimsm of the lexicon module.
 
 =head2 How to extract?
 
@@ -161,28 +163,28 @@ Run the examples of this distribution (folder example).
                             ^
                             |
  .--------------------------'-------------------.
- | Locale::Text::Domain::OO::Singleton::Lexicon |---------------.
- `----------------------------------------------'               |
-                            ^                                   |
-                            |                                   |
- .--------------------------'-------------------------------.   |
- | build lexicon using Locale::TextDomain::OO::Lexicon::... |   |
- |----------------------------------------------------------|   |
- |           Hash              |   File::MO       | ...     |   |
- `----------------------------------------------------------'   |
-       ^               ^               ^                        |
-       |               |               |                        |
- .-----'-----.    _____|_____    .-----'----.                   |
- | Perl      |   /_ _ _ _ _ _\   | mo files |-.                 |
- | data      |   |           |   `----------' |-.               |
- | structure |   | Database  |     `----------' |               |
- `-----------'   `-----------'       `----------'               |
-                                       ^                        |
-                                       |                        |
-                                  build using                   |
-                                  gettext tools                 |
-                                                                |
-                              .---------------------------------´
+ | Locale::Text::Domain::OO::Singleton::Lexicon |----------------------.
+ `----------------------------------------------'                      |
+                            ^                                          |
+                            |                                          |
+ .--------------------------'-------------------------------.          |
+ | build lexicon using Locale::TextDomain::OO::Lexicon::... |          |
+ |----------------------------------------------------------|          |
+ |           Hash              |   File::MO     | File::PO  |          |
+ `----------------------------------------------------------'          |
+       ^               ^               ^              ^                |
+       |               |               |              |                |
+ .-----'-----.    _____|_____    .-----'----.       .-----'----.       |
+ | Perl      |   /_ _ _ _ _ _\   | mo files |-.     | po files |-.     |
+ | data      |   |           |   `----------' |-.   `----------' |-.   |
+ | structure |   | Database  |     `----------' |     `----------' |   |
+ `-----------'   `-----------'       `----------'       `----------'   |
+                                       ^                   ^           |
+                                       |                   |           |
+                                  build using        build using       |
+                                  gettext tools      gettext tools     |
+                                                 (not yet implemented) |
+                              .----------------------------------------'
                               |
                               v
  .------------------------------------------------------------------.
@@ -194,16 +196,17 @@ Run the examples of this distribution (folder example).
                       | lexicon.json |
                       `-------.------'
                               |
- .--- not yet implemented ----------------------------------------------.
- | js/jquery/locale/text/domain/oo.js                                   |
- | with plugins with plugins js/jquery/locale/text/domain/oo/expand/... |
- |----------------------------------------------------------------------|
- | gettext.js                                                           |
- | gettext/domain_and_category.js                                       |
- | maketext.js                                                          |
- | maketext/loc.js                                                      |
- | maketext/localize.js                                                 |
- `----------------------------------------------------------------------'
+                              v
+ .--- not yet implemented --------------------.
+ | js/loc.js                                   |
+ | with plugins with plugins js/loc/expand/... |
+ |---------------------------------------------|
+ | gettext.js                                  |
+ | gettext/domain_and_category.js              |
+ | maketext.js                                 |
+ | maketext/loc.js                             |
+ | maketext/localize.js                        |
+ `---------------------------------------------'
 
 =head1 SYNOPSIS
 
