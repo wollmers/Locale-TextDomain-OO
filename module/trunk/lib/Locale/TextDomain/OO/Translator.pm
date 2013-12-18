@@ -67,6 +67,23 @@ has filter => (
     },
 );
 
+sub _calculate_multiplural_index {
+    my ($self, $count_ref, $plural_code, $lexicon, $lexicon_key) = @_;
+
+    my $nplurals = $lexicon->{ $self->msg_key_separator }->{multiplural_nplurals}
+        or confess qq{X-Multiplural-Nplurals not found in lexicon "$lexicon_key"};
+    my @counts = @{$count_ref}
+        or confess 'Count array is empty';
+    my $index = 0;
+    while (@counts) {
+        $index *= $nplurals;
+        my $count = shift @counts;
+        $index += $plural_code->($count);
+    }
+
+    return $index;
+}
+
 sub translate { ## no critic (ExcessComplexity ManyArgs)
     my ($self, $msgctxt, $msgid, $msgid_plural, $count, $is_n) = @_;
 
@@ -88,13 +105,14 @@ sub translate { ## no critic (ExcessComplexity ManyArgs)
     if ( $is_n ) {
         my $plural_code = $lexicon->{ $self->msg_key_separator }->{plural_code}
             or confess qq{Plural-Forms not found in lexicon "$lexicon_key"};
-        my $index
-            = $plural_code->($count);
+        my $multiplural_index = ref $count eq 'ARRAY'
+            ? $self->_calculate_multiplural_index($count, $plural_code, $lexicon, $lexicon_key)
+            : $plural_code->($count);
         my $msgstr_plural = exists $lexicon->{$msg_key}
-            ? $lexicon->{$msg_key}->{msgstr_plural}->[$index]
+            ? $lexicon->{$msg_key}->{msgstr_plural}->[$multiplural_index]
             : ();
         if ( ! defined $msgstr_plural ) { # fallback
-            $msgstr_plural = $index
+            $msgstr_plural = $plural_code->($count)
                 ? $msgid_plural
                 : $msgid;
             my $text = $lexicon
