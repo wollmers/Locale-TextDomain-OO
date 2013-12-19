@@ -1,46 +1,40 @@
-#!perl -T
+#!perl -T ## no critic (TidyCode)
 
 use strict;
 use warnings;
+use Locale::TextDomain::OO;
 
 our $VERSION = 0;
 
-require Locale::TextDomain::OO;
-
-local $ENV{LANGUAGE}
-    = Locale::TextDomain::OO
-    ->get_default_language_detect()
-    ->('de_DE');
-my $text_domain = 'example';
-
 my $loc = Locale::TextDomain::OO->new(
-    text_domain => $text_domain,
-    search_dirs => [qw(./LocaleData/)],
+    language => 'i-default',
+    plugins  => [ qw( Expand::Gettext ) ],
 );
 
-# Put all data for the translation into a structure.
+# Put all data for the translation into a structure
+# and do not run the translation.
 # That allows the extractor to find all the phrases.
 my @extractable_data = (
-    q{} => [
+    __ => [
         $loc->N__(
             'This is a text.',
         )
     ],
-    x => [
+    __x => [
         $loc->N__x(
             '{name} is programming {language}.',
             name     => 'Steffen',
             language => 'Perl',
         )
     ],
-    n => [
+    __n => [
         $loc->N__n(
             'Singular',
             'Plural',
             1,
         )
     ],
-    nx => [
+    __nx => [
         $loc->N__nx(
             '{num} shelf',
             '{num} shelves',
@@ -48,32 +42,32 @@ my @extractable_data = (
             num => 1,
         )
     ],
-    p => [
+    __p => [
         $loc->N__p(
             'maskulin',
             'Dear',
         )
     ],
-    px => [
+    __px => [
         $loc->N__px(
             'maskulin',
-            'Dear {name}',
-            name => 'Winkler',
+            'Dear {full name}',
+            'full name' => 'Steffen Winkler',
         )
     ],
-    np => [
+    __np => [
         $loc->N__np(
-            'better',
-            'shelf',
-            'shelves',
+            'appointment',
+            'date',
+            'dates',
             1,
         )
     ],
-    npx => [
+    __npx => [
         $loc->N__npx(
-            'better',
-            '{num} shelf',
-            '{num} shelves',
+            'appointment',
+            '{num} date',
+            '{num} dates',
             1,
             num => 1,
         )
@@ -81,10 +75,11 @@ my @extractable_data = (
 );
 
 # Do any complex things and run the translations later.
-while (my ($method_suffix, $array_ref) = splice @extractable_data, 0, 2) {
-    my $method = "__$method_suffix";
+while ( my ($method_name, $array_ref) = splice @extractable_data, 0, 2 ) {
     () = print
-        $loc->$method( @{$array_ref} ),
+        $method_name,
+        ': ',
+        $loc->$method_name( @{$array_ref} ),
         "\n";
 }
 
@@ -94,15 +89,11 @@ __END__
 
 Output:
 
-Das ist ein Text.
-Steffen programmiert Perl.
-Einzahl
-Mehrzahl
-1 Regal
-2 Regale
-Sehr geehrter Herr
-Sehr geehrter Herr Winkler
-gutes Regal
-gute Regale
-1 gutes Regal
-2 gute Regale
+__: This is a text.
+__x: Steffen is programming Perl.
+__n: Singular
+__nx: 1 shelf
+__p: Dear
+__px: Dear Steffen Winkler
+__np: date
+__npx: 1 date

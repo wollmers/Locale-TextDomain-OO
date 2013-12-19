@@ -1,20 +1,20 @@
-#!perl -T
+#!perl -T ## no critic (TidyCode)
 
 use strict;
 use warnings;
+use Locale::TextDomain::OO;
+use Locale::TextDomain::OO::Lexicon::Hash;
 
 our $VERSION = 0;
 
-use Locale::TextDomain::OO::Lexicon::Hash;
-use Locale::TextDomain::OO;
-
-# Lexicon from hash
+# switch of perlcritic because of po-file similar writing
+## no critic (InterpolationOfLiterals EmptyQuotes)
 Locale::TextDomain::OO::Lexicon::Hash->new->lexicon_ref({
-    # data equal to de/LC_MESSAGES/test.po (.mo)
-    # language -----^^ ^^^^^^^^^^^ ^^^^
-    # category -------´           /
-    # domain --------------------´
-    'de:LC_MESSAGES:test' => [
+    # data equal to de/LC_MESSAGES/example.po (example.mo)
+    # language -----^^ ^^^^^^^^^^^ ^^^^^^^
+    # category --------'           |
+    # domain ----------------------'
+    'de:LC_MESSAGES:example' => [
         # header similar to po file
         {
             msgid  => "",
@@ -101,15 +101,17 @@ Locale::TextDomain::OO::Lexicon::Hash->new->lexicon_ref({
         },
     ],
 });
+## use critic (InterpolationOfLiterals EmptyQuotes)
 
 my $loc = Locale::TextDomain::OO->new(
     language => 'de',          # default is 'i-default'
     category => 'LC_MESSAGES', # default is q{}
-    domain   => 'test',        # default is q{}
+    domain   => 'example',     # default is q{}
+    logger   => sub { () = print shift, "\n" },
     plugins  => [ qw( Expand::Gettext ) ],
 );
 
-# run all translations
+# run translations
 () = print map {"$_\n"}
     $loc->__(
         'This is a text.',

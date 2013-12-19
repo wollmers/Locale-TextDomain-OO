@@ -3,7 +3,7 @@
 use strict;
 use warnings;
 
-use Test::More tests => 18;
+use Test::More tests => 19;
 use Test::NoWarnings;
 use Test::Differences;
 
@@ -133,6 +133,18 @@ is
 eq_or_diff
     [
         $loc->Nloc_p(
+            'appointment',
+            'date',
+        ),
+    ],
+    [
+        'appointment',
+        'date',
+    ],
+    'Nloc_p';
+eq_or_diff
+    [
+        $loc->Nloc_p(
             'not existing context',
             'book',
         ),
@@ -141,4 +153,4 @@ eq_or_diff
         'not existing context',
         'book',
     ],
-    'Nloc_p';
+    'Nloc_p (not in lexicon)';

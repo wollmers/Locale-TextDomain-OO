@@ -17,12 +17,12 @@ with qw(
 sub to_json {
     my $self = shift;
 
-    return $self->store_content( 
-        encode_json( 
+    return $self->store_content(
+        encode_json(
             $self->data({
                 msg_key_separator => '{MSG_KEY_SEPARATOR}',
             }),
-        ), 
+        ),
     );
 }
 

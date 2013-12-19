@@ -150,7 +150,7 @@ sub __dcnx {
     my ( $self, $domain, @more ) = @_;
 
     $self->__begin_d($domain);
-    my $translation = $self->__cnx(@_);
+    my $translation = $self->__cnx(@more);
     $self->__end_d;
 
     return $translation;
@@ -160,7 +160,7 @@ sub __dpx {
     my ( $self, $domain, @more ) = @_;
 
     $self->__begin_d($domain);
-    my $translation = $self->__px(@_);
+    my $translation = $self->__px(@more);
     $self->__end_d;
 
     return $translation;

@@ -16,7 +16,7 @@ Locale::TextDomain::OO::Lexicon::File::MO
     )
     ->lexicon_ref({
         search_dirs => [ './LocaleData' ],
-        decode      => 1, # from UTF-8, see header of po/mo file
+        decode      => 1,
         data        => [
             # map category and domain to q{}
             '*::' => '*/LC_MESSAGES/example.mo',
@@ -26,60 +26,31 @@ Locale::TextDomain::OO::Lexicon::File::MO
 my $loc = Locale::TextDomain::OO->new(
     language => 'ru',
     logger   => sub { () = print shift, "\n" },
-    plugins  => [ qw( Expand::Gettext ) ],
+    plugins  => [ qw( Expand::Maketext::Localize ) ],
 );
 
 # all unicode chars encode to UTF-8
 binmode STDOUT, ':encoding(utf-8)'
     or confess "Binmode STDOUT\n$OS_ERROR";
 
-# run translations
+# run all translations
 () = print map {"$_\n"}
-    $loc->__(
+    $loc->localize(
         'book',
     ),
-    $loc->__nx(
-        '{count} book',
-        '{count} books',
-        1,
-        count => 1,
+    $loc->localize(
+        '§ book',
     ),
-    $loc->__nx(
-        '{count} book',
-        '{count} books',
-        3, ## no critic (MagicNumbers)
-        count => 3,
-    ),
-    $loc->__nx(
-        '{count} book',
-        '{count} books',
-        5, ## no critic (MagicNumbers)
-        count => 5,
-    ),
-    $loc->__p(
+    $loc->localize_p(
         'appointment',
         'date',
     ),
-    $loc->__npx(
-        'appointment',
-        'This is {num} date.',
-        'This are {num} dates.',
-        1,
-        num => 1,
+    $loc->Nlocalize(
+        'book',
     ),
-    $loc->__npx(
+    $loc->Nlocalize_p(
         'appointment',
-        'This is {num} date.',
-        'This are {num} dates.',
-        3, ## no critic (MagicNumbers)
-        num => 3,
-    ),
-    $loc->__npx(
-        'appointment',
-        'This is {num} date.',
-        'This are {num} dates.',
-        5, ## no critic (MagicNumbers)
-        num => 5,
+        'date',
     );
 
 # $Id$
@@ -91,10 +62,8 @@ Output:
 Lexicon "de::" loaded from file "LocaleData/de/LC_MESSAGES/example.mo"
 Lexicon "ru::" loaded from file "LocaleData/ru/LC_MESSAGES/example.mo"
 книга
-1 книга
-3 книги
-5 книг
+§ книга
 воссоединение
-Это 1 воссоединение.
-Это 3 воссоединения.
-Эти 5 воссоединения.
+book
+appointment
+date

@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use utf8;
 
-use Test::More tests => 8;
+use Test::More tests => 9;
 use Test::NoWarnings;
 use Test::Differences;
 
@@ -44,10 +44,10 @@ is
     'localize, umlaut';
 is
     $loc->localize_p(
-        'not existing context',
-        'book',
+        'appointment',
+        'date',
     ),
-    'book',
+    'воссоединение',
     'localize_p';
 is
     $loc->Nlocalize(
@@ -55,6 +55,18 @@ is
     ),
     'book',
     'Nlocalize';
+eq_or_diff
+    [
+        $loc->Nlocalize_p(
+            'appointment',
+            'date',
+        ),
+    ],
+    [
+        'appointment',
+        'date',
+    ],
+    'Nlocalize_p';
 eq_or_diff
     [
         $loc->Nlocalize_p(
@@ -66,4 +78,4 @@ eq_or_diff
         'not existing context',
         'book',
     ],
-    'Nlocalize_p';
+    'Nlocalize_p (not in lexicon)';

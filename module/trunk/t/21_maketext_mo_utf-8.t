@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use utf8;
 
-use Test::More tests => 18;
+use Test::More tests => 19;
 use Test::NoWarnings;
 use Test::Differences;
 
@@ -134,6 +134,18 @@ is
 eq_or_diff
     [
         $loc->Nmaketext_p(
+            'appointment',
+            'date',
+        ),
+    ],
+    [
+        'appointment',
+        'date',
+    ],
+    'Nmaketext_p';
+eq_or_diff
+    [
+        $loc->Nmaketext_p(
             'not existing context',
             'book',
         ),
@@ -142,4 +154,4 @@ eq_or_diff
         'not existing context',
         'book',
     ],
-    'Nmaketext_p';
+    'Nmaketext_p (not in lexicon)';

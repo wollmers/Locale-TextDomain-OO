@@ -1,36 +1,37 @@
-#!perl -T
+#!perl -T ## no critic (TidyCode)
 
 use strict;
 use warnings;
 use utf8;
+use Carp qw(confess);
+use English qw(-no_match_vars $OS_ERROR);
+use Locale::TextDomain::OO;
+use Locale::TextDomain::OO::Lexicon::File::MO;
 
 our $VERSION = 0;
 
-use Carp qw(croak);
-use English qw(-no_match_vars $OS_ERROR);
-use Encode qw(encode decode);
-require Locale::TextDomain::OO;
-
-local $ENV{LANG} = (); # for author test only
-local $ENV{LANGUAGE}
-    = Locale::TextDomain::OO
-    ->get_default_language_detect()
-    ->('de');
-my $text_domain = 'example_cp1252';
-my $encoding    = 'cp1252';
+Locale::TextDomain::OO::Lexicon::File::MO
+    ->new(
+        logger => sub { () = print shift, "\n" },
+    )
+    ->lexicon_ref({
+        search_dirs => [ './LocaleData' ],
+        decode      => 1, # from cp1252, see header of po/mo file
+        data        => [
+            # map category and domain to q{}
+            '*::' => '*/LC_MESSAGES/example_cp1252.mo',
+        ],
+    });
 
 my $loc = Locale::TextDomain::OO->new(
-    text_domain  => $text_domain,
-    search_dirs  => [qw(./LocaleData/)],
-    # input filter
-    input_filter => sub { encode($encoding, shift) },
-    # output filter
-    filter       => sub { decode($encoding, shift) },
+    language => 'de',
+    logger   => sub { () = print shift, "\n" },
+    plugins  => [ qw( Expand::Gettext ) ],
 );
 
 # all unicode chars encode to UTF-8
 binmode STDOUT, ':encoding(utf-8)'
-    or croak "Binmode STDOUT\n$OS_ERROR";
+    or confess "Binmode STDOUT\n$OS_ERROR";
 
 # run all translations
 () = print map {"$_\n"}
@@ -44,4 +45,5 @@ __END__
 
 Output:
 
+Lexicon "de::" loaded from file "LocaleData/de/LC_MESSAGES/example_cp1252.mo
 Das sind deutsche Umlaute: ä ö ü ß Ä Ö Ü.

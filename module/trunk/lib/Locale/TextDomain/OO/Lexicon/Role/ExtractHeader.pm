@@ -75,7 +75,7 @@ sub extract_header_msgstr {
         (
             nplurals [ ]* [=] [ ]* \d+   [ ]* [;]
             [ ]*
-            plural   [ ]* [=] [ ]* [^;]+ [ ]* [;]?
+            plural   [ ]* [=] [ ]* [^;\n]+ [ ]* [;]?
             [ ]*
         )
         $
@@ -92,13 +92,21 @@ sub extract_header_msgstr {
         $
     }xms
         or confess 'Content-Type with charset not found in header';
+    my ( $multiplural_nplurals ) = $header_msgstr =~ m{
+        ^ X-Multiplural-Nplurals: [ ]* ( \d+ ) [ ]* $
+    }xms;
 
-    return {
+    return {(
         nplurals    => $self->_nplurals($plural_forms),
         plural      => $self->_plural($plural_forms),
         plural_code => $self->_plural_code($plural_forms),
         charset     => $charset,
-    };
+        (
+            $multiplural_nplurals
+            ? ( multiplural_nplurals => $multiplural_nplurals )
+            : ()
+        ),
+    )};
 }
 
 sub message_array_to_hash {

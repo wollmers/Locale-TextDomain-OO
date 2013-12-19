@@ -117,7 +117,7 @@ eq_or_diff
     ),
     {
         'i-default::' => {
-            "\x04" => {
+            '{MSG_KEY_SEPARATOR}' => {
                 nplurals => 2,
                 plural   => 'n != 1',
             },

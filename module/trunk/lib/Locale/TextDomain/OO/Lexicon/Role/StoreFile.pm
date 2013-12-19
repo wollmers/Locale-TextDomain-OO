@@ -4,7 +4,6 @@ use strict;
 use warnings;
 use Carp qw(confess);
 use English qw(-no_match_vars $OS_ERROR);
-require IO::File;
 use Moo::Role;
 use MooX::Types::MooseLike::Base qw(Str);
 use namespace::autoclean;
@@ -33,7 +32,7 @@ sub store_content {
     }
     if ( $self->filename ) {
         my $filename = $self->filename;
-        my $file_handle = IO::File->new( $self->filename, q{>} )
+        open my $file_handle, q{> :raw}, $self->filename
             or confess qq{Unable to open file "$filename" $OS_ERROR};
         $file_handle->print( $file_handle, $content )
             or confess qq{Unable to print file "$filename" $OS_ERROR};
@@ -87,6 +86,25 @@ If both not set the content itself will be returned.
 
     $content = $self->store_content($content);
 
+=head2 filename
+
+    $self->filename('myfile.myext')
+    $self->store_content;
+
+=head2 file_handle
+
+Set filename also to get a speaking error messages.
+Must not a real filename if the handle is not a real file.
+
+    my $filename = 'myfile.myext';
+    $self->filename($filename);
+    open my $file_handle, q{>}, $filename
+        or confess qq{Unable to open file "$filename" $OS_ERROR};
+    $self->file_handle($file_handle);
+    $self->store_content;
+    close $file_handle
+        or confess qq{Unable to close file "$filename" $OS_ERROR};
+
 =head1 EXAMPLE
 
 Inside of this distribution is a directory named example.
@@ -105,8 +123,6 @@ none
 L<Carp|Carp>
 
 L<English|English>
-
-L<IO::File|IO::File>
 
 L<Moo::Role|Moo::Role>
 

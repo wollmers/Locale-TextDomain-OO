@@ -95,18 +95,26 @@ sub data {
     my $regex = $self->_domain_category_regex;
     $data = {
         map { ## no critic (ComplexMappings)
-            my $value = { %{ $data->{$_} } };
-            delete $value->{ $self->msg_key_separator }->{plural_code};
+            my $lexicon = { %{ $data->{$_} } };
+            # not able to serialize code references
+            delete $lexicon->{ $self->msg_key_separator }->{plural_code};
             if ( $arg_ref->{msg_key_separator} ) {
-                $value->{ $arg_ref->{msg_key_separator} }
-                    = delete $value->{ $self->msg_key_separator };
+                my $binary_separator = $self->msg_key_separator;
+                for my $lexicon_key ( keys %{$lexicon} ) {
+                    my $new_key = $lexicon_key;
+                    $new_key =~ s{
+                        \Q$binary_separator\E
+                    }{$arg_ref->{msg_key_separator}}xmsg;
+                    $lexicon->{$new_key}
+                        = delete $lexicon->{$lexicon_key};
+                }
             }
-            $_ => $value;
+            $_ => $lexicon;
         }
         grep {
-            my $key = $_;
+            my $lexicon_name = $_;
             @{$regex}
-                ? any { $key =~ $_ } @{$regex}
+                ? any { $lexicon_name =~ $_ } @{$regex}
                 : 1;
         }
         keys %{$data}
