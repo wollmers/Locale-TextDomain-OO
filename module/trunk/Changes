@@ -1,7 +1,14 @@
 Revision history for Perl extension Locale::Text::Domain:OO.
 
+1.000 Thu Dec 19 17:42:56 2013
+- Compleately rewritten.
+  The main idea is that the lexicon can load during compile time.
+  The next thing is that the HTTP request or the OS is compleately untouched.
+  If someone need that connection he is able to do that by himself.
+  The binding to Locale::TextDomain internal module is no longer used.
+
 0.07  Thu May 13 10:21:15 2010
-- Problem with UTF-8 Environment $ENV{LANG} is 'en_GB.UTF-8' or 'en_US.UTF-8' 
+- Problem with UTF-8 Environment $ENV{LANG} is 'en_GB.UTF-8' or 'en_US.UTF-8'
   https://rt.cpan.org/Public/Bug/Display.html?id=53931
 
 0.06  Wed Jan 20 07:15:00 2010
