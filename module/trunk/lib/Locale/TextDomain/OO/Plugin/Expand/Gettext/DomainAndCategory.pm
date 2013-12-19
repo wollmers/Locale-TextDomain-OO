@@ -291,6 +291,9 @@ $HeadURL$
 
 This methods swiching the domain and/or category during translation process.
 
+I am not sure if that is the best way to do.
+Maybe that will change in future.
+
 =head1 SYNOPSIS
 
     my $loc = Locale::Text::TextDomain::OO->new(
