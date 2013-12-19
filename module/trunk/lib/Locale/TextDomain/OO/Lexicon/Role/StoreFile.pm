@@ -86,12 +86,12 @@ If both not set the content itself will be returned.
 
     $content = $self->store_content($content);
 
-=head2 filename
+=head2 method filename
 
     $self->filename('myfile.myext')
     $self->store_content;
 
-=head2 file_handle
+=head2 method file_handle
 
 Set filename also to get a speaking error messages.
 Must not a real filename if the handle is not a real file.

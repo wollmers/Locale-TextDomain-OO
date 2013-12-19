@@ -258,7 +258,7 @@ That depends on your project.
     $loc->category($category || q{} );
     $category = $loc->category;
 
-=head2 method domain => (
+=head2 method domain
 
 You are able to ignore or set the domain.
 That depends on your project.

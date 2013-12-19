@@ -189,9 +189,13 @@ none
 L<Carp|Carp>
 
 L<English|English>
+
 L<Moo::Role|Moo::Role>
+
 L<Safe|Safe>
+
 L<namespace::autoclean|namespace::autoclean>
+
 L<Locale::TextDomain::OO::Lexicon::Role::Constants|Locale::TextDomain::OO::Lexicon::Role::Constants>
 
 =head1 INCOMPATIBILITIES

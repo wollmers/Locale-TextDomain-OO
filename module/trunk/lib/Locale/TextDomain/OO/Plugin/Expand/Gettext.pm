@@ -131,7 +131,7 @@ for static domain and category handling.
 
 How to build the method name?
 
-Use __ and append this with 'n', 'p' and/or 'x' in alphabetic order.
+Use __ and append this with "n", "p" and/or "x" in alphabetic order.
 
  .------------------------------------------------------------------------.
  | Snippet | Description                                                  |
@@ -182,7 +182,7 @@ Plural and expand named placeholders
         num => $num_files,
     );
 
-=head3 method method __p
+=head3 method __p
 
 Context
 
@@ -237,7 +237,7 @@ Context, plural and expand named placeholders
 
 How to build the method name?
 
-Use N__ and append this with 'n', 'p' and/or 'x' in alphabetic order.
+Use N__ and append this with "n", "p" and/or "x" in alphabetic order.
 
  .------------------------------------------------------------------------.
  | Snippet | Description                                                  |
@@ -248,7 +248,7 @@ Use N__ and append this with 'n', 'p' and/or 'x' in alphabetic order.
  | x       | Last parameters as hash/hash_ref are for named placeholders. |
  '------------------------------------------------------------------------'
 
-=head3 method N__, N__x, N__n, N__nx, N__p, N__px, N__np, N__npx
+=head3 methods N__, N__x, N__n, N__nx, N__p, N__px, N__np, N__npx
 
 The extractor looks for C<__('...>
 and has no problem with C<<$loc->N__('...>>.

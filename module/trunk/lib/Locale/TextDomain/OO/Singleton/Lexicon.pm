@@ -90,6 +90,8 @@ L<MooX::StrictConstructor|MooX::StrictConstructor>
 
 L<namespace::autoclean|namespace::autoclean>
 
+L<Locale::TextDomain::OO::Lexicon::Role::Constants|Locale::TextDomain::OO::Lexicon::Role::Constants>
+
 L<MooX::Singleton|MooX::Singleton>
 
 =head1 INCOMPATIBILITIES

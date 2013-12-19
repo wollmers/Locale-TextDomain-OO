@@ -51,7 +51,7 @@ This module provides alternative maketext methods.
 
 =head1 SUBROUTINES/METHODS
 
-=head2 method localize, localize_p, Nlocalize, Nlocalize_p
+=head2 methods localize, localize_p, Nlocalize, Nlocalize_p
 
 This methods are aliases to method
 maketext, maketext_p, Nmaketext and Nmaketext_p.

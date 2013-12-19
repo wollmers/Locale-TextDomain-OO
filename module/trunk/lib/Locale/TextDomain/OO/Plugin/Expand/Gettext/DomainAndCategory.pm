@@ -308,7 +308,7 @@ Maybe that will change in future.
 
 =head2 Switch methods
 
-=head3 method __begin_d, __end_d
+=head3 methods __begin_d, __end_d
 
 Switch the domain.
 
@@ -320,7 +320,7 @@ All translations using the lexicon of that domain.
 
 All translations using the lexicon before call of __begin_d.
 
-=head3 method __begin_c, __end_c
+=head3 methods __begin_c, __end_c
 
 Switch the category.
 
@@ -332,7 +332,7 @@ All translations using the lexicon of that category.
 
 All translations using the lexicon before call of __begin_c.
 
-=head3 method __begin_dc, __end_dc
+=head3 methods __begin_dc, __end_dc
 
 Switch the domain and category.
 
@@ -346,7 +346,7 @@ All translations using the lexicon before call of __begin_dc.
 
 =head2 Translation methods
 
-=head3 method __d, __dn, __dp, __dnp, __dx, __dnx, __dpx, __dnpx
+=head3 methods __d, __dn, __dp, __dnp, __dx, __dnx, __dpx, __dnpx
 
 Switch to that domain, translate and switch back.
 
@@ -355,7 +355,7 @@ Switch to that domain, translate and switch back.
 Other methods are similar extended.
 The domain is the 1st parameter.
 
-=head3 method __c, __cn, __cp, __cnp, __cx, __cnx, __cpx, __cnpx
+=head3 methods __c, __cn, __cp, __cnp, __cx, __cnx, __cpx, __cnpx
 
 Switch to that category, translate and switch back.
 
@@ -365,7 +365,7 @@ Other methods are similar extended.
 The category is the last parameter
 but before the placeholder replacement hash/hash_ref.
 
-=head3 method __dc, __dcn, __dcp, __dcnp, __dcx, __dcnx, __dcpx, __dcnpx
+=head3 methods __dc, __dcn, __dcp, __dcnp, __dcx, __dcnx, __dcpx, __dcnpx
 
 Switch to that domain and category, translate and switch back both.
 

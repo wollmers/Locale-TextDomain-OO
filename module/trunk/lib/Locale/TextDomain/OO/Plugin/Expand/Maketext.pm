@@ -139,7 +139,7 @@ This method includes the expansion as 'quant' or '*'.
         $books,
     );
 
-=head2 method Nmaketext, Nmaketext_p
+=head2 methods Nmaketext, Nmaketext_p
 
 The extractor looks for C<maketext('...>
 and has no problem with C<<$loc->Nmaketext('...>>.
