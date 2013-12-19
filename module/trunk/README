@@ -1,5 +1,5 @@
-Locale-Text-Domain-OO version 0.07
-==================================
+Locale-Text-Domain-OO version 1.000
+===================================
 
 Perl OO Interface to Uniforum Message Translation
 
@@ -12,34 +12,33 @@ To install this module, run the following commands:
     make test
     make install
 
-Alternatively, to install with Module::Build, you can use the following commands:
-
-    perl Build.PL
-    ./Build
-    ./Build test
-    ./Build install
-
 DEPENDENCIES
 
 This module requires these other modules and libraries:
 
-    version
-    parent
-    Safe
+    charnames
+    namespace::autoclean
     Carp
-    Cwd
     Encode
-    DBI
-    DBD::PO
-    Perl6::Export::Attrs
-    I18N::LangTags
-    I18N::LangTagsDetect
+    English
+    File::Spec
+    JSON
+    List::MoreUtils
+    Locale::MO::File
+    Locale::Utils::PlaceholderMaketext
+    Locale::Utils::PlaceholderNamed
+    Moo
+    Moo::Role
+    MooX::StrictConstructor
+    MooX::Types::MooseLike::Base
+    Path::Class
+    Path::Class::Rule
+    Safe
     Tie::Sub
-    Locale::Messages
 
 COPYRIGHT AND LICENCE
 
-Copyright (c) 2009 - 2010,
+Copyright (c) 2009 - 2013,
 Steffen Winkler
 steffenw at cpan.org.
 All rights reserved.
