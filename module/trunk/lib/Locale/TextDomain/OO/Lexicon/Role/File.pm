@@ -13,7 +13,7 @@ use Path::Class qw(file);
 use Path::Class::Rule;
 use namespace::autoclean;
 
-our $VERSION = '1.000';
+our $VERSION = '1.002';
 
 with qw(
     Locale::TextDomain::OO::Lexicon::Role::ExtractHeader
@@ -116,7 +116,7 @@ sub _my_glob {
         or confess qq{Can not open directory "$left_dir" $OS_ERROR};
     my @inner_dirs = grep {
         ! m{\A [.]{1,2} \z}xms
-        && m{\A $inner_dir_regex \E}xms;
+        && m{\A $inner_dir_regex \z}xms;
     } readdir $dirh;
 
     return map {
@@ -191,7 +191,7 @@ $HeadURL$
 
 =head1 VERSION
 
-1.000
+1.002
 
 =head1 DESCRIPTION
 
