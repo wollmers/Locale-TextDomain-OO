@@ -13,7 +13,7 @@ use Path::Class qw(file);
 use Path::Class::Rule;
 use namespace::autoclean;
 
-our $VERSION = '1.002';
+our $VERSION = '1.003';
 
 with qw(
     Locale::TextDomain::OO::Lexicon::Role::ExtractHeader
@@ -143,16 +143,19 @@ sub lexicon_ref {
                 = ( $data->[ $index++ ], $data->[ $index++ ] );
             my $file = file( $dir, $lexicon_value );
             my @files = $self->_my_glob($file);
-            for my $filename ( @files ) {
+            for ( @files ) {
+                my $filename = $_->stringify;
                 my $lexicon_language_key = $lexicon_key;
                 my $language = $filename;
                 my @parts = split m{[*]}xms, $file;
                 if ( @parts == 2 ) {
+                    use Data::Dumper;
+                    die Dumper $language if ref $language;
                     substr $language, 0, length $parts[0], q{};
                     substr $language, - length $parts[1], length $parts[1], q{};
                     $lexicon_language_key =~s {[*]}{$language}xms;
                 }
-                my $messages = $self->read_messages( $filename->stringify );
+                my $messages = $self->read_messages($filename);
                 my $header_msgstr = $messages->[0]->{msgstr}
                     or confess 'msgstr of header not found';
                 my $header = $messages->[0];
@@ -191,7 +194,7 @@ $HeadURL$
 
 =head1 VERSION
 
-1.002
+1.003
 
 =head1 DESCRIPTION
 
