@@ -9,8 +9,8 @@ use Test::Differences;
 use Cwd qw(getcwd chdir);
 use Encode qw(decode_utf8);
 
-$ENV{TEST_EXAMPLE} or plan(
-    skip_all => 'Set $ENV{TEST_EXAMPLE} to run this test.'
+$ENV{AUTHOR_TESTING} or plan(
+    skip_all => 'Set $ENV{AUTHOR_TESTING} to run this test.'
 );
 
 plan(tests => 6);
