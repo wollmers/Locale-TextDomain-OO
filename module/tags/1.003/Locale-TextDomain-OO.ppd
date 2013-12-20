@@ -1,0 +1,27 @@
+<SOFTPKG NAME="Locale-TextDomain-OO" VERSION="1.003">
+    <ABSTRACT>Locale::TextDomain::OO - Perl OO Interface to Uniforum Message Translation</ABSTRACT>
+    <AUTHOR>Steffen Winkler &lt;steffenw at cpan.org&gt;</AUTHOR>
+    <IMPLEMENTATION>
+        <REQUIRE NAME="Locale::Utils::PlaceholderMaketext" VERSION="0" />
+        <REQUIRE NAME="File::Spec" VERSION="0" />
+        <REQUIRE NAME="Path::Class::Rule" VERSION="0" />
+        <REQUIRE NAME="Moo::Role" VERSION="0" />
+        <REQUIRE NAME="Locale::MO::File" VERSION="0" />
+        <REQUIRE NAME="Encode::" VERSION="0" />
+        <REQUIRE NAME="MooX::Types::MooseLike::Base" VERSION="0" />
+        <REQUIRE NAME="List::MoreUtils" VERSION="0" />
+        <REQUIRE NAME="Safe::" VERSION="0" />
+        <REQUIRE NAME="namespace::autoclean" VERSION="0" />
+        <REQUIRE NAME="English::" VERSION="0" />
+        <REQUIRE NAME="charnames::" VERSION="0" />
+        <REQUIRE NAME="Tie::Sub" VERSION="0.09" />
+        <REQUIRE NAME="Moo::" VERSION="0" />
+        <REQUIRE NAME="Carp::" VERSION="0" />
+        <REQUIRE NAME="MooX::StrictConstructor" VERSION="0" />
+        <REQUIRE NAME="Path::Class" VERSION="0" />
+        <REQUIRE NAME="MooX::Singleton" VERSION="0" />
+        <REQUIRE NAME="Locale::Utils::PlaceholderNamed" VERSION="0" />
+        <REQUIRE NAME="JSON::" VERSION="0" />
+        <CODEBASE HREF="PPM-Locale-TextDomain-OO-1.003.tar.gz" />
+    </IMPLEMENTATION>
+</SOFTPKG>
