@@ -3,7 +3,7 @@ package Locale::TextDomain::OO; ## no critic (TidyCode)
 use strict;
 use warnings;
 
-our $VERSION = '1.002';
+our $VERSION = '1.003';
 
 use Locale::TextDomain::OO::Translator;
 
@@ -29,7 +29,7 @@ $HeadURL$
 
 =head1 VERSION
 
-1.002
+1.003
 
 Starting with version 1.000 the interface has changed.
 
@@ -153,7 +153,7 @@ Run the examples of this distribution (folder example).
          v                         v             v
  .-----------------------------------------------------------.
  | Locale::TextDomain::OO                                    |
- | with plugin LanguagesOfLanguage                           |
+ | with plugin LanguageOfLanguages                           |
  | with plugins Locale::TextDomain::OO::Plugin::Expand::...  |
  |-----------------------------------------------------------|
  | Gettext                    |\       /| Maketext           |
@@ -197,16 +197,16 @@ Run the examples of this distribution (folder example).
                       `-------.------'
                               |
                               v
- .--- not yet implemented --------------------.
- | js/loc.js                                   |
- | with plugins with plugins js/loc/expand/... |
- |---------------------------------------------|
- | gettext.js                                  |
- | gettext/domain_and_category.js              |
- | maketext.js                                 |
- | maketext/loc.js                             |
- | maketext/localize.js                        |
- `---------------------------------------------'
+ .--- not yet implemented --------.
+ | js/loc.js                      |
+ | with plugins js/loc/expand/... |
+ |--------------------------------|
+ | gettext.js                     |
+ | gettext/domain_and_category.js |
+ | maketext.js                    |
+ | maketext/loc.js                |
+ | maketext/localize.js           |
+ `--------------------------------'
 
 =head1 SYNOPSIS
 
