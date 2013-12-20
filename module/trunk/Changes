@@ -1,5 +1,9 @@
 Revision history for Perl extension Locale::Text::Domain:OO.
 
+1.002  Fri Dec 20 09:48:37 2013
+- repaired regex, syntax error in Perl 5.16 and newer.
+- repaired perl_critic.t, not used now during non author test
+
 1.001 Fri Dec 20 06:49:34 2013
 - added missing dependency MooX::Singleton
 - repaired the Pod a little
