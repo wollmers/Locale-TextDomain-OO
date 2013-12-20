@@ -1,5 +1,10 @@
 Revision history for Perl extension Locale::Text::Domain:OO.
 
+1.001 Fri Dec 20 06:49:34 2013
+- added missing dependency MooX::Singleton
+- repaired the Pod a little
+- removed Build.PL from distribution
+
 1.000 Thu Dec 19 17:42:56 2013
 - Compleately rewritten.
   The main idea is that the lexicon can load during compile time.

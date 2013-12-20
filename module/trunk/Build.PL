@@ -24,6 +24,7 @@ Module::Build->new(
         'Locale::Utils::PlaceholderNamed'    => 0,
         'Moo'                                => 0,
         'Moo::Role'                          => 0,
+        'MooX::Singleton'                    => 0,
         'MooX::StrictConstructor'            => 0,
         'MooX::Types::MooseLike::Base'       => 0,
         'Path::Class'                        => 0,
