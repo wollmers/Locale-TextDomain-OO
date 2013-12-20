@@ -149,8 +149,6 @@ sub lexicon_ref {
                 my $language = $filename;
                 my @parts = split m{[*]}xms, $file;
                 if ( @parts == 2 ) {
-                    use Data::Dumper;
-                    die Dumper $language if ref $language;
                     substr $language, 0, length $parts[0], q{};
                     substr $language, - length $parts[1], length $parts[1], q{};
                     $lexicon_language_key =~s {[*]}{$language}xms;
