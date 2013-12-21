@@ -1,0 +1,57 @@
+Revision history for Perl extension Locale::Text::Domain:OO.
+
+1.004  Sat Dec 21 07:15:09 2013
+- simplified some encoding stuff
+  require the minimal working version of Moo
+
+1.003  Fri Dec 20 12:52:39 2013
+- fixed Path::Class::File object used in substring
+  (fails as: Attempt to use reference as lvalue in substr)
+
+1.002  Fri Dec 20 09:48:37 2013
+- repaired regex, syntax error in Perl 5.16 and newer.
+- repaired perl_critic.t, not used now during non author test
+
+1.001 Fri Dec 20 06:49:34 2013
+- added missing dependency MooX::Singleton
+- repaired the Pod a little
+- removed Build.PL from distribution
+
+1.000 Thu Dec 19 17:42:56 2013
+- Compleately rewritten.
+  The main idea is that the lexicon can load during compile time.
+  The next thing is that the HTTP request or the OS is compleately untouched.
+  If someone need that connection he is able to do that by himself.
+  The binding to Locale::TextDomain internal module is no longer used.
+
+0.07  Thu May 13 10:21:15 2010
+- Problem with UTF-8 Environment $ENV{LANG} is 'en_GB.UTF-8' or 'en_US.UTF-8'
+  https://rt.cpan.org/Public/Bug/Display.html?id=53931
+
+0.06  Wed Jan 20 07:15:00 2010
+- repair Makefile.PL
+
+0.05  Sat Jan 16 10:00:00 2010
+- remove the extractor to a second distribution
+
+0.04  Tue Dec 29 20:00:00 2009
+- add a TiedInterface
+- add an extractor to create the pot files from source
+  - a base class
+  - a stable extractor for perl source code
+  - 2 beta extractors for tt-templates and JavaScript
+- I do not test the first example using Locale::TextDomain
+  because of bug 49744 at Locale::gettext_pp version 1.20.
+
+0.03  Mon Dec  7 22:30:00 2009
+- add forgotten language at test 22
+- add forgotten xs package name at OO.pm
+- some POD
+
+0.02  Sat Dec  5 22:00:00 2009
+- bugfix: dependency errors at Build.PL
+- better module POD
+- bette README at folder example
+
+0.01  Fri Dec  4 14:00:00 2009
+- first version
