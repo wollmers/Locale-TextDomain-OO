@@ -22,7 +22,7 @@ Module::Build->new(
         'Locale::MO::File'                   => 0,
         'Locale::Utils::PlaceholderMaketext' => 0,
         'Locale::Utils::PlaceholderNamed'    => 0,
-        'Moo'                                => 0,
+        'Moo'                                => '1.003.001',
         'Moo::Role'                          => 0,
         'MooX::Singleton'                    => 0,
         'MooX::StrictConstructor'            => 0,
