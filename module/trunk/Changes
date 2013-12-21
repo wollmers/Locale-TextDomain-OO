@@ -1,5 +1,9 @@
 Revision history for Perl extension Locale::Text::Domain:OO.
 
+1.004  Sat Dec 21 07:15:09 2013
+- simplified some encoding stuff
+  require the minimal working version of Moo
+
 1.003  Fri Dec 20 12:52:39 2013
 - fixed Path::Class::File object used in substring
   (fails as: Attempt to use reference as lvalue in substr)

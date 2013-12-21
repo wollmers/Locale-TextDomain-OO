@@ -13,7 +13,7 @@ use Path::Class qw(file);
 use Path::Class::Rule;
 use namespace::autoclean;
 
-our $VERSION = '1.003';
+our $VERSION = '1.004';
 
 with qw(
     Locale::TextDomain::OO::Lexicon::Role::ExtractHeader
@@ -190,7 +190,7 @@ $HeadURL$
 
 =head1 VERSION
 
-1.003
+1.004
 
 =head1 DESCRIPTION
 
