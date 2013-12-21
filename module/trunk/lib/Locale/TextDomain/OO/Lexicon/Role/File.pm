@@ -3,7 +3,7 @@ package Locale::TextDomain::OO::Lexicon::Role::File; ## no critic (TidyCode)
 use strict;
 use warnings;
 use Carp qw(confess);
-use Encode qw(decode decode_utf8);
+use Encode qw(decode FB_CROAK);
 use English qw(-no_match_vars $OS_ERROR);
 use File::Spec;
 use Locale::TextDomain::OO::Singleton::Lexicon;
@@ -35,9 +35,7 @@ has decode_code => (
             defined $text
                 or return $text;
 
-            return $charset eq 'utf-8'
-                ? decode_utf8($text)
-                : decode( $charset, $text );
+            return decode( $charset, $text, FB_CROAK );
         };
     },
 );
