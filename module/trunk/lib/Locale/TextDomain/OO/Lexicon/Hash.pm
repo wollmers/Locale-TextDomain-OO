@@ -42,7 +42,14 @@ sub lexicon_ref {
         $lexicon->data->{$lexicon_key}
             = $self->message_array_to_hash($lexicon_value);
         $self->logger
-            and $self->logger->( qq{Lexicon "$lexicon_key" loaded from hash.} );
+            and $self->logger->(
+                qq{Lexicon "$lexicon_key" loaded from hash.},
+                {
+                    object => $self,
+                    type   => 'info',
+                    event  => 'lexicon,load',
+                },
+            );
     }
 
     return;

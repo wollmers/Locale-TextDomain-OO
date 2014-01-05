@@ -27,8 +27,6 @@ __END__
 
 Output:
 
-Using lexicon "i-default::". msgstr not found for msgctxt=undef, msgid="Hello World 1!".
-Using lexicon "i-default::". msgstr not found for msgctxt=undef, msgid="Hello World 2!".
 Hello World 1! filter added: i-default
 Hello World 2! filter added: i-default
 

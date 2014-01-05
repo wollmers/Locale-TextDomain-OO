@@ -42,12 +42,28 @@ sub _trigger_languages { ## no critic (UnusedPrivateSubroutines)
             if ( $key eq $lexicon_key ) {
                $self->language( lc $language );
                $self->logger
-                   and $self->logger->( qq{Language "\l$language" selected.} );
+                    and $self->logger->(
+                        qq{Language "\l$language" selected.},
+                        {
+                            object => $self,
+                            type   => 'info',
+                            event  => 'language,selection',
+                        },
+                    );
                return $self;
             }
         }
     }
     $self->language('i-default');
+    $self->logger
+        and $self->logger->(
+            'Fallback language "i-default" selected.',
+            {
+                object => $self,
+                type   => 'warn',
+                event  => 'language,selection,fallback',
+            },
+        );
 
     return $self;
 }

@@ -1,4 +1,7 @@
-Revision history for Perl extension Locale::Text::Domain:OO.
+Revision history for Perl extension Locale::TextDomain::OO.
+
+1.005
+- fixed Pod
 
 1.004  Sat Dec 21 07:15:09 2013
 - simplified some encoding stuff

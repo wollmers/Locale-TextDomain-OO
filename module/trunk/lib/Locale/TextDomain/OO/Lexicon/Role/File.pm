@@ -9,11 +9,10 @@ use File::Spec;
 use Locale::TextDomain::OO::Singleton::Lexicon;
 use Moo::Role;
 use MooX::Types::MooseLike::Base qw(CodeRef);
-use Path::Class qw(file);
-use Path::Class::Rule;
+use Path::Tiny qw(path);
 use namespace::autoclean;
 
-our $VERSION = '1.004';
+our $VERSION = '1.005';
 
 with qw(
     Locale::TextDomain::OO::Lexicon::Role::ExtractHeader
@@ -73,7 +72,7 @@ sub _decode_messages {
 sub _my_glob {
     my ($self, $file) = @_;
 
-    my $dirname  = $file->dir;
+    my $dirname  = $file->dirname;
     my $filename = $file->basename;
 
     # only one * allowed at all
@@ -86,12 +85,10 @@ sub _my_glob {
         and confess 'Only one * in dirname/filename is allowd to reference the language';
 
     # one * in filename
-    $file_star_count and return Path::Class::Rule ## no critic ( LongChainsOfMethodCalls)
-        ->new
-        ->max_depth(1)
-        ->file
-        ->name($filename)
-        ->all($dirname);
+    if ( $file_star_count ) {
+        ( my $file_regex = quotemeta $filename ) =~ s{\\[*]}{.*?}xms;
+        return path($dirname)->childreen( qr{$file_regex}xms );
+    }
 
     # one * in dir
     # split that dir into left, inner with * and right
@@ -109,22 +106,16 @@ sub _my_glob {
     }
     my $inner_dir_regex = quotemeta pop @left_dir;
     $inner_dir_regex =~ s{\\[*]}{.*?}xms;
-    my $left_dir = File::Spec->catdir(@left_dir);
-    opendir my( $dirh ), $left_dir
-        or confess qq{Can not open directory "$left_dir" $OS_ERROR};
-    my @inner_dirs = grep {
-        ! m{\A [.]{1,2} \z}xms
-        && m{\A $inner_dir_regex \z}xms;
-    } readdir $dirh;
+    my @left_and_inner_dirs
+        = path(@left_dir)->children( qr{\A $inner_dir_regex \z}xms );
 
-    return map {
-        Path::Class::Rule ## no critic (LongChainsOfMethodCalls)
-            ->new
-            ->max_depth(1)
-            ->file
-            ->name($filename)
-            ->all( File::Spec->catdir(@left_dir, $_, @right_dir) );
-    } @inner_dirs;
+    return
+        grep {
+            $_->is_file;
+        }
+        map {
+            path($_, @right_dir, $filename);
+        } @left_and_inner_dirs;
 }
 
 sub lexicon_ref {
@@ -139,17 +130,17 @@ sub lexicon_ref {
         while ( $index < @{ $file_lexicon->{data} } ) {
             my ($lexicon_key, $lexicon_value)
                 = ( $data->[ $index++ ], $data->[ $index++ ] );
-            my $file = file( $dir, $lexicon_value );
+            my $file = path( $dir, $lexicon_value );
             my @files = $self->_my_glob($file);
             for ( @files ) {
-                my $filename = $_->stringify;
+                my $filename = $_->canonpath;
                 my $lexicon_language_key = $lexicon_key;
                 my $language = $filename;
                 my @parts = split m{[*]}xms, $file;
                 if ( @parts == 2 ) {
                     substr $language, 0, length $parts[0], q{};
                     substr $language, - length $parts[1], length $parts[1], q{};
-                    $lexicon_language_key =~s {[*]}{$language}xms;
+                    $lexicon_language_key =~ s{[*]}{$language}xms;
                 }
                 my $messages = $self->read_messages($filename);
                 my $header_msgstr = $messages->[0]->{msgstr}
@@ -168,6 +159,11 @@ sub lexicon_ref {
                 $self->logger
                     and $self->logger->(
                         qq{Lexicon "$lexicon_language_key" loaded from file "$filename"},
+                        {
+                            object => $self,
+                            type   => 'info',
+                            event  => 'lexicon,load',
+                        },
                     );
             }
         }
@@ -190,7 +186,7 @@ $HeadURL$
 
 =head1 VERSION
 
-1.004
+1.005
 
 =head1 DESCRIPTION
 
@@ -268,9 +264,7 @@ L<Moo::Role|Moo::Role>
 
 L<MooX::Types::MooseLike::Base|MooX::Types::MooseLike::Base>
 
-L<Path::Class|Path::Class>
-
-L<Path::Class::Rule|Path::Class::Rule>
+L<Path::Tiny|Path::Tiny>
 
 L<namespace::autoclean|namespace::autoclean>
 

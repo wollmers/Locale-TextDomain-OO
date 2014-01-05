@@ -27,8 +27,7 @@ Module::Build->new(
         'MooX::Singleton'                    => 0,
         'MooX::StrictConstructor'            => 0,
         'MooX::Types::MooseLike::Base'       => 0,
-        'Path::Class'                        => 0,
-        'Path::Class::Rule'                  => 0,
+        'Path::Tiny'                         => '0.051',
         'Safe'                               => 0, # perl dist
         'Tie::Sub'                           => '0.09',
     },

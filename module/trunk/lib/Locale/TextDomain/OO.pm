@@ -3,7 +3,7 @@ package Locale::TextDomain::OO; ## no critic (TidyCode)
 use strict;
 use warnings;
 
-our $VERSION = '1.004';
+our $VERSION = '1.005';
 
 use Locale::TextDomain::OO::Translator;
 
@@ -29,7 +29,7 @@ $HeadURL$
 
 =head1 VERSION
 
-1.004
+1.005
 
 Starting with version 1.000 the interface has changed.
 
@@ -162,9 +162,9 @@ Run the examples of this distribution (folder example).
  `-----------------------------------------------------------'
                             ^
                             |
- .--------------------------'-------------------.
- | Locale::Text::Domain::OO::Singleton::Lexicon |----------------------.
- `----------------------------------------------'                      |
+ .--------------------------'-----------------.
+ | Locale::TextDomain::OO::Singleton::Lexicon |------------------------.
+ `--------------------------------------------'                        |
                             ^                                          |
                             |                                          |
  .--------------------------'-------------------------------.          |
@@ -385,7 +385,7 @@ Steffen Winkler
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2009 - 2013,
+Copyright (c) 2009 - 2014,
 Steffen Winkler
 C<< <steffenw at cpan.org> >>.
 All rights reserved.
