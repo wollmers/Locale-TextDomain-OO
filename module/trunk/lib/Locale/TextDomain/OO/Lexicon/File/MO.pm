@@ -7,7 +7,7 @@ use Moo;
 use MooX::StrictConstructor;
 use namespace::autoclean;
 
-our $VERSION = '1.000';
+our $VERSION = '1.005';
 
 with qw(
     Locale::TextDomain::OO::Lexicon::Role::File
@@ -36,7 +36,7 @@ $HeadURL$
 
 =head1 VERSION
 
-1.000
+1.005
 
 =head1 DESCRIPTION
 
@@ -48,12 +48,19 @@ This module reads a gettext mo file into the lexicon.
 
     Locale::TextDomain::OO::Lexicon::File::MO
         ->new(
-            # optional
+            # all parameters are optional
             decode_code => sub {
                 my ($charset, $text) = @_;
                 defined $text
                     or return $text;
                 return decode( $charset, $text );
+            },
+            # optional
+            logger => sub {
+                my ($message, $arg_ref) = @_;
+                my $type = $arg_ref->{type}; # info, warn or error
+                Log::Log4perl->get_logger(...)->$type($message);
+                return;
             },
         )
         ->lexicon_ref({
@@ -88,6 +95,25 @@ Called from Locale::TextDomain::OO::Lexicon::Role::File
 to run the mo file specific code.
 
     $messages_ref = $self->read_messages($filename);
+
+=head2 method logger
+
+Set the logger
+
+    $lexicon_file_mo->logger(
+        sub {
+            my ($message, $arg_ref) = @_;
+            my $type = $arg_ref->{type};
+            Log::Log4perl->get_logger(...)->$type($message);
+            return;
+        },
+    );
+
+$arg_ref contains
+
+    object => $lexicon_file_mo, # the object itself
+    type   => 'info',
+    event  => 'lexicon,load',
 
 =head1 EXAMPLE
 
@@ -130,7 +156,7 @@ Steffen Winkler
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2013,
+Copyright (c) 2013 - 2014,
 Steffen Winkler
 C<< <steffenw at cpan.org> >>.
 All rights reserved.

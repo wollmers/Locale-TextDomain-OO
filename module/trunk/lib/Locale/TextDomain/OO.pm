@@ -225,7 +225,13 @@ Run the examples of this distribution (folder example).
             # encode if needed
             # run a formatter if needed, e.g.
             ${$translation_ref} =~ s{__ ( .+? ) __}{<b>$1</b>}xmsg;
-            return $self;
+            return;
+        },
+        logger   => sub {
+            my ($message, $arg_ref) = @_;
+            my $type = $arg_ref->{type}; # info, warn or error
+            Log::Log4perl->get_logger(...)->$type($message);
+            return;
         },
     );
 
@@ -277,12 +283,32 @@ You are allowed to run code after each translation.
         # manipulate ${$translation_ref}
         # do not undef ${$translation_ref}
 
-        return $self;
+        return;
     } );
 
 Switch off the filter
 
     $loc->filter(undef);
+
+=head2 method logger
+
+Set the logger
+
+    $loc->logger(
+        sub {
+            my ($message, $arg_ref) = @_;
+            my $type = $arg_ref->{type};
+            Log::Log4perl->get_logger(...)->$type($message);
+            return;
+        },
+    );
+
+$arg_ref contains
+
+    object => $loc, # the object itself
+    type   => 'info', # 'warn' or 'error'
+    event  => 'language,selection', # 'language,selection,fallback' 
+                                    # or 'translation,fallback'
 
 =head2 method translate
 

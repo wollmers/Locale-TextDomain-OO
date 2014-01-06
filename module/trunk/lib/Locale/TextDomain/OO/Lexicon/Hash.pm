@@ -8,7 +8,7 @@ use Moo;
 use MooX::StrictConstructor;
 use namespace::autoclean;
 
-our $VERSION = '1.000';
+our $VERSION = '1.005';
 
 with qw(
     Locale::TextDomain::OO::Lexicon::Role::ExtractHeader
@@ -69,7 +69,7 @@ $HeadURL$
 
 =head1 VERSION
 
-1.000
+1.005
 
 =head1 DESCRIPTION
 
@@ -79,7 +79,17 @@ This module allows to create a lexicon from data structure.
 
     require Locale::TextDomain::OO::Lexicon::Hash;
 
-    Locale::TextDomain::OO::Lexicon::Hash->new->lexicon_ref({ ... });
+    Locale::TextDomain::OO::Lexicon::Hash
+        ->new(
+            # all parameters are optional
+            logger => sub {
+                my ($message, $arg_ref) = @_;
+                my $type = $arg_ref->{type}; # info, warn or error
+                Log::Log4perl->get_logger(...)->$type($message);
+                return;
+            },
+        )
+        ->lexicon_ref({ ... });
 
 =head1 SUBROUTINES/METHODS
 
@@ -139,6 +149,25 @@ are written as key "msgstr_plural" with an array reference as value.
         ],
     });
 
+=head2 method logger
+
+Set the logger
+
+    $lexicon_hash->logger(
+        sub {
+            my ($message, $arg_ref) = @_;
+            my $type = $arg_ref->{type};
+            Log::Log4perl->get_logger(...)->$type($message);
+            return;
+        },
+    );
+
+$arg_ref contains
+
+    object => $lexicon_hash, # the object itself
+    type   => 'info',
+    event  => 'lexicon,load',
+
 =head1 EXAMPLE
 
 Inside of this distribution is a directory named example.
@@ -186,7 +215,7 @@ Steffen Winkler
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2013,
+Copyright (c) 2013 - 2014,
 Steffen Winkler
 C<< <steffenw at cpan.org> >>.
 All rights reserved.

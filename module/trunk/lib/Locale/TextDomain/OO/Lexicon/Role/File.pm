@@ -292,7 +292,7 @@ Steffen Winkler
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2013,
+Copyright (c) 2013 - 2014,
 Steffen Winkler
 C<< <steffenw at cpan.org> >>.
 All rights reserved.

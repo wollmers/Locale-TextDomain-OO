@@ -6,7 +6,7 @@ use Moo::Role;
 use MooX::Types::MooseLike::Base qw(CodeRef);
 use namespace::autoclean;
 
-our $VERSION = '1.000';
+our $VERSION = '1.005';
 
 has logger => (
     is  => 'rw',
@@ -27,7 +27,7 @@ $HeadURL$
 
 =head1 VERSION
 
-1.000
+1.005
 
 =head1 DESCRIPTION
 
@@ -36,12 +36,8 @@ for L<Locale::TextDomain:OO|Locale::TextDomain:OO>.
 
 =head1 SYNOPSIS
 
-    require Locale::TextDomain::OO;
-
-    my $loc = Locale::TextDomain::OO->new(
-        logger => sub {
-        },
-        ...
+    with qw(
+        Locale::TextDomain::OO::Role::Logger
     );
 
 =head1 SUBROUTINES/METHODS
@@ -52,15 +48,22 @@ Store logger code to get some information
 what lexicon is used
 or why the translation process is using a fallback.
 
-    $log->logger(
+    $lexicon_hash->logger(
         sub {
-            my $message = shift;
-            ...
+            my ($message, $arg_ref) = @_;
+            my $type = $arg_ref->{type};
+            Log::Log4perl->get_logger(...)->$type($message);
             return;
         },
     );
 
-get back
+$arg_ref contains
+
+    object => $self, # the object itself
+    type   => 'info', # the log category
+    event  => 'lexicon,load', # event category
+
+Get back
 
     $code_ref_or_undef = $self->logger;
 
@@ -103,7 +106,7 @@ Steffen Winkler
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2013,
+Copyright (c) 2013 - 2014,
 Steffen Winkler
 C<< <steffenw at cpan.org> >>.
 All rights reserved.
