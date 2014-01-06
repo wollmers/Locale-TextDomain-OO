@@ -59,8 +59,8 @@ __END__
 
 Output:
 
-Lexicon "de::" loaded from file "LocaleData/de/LC_MESSAGES/example.mo"
-Lexicon "ru::" loaded from file "LocaleData/ru/LC_MESSAGES/example.mo"
+Lexicon "de::" loaded from file "LocaleData/de/LC_MESSAGES/example.mo".
+Lexicon "ru::" loaded from file "LocaleData/ru/LC_MESSAGES/example.mo".
 книга
 § книга
 воссоединение

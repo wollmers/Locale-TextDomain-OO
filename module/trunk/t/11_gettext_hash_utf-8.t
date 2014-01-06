@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use utf8;
 
-use Test::More tests => 17;
+use Test::More tests => 26;
 use Test::NoWarnings;
 
 BEGIN {
@@ -14,7 +14,26 @@ BEGIN {
 
 Locale::TextDomain::OO::Lexicon::Hash
     ->new(
-        logger => sub { note shift },
+        logger => sub {
+            my ($message, $arg_ref ) = @_;
+            is
+                $message,
+                'Lexicon "de:LC_MESSAGES:test" loaded from hash.',
+                'message';
+            is
+                ref $arg_ref->{object},
+                'Locale::TextDomain::OO::Lexicon::Hash',
+                'logger object';
+            is
+                $arg_ref->{type},
+                'info',
+                'logger type';
+            is
+                $arg_ref->{event},
+                'lexicon,load',
+                'logger event';
+            return;
+        },
     )
     ->lexicon_ref({
         'de:LC_MESSAGES:test' => [ # data equal to de/LC_MESSAGES/test.po
@@ -104,8 +123,33 @@ my $loc = Locale::TextDomain::OO->new(
     category => 'LC_MESSAGES',
     domain   => 'test',
     plugins  => [ qw( Expand::Gettext ) ],
-    logger   => sub { note shift },
+    logger   => sub {
+            my ($message, $arg_ref ) = @_;
+            is
+                $message,
+                'Using lexicon "de:LC_MESSAGES:test". msgstr not found for msgctxt=undef, msgid="not existing text".',
+                'message';
+            is
+                ref $arg_ref->{object},
+                'Locale::TextDomain::OO::Translator',
+                'logger object';
+            is
+                $arg_ref->{type},
+                'warn',
+                'logger type';
+            is
+                $arg_ref->{event},
+                'translation,fallback',
+                'logger event';
+            return;
+    },
 );
+is
+    $loc->__(
+        'not existing text',
+    ),
+    'not existing text',
+    '__ fallback';
 is
     $loc->__(
         'This is a text.',

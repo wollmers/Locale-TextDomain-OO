@@ -12,7 +12,7 @@ use MooX::Types::MooseLike::Base qw(CodeRef);
 use Path::Tiny qw(path);
 use namespace::autoclean;
 
-our $VERSION = '1.005';
+our $VERSION = '1.006';
 
 with qw(
     Locale::TextDomain::OO::Lexicon::Role::ExtractHeader
@@ -158,7 +158,7 @@ sub lexicon_ref {
                 $lexicon->data->{$lexicon_language_key} = $messages;
                 $self->logger
                     and $self->logger->(
-                        qq{Lexicon "$lexicon_language_key" loaded from file "$filename"},
+                        qq{Lexicon "$lexicon_language_key" loaded from file "$filename".},
                         {
                             object => $self,
                             type   => 'info',
@@ -186,7 +186,7 @@ $HeadURL$
 
 =head1 VERSION
 
-1.005
+1.006
 
 =head1 DESCRIPTION
 

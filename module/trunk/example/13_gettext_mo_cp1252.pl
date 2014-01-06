@@ -45,5 +45,5 @@ __END__
 
 Output:
 
-Lexicon "de::" loaded from file "LocaleData/de/LC_MESSAGES/example_cp1252.mo
+Lexicon "de::" loaded from file "LocaleData/de/LC_MESSAGES/example_cp1252.mo".
 Das sind deutsche Umlaute: ä ö ü ß Ä Ö Ü.

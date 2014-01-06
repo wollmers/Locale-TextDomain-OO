@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use utf8;
 
-use Test::More tests => 12;
+use Test::More tests => 20;
 use Test::NoWarnings;
 
 BEGIN {
@@ -14,7 +14,35 @@ BEGIN {
 
 Locale::TextDomain::OO::Lexicon::File::MO
     ->new(
-        logger => sub { note shift },
+        logger => sub {
+            my ($message, $arg_ref ) = @_;
+            $message =~ s{\\}{/}xmsg;
+            like
+                $message,
+                qr{
+                    \A
+                    \QLexicon "\E
+                    ( de | ru )
+                    \Q::" loaded from file "t/LocaleData/\E
+                    \1
+                    \Q/LC_MESSAGES/test.mo".\E
+                    \z
+                }xms,
+                'message';
+            is
+                ref $arg_ref->{object},
+                'Locale::TextDomain::OO::Lexicon::File::MO',
+                'logger object';
+            is
+                $arg_ref->{type},
+                'info',
+                'logger type';
+            is
+                $arg_ref->{event},
+                'lexicon,load',
+                'logger event';
+            return;
+        },
     )
     ->lexicon_ref({
         search_dirs => [ './t/LocaleData' ],
@@ -27,7 +55,26 @@ Locale::TextDomain::OO::Lexicon::File::MO
 my $loc = Locale::TextDomain::OO->new(
     language => 'ru',
     plugins  => [ qw( Expand::Gettext ) ],
-    logger   => sub { note shift },
+    logger   => sub {
+        my ($message, $arg_ref ) = @_;
+        is
+            $message,
+            '',
+            'message';
+        is
+            ref $arg_ref->{object},
+            'Locale::TextDomain::OO::Lexicon::Hash',
+            'logger object';
+        is
+            $arg_ref->{type},
+            'info',
+            'logger type';
+        is
+            $arg_ref->{event},
+            'lexicon,load',
+            'logger event';
+        return;
+    },
 );
 is
     $loc->__(

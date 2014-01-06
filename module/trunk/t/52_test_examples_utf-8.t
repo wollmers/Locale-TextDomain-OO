@@ -30,8 +30,10 @@ EOT
         path   => 'example',
         script => '-I../lib -T 12_gettext_mo_utf-8.pl',
         result => <<'EOT',
-Lexicon "de::" loaded from file "LocaleData/de/LC_MESSAGES/example.mo"
-Lexicon "ru::" loaded from file "LocaleData/ru/LC_MESSAGES/example.mo"
+info: Lexicon "de::" loaded from file "LocaleData/de/LC_MESSAGES/example.mo".
+info: Lexicon "ru::" loaded from file "LocaleData/ru/LC_MESSAGES/example.mo".
+Using lexicon "ru::". msgstr not found for msgctxt=undef, msgid="not existing text".
+not existing text
 книга
 1 книга
 3 книги
@@ -47,7 +49,7 @@ EOT
         path   => 'example',
         script => '-I../lib -T 13_gettext_mo_cp1252.pl',
         result => <<'EOT',
-Lexicon "de::" loaded from file "LocaleData/de/LC_MESSAGES/example_cp1252.mo"
+Lexicon "de::" loaded from file "LocaleData/de/LC_MESSAGES/example_cp1252.mo".
 Das sind deutsche Umlaute: ä ö ü ß Ä Ö Ü.
 EOT
     },
@@ -56,7 +58,7 @@ EOT
         path   => 'example',
         script => '-I../lib -T 16_multiplural_mo_utf-8.pl',
         result => <<'EOT',
-Lexicon "de:LC_MULTIPLURAL2:" loaded from file "LocaleData/de/LC_MULTIPLURAL2/example_multiplural.mo"
+Lexicon "de:LC_MULTIPLURAL2:" loaded from file "LocaleData/de/LC_MULTIPLURAL2/example_multiplural.mo".
 Dort ist nichts.
 Dort ist 1 Regal.
 Dort sind 2 Regale.
@@ -76,7 +78,7 @@ EOT
         path   => 'example',
         script => '-I../lib -T 21_maketext_mo_utf-8.pl',
         result => <<'EOT',
-Lexicon "de::" loaded from file "LocaleData/de/LC_MESSAGES/example_maketext.mo"
+Lexicon "de::" loaded from file "LocaleData/de/LC_MESSAGES/example_maketext.mo".
 Das ist ein Text.
 § Buch
 Steffen programmiert Perl.
@@ -99,8 +101,8 @@ EOT
         path   => 'example',
         script => '-I../lib -T 23_localize_mo_utf-8.pl',
         result => <<'EOT',
-Lexicon "de::" loaded from file "LocaleData/de/LC_MESSAGES/example.mo"
-Lexicon "ru::" loaded from file "LocaleData/ru/LC_MESSAGES/example.mo"
+Lexicon "de::" loaded from file "LocaleData/de/LC_MESSAGES/example.mo".
+Lexicon "ru::" loaded from file "LocaleData/ru/LC_MESSAGES/example.mo".
 книга
 § книга
 воссоединение

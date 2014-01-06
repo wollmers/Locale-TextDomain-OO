@@ -94,7 +94,7 @@ __END__
 
 Output:
 
-Lexicon "de:LC_MESSAGES:example_maketext_style_gettext" loaded from file "LocaleData/de/LC_MESSAGES\example_maketext_style_gettext.mo"
+Lexicon "de:LC_MESSAGES:example_maketext_style_gettext" loaded from file "LocaleData/de/LC_MESSAGES\example_maketext_style_gettext.mo".
 Das ist ein Text.
 § Buch
 Steffen programmiert Perl.

@@ -100,7 +100,7 @@ __END__
 
 Output:
 
-Lexicon "de::" loaded from file "LocaleData/de/LC_MESSAGES/example_maketext.mo"
+Lexicon "de::" loaded from file "LocaleData/de/LC_MESSAGES/example_maketext.mo".
 Das ist ein Text.
 § Buch
 Steffen programmiert Perl.

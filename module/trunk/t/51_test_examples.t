@@ -40,6 +40,9 @@ EOT
         path   => 'example',
         script => '-I../lib -T 11_gettext_hash.pl',
         result => <<'EOT',
+info: Lexicon "de:LC_MESSAGES:example" loaded from hash.
+warn: Using lexicon "de:LC_MESSAGES:example". msgstr not found for msgctxt=undef, msgid="not existing text".
+not existing text
 Das ist ein Text.
 Steffen programmiert Perl.
 Steffen programmiert {language}.
@@ -75,7 +78,7 @@ EOT
         path   => 'example',
         script => '-I../lib -T 22_loc_mo_style_gettext.pl',
         result => <<'EOT',
-Lexicon "de:LC_MESSAGES:example_maketext_style_gettext" loaded from file "LocaleData/de/LC_MESSAGES/example_maketext_style_gettext.mo"
+Lexicon "de:LC_MESSAGES:example_maketext_style_gettext" loaded from file "LocaleData/de/LC_MESSAGES/example_maketext_style_gettext.mo".
 Das ist ein Text.
 § Buch
 Steffen programmiert Perl.
@@ -98,9 +101,9 @@ EOT
         path   => 'example',
         script => '-I../lib -T 41_tied_interface.pl',
         result => <<'EOT',
-Lexicon "de:LC_MESSAGES:example" loaded from file "LocaleData/de/LC_MESSAGES/example.mo"
-Lexicon "ru:LC_MESSAGES:example" loaded from file "LocaleData/ru/LC_MESSAGES/example.mo"
-Lexicon "de:LC_MESSAGES:example_maketext" loaded from file "LocaleData/de/LC_MESSAGES/example_maketext.mo"
+Lexicon "de:LC_MESSAGES:example" loaded from file "LocaleData/de/LC_MESSAGES/example.mo".
+Lexicon "ru:LC_MESSAGES:example" loaded from file "LocaleData/ru/LC_MESSAGES/example.mo".
+Lexicon "de:LC_MESSAGES:example_maketext" loaded from file "LocaleData/de/LC_MESSAGES/example_maketext.mo".
 Das ist ein Text.
 Das ist ein Text.
 Das ist ein Text.
@@ -145,9 +148,9 @@ EOT
         path   => 'example',
         script => '-I../lib -T 42_functional_interface.pl',
         result => <<'EOT',
-Lexicon "de:LC_MESSAGES:example" loaded from file "LocaleData/de/LC_MESSAGES/example.mo"
-Lexicon "ru:LC_MESSAGES:example" loaded from file "LocaleData/ru/LC_MESSAGES/example.mo"
-Lexicon "de:LC_MESSAGES:example_maketext" loaded from file "LocaleData/de/LC_MESSAGES/example_maketext.mo"
+Lexicon "de:LC_MESSAGES:example" loaded from file "LocaleData/de/LC_MESSAGES/example.mo".
+Lexicon "ru:LC_MESSAGES:example" loaded from file "LocaleData/ru/LC_MESSAGES/example.mo".
+Lexicon "de:LC_MESSAGES:example_maketext" loaded from file "LocaleData/de/LC_MESSAGES/example_maketext.mo".
 Das ist ein Text.
 Steffen programmiert Perl.
 Einzahl

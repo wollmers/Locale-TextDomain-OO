@@ -12,7 +12,11 @@ our $VERSION = 0;
 
 Locale::TextDomain::OO::Lexicon::File::MO
     ->new(
-        logger => sub { () = print shift, "\n" },
+        logger => sub {
+            my ($message, $arg_ref) = @_;
+            () = print "$arg_ref->{type}: $message\n";
+            return;
+        },
     )
     ->lexicon_ref({
         search_dirs => [ './LocaleData' ],
@@ -35,6 +39,9 @@ binmode STDOUT, ':encoding(utf-8)'
 
 # run translations
 () = print map {"$_\n"}
+    $loc->__(
+        'not existing text',
+    ),
     $loc->__(
         'book',
     ),
@@ -88,8 +95,10 @@ __END__
 
 Output:
 
-Lexicon "de::" loaded from file "LocaleData/de/LC_MESSAGES/example.mo"
-Lexicon "ru::" loaded from file "LocaleData/ru/LC_MESSAGES/example.mo"
+info: Lexicon "de::" loaded from file "LocaleData/de/LC_MESSAGES/example.mo".
+info: Lexicon "ru::" loaded from file "LocaleData/ru/LC_MESSAGES/example.mo".
+Using lexicon "ru::". msgstr not found for msgctxt=undef, msgid="not existing text".
+not existing text
 книга
 1 книга
 3 книги

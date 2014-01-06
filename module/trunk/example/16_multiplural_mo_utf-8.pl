@@ -57,7 +57,7 @@ __END__
 
 Output:
 
-Lexicon "de:LC_MULTIPLURAL2:" loaded from file "LocaleData/de/LC_MULTIPLURAL2/example_multiplural.mo"
+Lexicon "de:LC_MULTIPLURAL2:" loaded from file "LocaleData/de/LC_MULTIPLURAL2/example_multiplural.mo".
 Dort ist nichts.
 Dort ist 1 Regal.
 Dort sind 2 Regale.
