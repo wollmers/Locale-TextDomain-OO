@@ -6,7 +6,7 @@ use Moo::Role;
 use MooX::Types::MooseLike::Base qw(CodeRef);
 use namespace::autoclean;
 
-our $VERSION = '1.005';
+our $VERSION = '1.006';
 
 has logger => (
     is  => 'rw',
@@ -27,7 +27,7 @@ $HeadURL$
 
 =head1 VERSION
 
-1.005
+1.006
 
 =head1 DESCRIPTION
 
@@ -60,7 +60,7 @@ or why the translation process is using a fallback.
 $arg_ref contains
 
     object => $self, # the object itself
-    type   => 'info', # the log category
+    type   => 'debug', # the log category
     event  => 'lexicon,load', # event category
 
 Get back

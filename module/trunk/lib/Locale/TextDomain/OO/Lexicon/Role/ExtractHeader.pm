@@ -8,7 +8,7 @@ use Moo::Role;
 require Safe;
 use namespace::autoclean;
 
-our $VERSION = '1.000';
+our $VERSION = '1.006';
 
 with qw(
     Locale::TextDomain::OO::Lexicon::Role::Constants
@@ -19,7 +19,7 @@ sub _perlify_plural_forms_ref {
 
     ${$plural_forms_ref} =~ s{ \b ( nplurals | plural | n ) \b }{\$$1}xmsg;
 
-    return $self;
+    return;
 }
 
 sub _nplurals {
@@ -140,7 +140,7 @@ $HeadURL$
 
 =head1 VERSION
 
-1.000
+1.006
 
 =head1 DESCRIPTION
 
@@ -216,7 +216,7 @@ Steffen Winkler
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2013,
+Copyright (c) 2013 - 2014,
 Steffen Winkler
 C<< <steffenw at cpan.org> >>.
 All rights reserved.

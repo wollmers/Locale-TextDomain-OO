@@ -204,7 +204,7 @@ __END__
 
 Output:
 
-info: Lexicon "de:LC_MESSAGES:example" loaded from hash.
+debug: Lexicon "de:LC_MESSAGES:example" loaded from hash.
 warn: Using lexicon "de:LC_MESSAGES:example". msgstr not found for msgctxt=undef, msgid="not existing text".
 not existing text
 Das ist ein Text.

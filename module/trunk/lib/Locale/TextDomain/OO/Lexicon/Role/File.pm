@@ -5,7 +5,6 @@ use warnings;
 use Carp qw(confess);
 use Encode qw(decode FB_CROAK);
 use English qw(-no_match_vars $OS_ERROR);
-use File::Spec;
 use Locale::TextDomain::OO::Singleton::Lexicon;
 use Moo::Role;
 use MooX::Types::MooseLike::Base qw(CodeRef);
@@ -66,7 +65,7 @@ sub _decode_messages {
         }
     }
 
-    return $self;
+    return;
 }
 
 sub _my_glob {
@@ -92,29 +91,18 @@ sub _my_glob {
 
     # one * in dir
     # split that dir into left, inner with * and right
-    my @right_dir = File::Spec->splitdir($dirname);
-    my @left_dir;
-    DIR:
-    while ( 1 ) {
-        my $dir = shift @right_dir;
-        defined $dir
-            or last DIR;
-        push @left_dir, $dir;
-        if ( $dir =~ m{ [*] }xms ) {
-            last DIR;
-        }
-    }
-    my $inner_dir_regex = quotemeta pop @left_dir;
-    $inner_dir_regex =~ s{\\[*]}{.*?}xms;
+    my ( $left_dir, $inner_dir, $right_dir )
+        = split qr{( [^/*]* [*] [^/]* )}xms, $dirname;
+    ( my $inner_dir_regex = quotemeta $inner_dir ) =~ s{\\[*]}{.*?}xms;
     my @left_and_inner_dirs
-        = path(@left_dir)->children( qr{\A $inner_dir_regex \z}xms );
+        = path($left_dir)->children( qr{\A $inner_dir_regex \z}xms );
 
     return
         grep {
             $_->is_file;
         }
         map {
-            path($_, @right_dir, $filename);
+            path($_, $right_dir, $filename);
         } @left_and_inner_dirs;
 }
 
@@ -161,7 +149,7 @@ sub lexicon_ref {
                         qq{Lexicon "$lexicon_language_key" loaded from file "$filename".},
                         {
                             object => $self,
-                            type   => 'info',
+                            type   => 'debug',
                             event  => 'lexicon,load',
                         },
                     );
@@ -255,8 +243,6 @@ L<Carp|Carp>
 L<Encode|Encode>
 
 L<English|English>
-
-L<File::Spec|File::Spec>
 
 L<Locale::TextDomain::OO::Singleton::Lexicon|Locale::TextDomain::OO::Singleton::Lexicon>
 

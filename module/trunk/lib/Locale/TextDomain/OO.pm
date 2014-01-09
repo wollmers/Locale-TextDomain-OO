@@ -229,7 +229,7 @@ Run the examples of this distribution (folder example).
         },
         logger   => sub {
             my ($message, $arg_ref) = @_;
-            my $type = $arg_ref->{type}; # info, warn or error
+            my $type = $arg_ref->{type}; # debug or warn
             Log::Log4perl->get_logger(...)->$type($message);
             return;
         },
@@ -306,7 +306,7 @@ Set the logger
 $arg_ref contains
 
     object => $loc, # the object itself
-    type   => 'info', # 'warn' or 'error'
+    type   => 'debug', # or 'warn'
     event  => 'language,selection', # 'language,selection,fallback' 
                                     # or 'translation,fallback'
 

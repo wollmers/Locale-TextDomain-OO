@@ -16,7 +16,6 @@ Module::Build->new(
         'Carp'                               => 0, # perl dist
         'Encode'                             => 0, # perl dist
         'English'                            => 0, # perl dist
-        'File::Spec'                         => 0, # perl dist
         'JSON'                               => 0, # perl dist
         'List::MoreUtils'                    => 0, # perl dist
         'Locale::MO::File'                   => 0,

@@ -35,7 +35,7 @@ Locale::TextDomain::OO::Lexicon::File::MO
                 'logger object';
             is
                 $arg_ref->{type},
-                'info',
+                'debug',
                 'logger type';
             is
                 $arg_ref->{event},
@@ -67,7 +67,7 @@ my $loc = Locale::TextDomain::OO->new(
             'logger object';
         is
             $arg_ref->{type},
-            'info',
+            'debug',
             'logger type';
         is
             $arg_ref->{event},

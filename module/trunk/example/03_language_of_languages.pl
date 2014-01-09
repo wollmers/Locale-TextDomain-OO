@@ -53,5 +53,4 @@ Output:
 
 i-default
 Lexicon "de::" loaded from hash.
-Language "de" selected.
 de

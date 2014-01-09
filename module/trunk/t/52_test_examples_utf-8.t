@@ -30,8 +30,8 @@ EOT
         path   => 'example',
         script => '-I../lib -T 12_gettext_mo_utf-8.pl',
         result => <<'EOT',
-info: Lexicon "de::" loaded from file "LocaleData/de/LC_MESSAGES/example.mo".
-info: Lexicon "ru::" loaded from file "LocaleData/ru/LC_MESSAGES/example.mo".
+debug: Lexicon "de::" loaded from file "LocaleData/de/LC_MESSAGES/example.mo".
+debug: Lexicon "ru::" loaded from file "LocaleData/ru/LC_MESSAGES/example.mo".
 Using lexicon "ru::". msgstr not found for msgctxt=undef, msgid="not existing text".
 not existing text
 книга

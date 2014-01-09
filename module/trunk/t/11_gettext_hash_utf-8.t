@@ -26,7 +26,7 @@ Locale::TextDomain::OO::Lexicon::Hash
                 'logger object';
             is
                 $arg_ref->{type},
-                'info',
+                'debug',
                 'logger type';
             is
                 $arg_ref->{event},
