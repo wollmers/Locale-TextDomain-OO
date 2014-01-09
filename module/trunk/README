@@ -1,4 +1,4 @@
-Locale-TextDomain-OO version 1.005
+Locale-TextDomain-OO version 1.006
 ==================================
 
 Perl OO Interface to Uniforum Message Translation
@@ -21,7 +21,6 @@ This module requires these other modules and libraries:
     Carp
     Encode
     English
-    File::Spec
     JSON
     List::MoreUtils
     Locale::MO::File

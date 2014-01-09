@@ -1,5 +1,10 @@
 Revision history for Perl extension Locale::TextDomain::OO.
 
+1.006  Thu Jan  9 08:54:41 2014
+- tested the extended logger
+- removed File::Spec
+- changed log level
+
 1.005  Mon Jan  6 14:04:33 2014
 - fixed Pod
 - extended logger
