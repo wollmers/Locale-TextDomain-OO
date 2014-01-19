@@ -2,11 +2,12 @@ package Locale::TextDomain::OO::Singleton::Lexicon; ## no critic (TidyCode)
 
 use strict;
 use warnings;
+use Carp qw(confess);
 use Moo;
 use MooX::StrictConstructor;
 use namespace::autoclean;
 
-our $VERSION = '1.000';
+our $VERSION = '1.007';
 
 with qw(
     Locale::TextDomain::OO::Lexicon::Role::Constants
@@ -31,6 +32,39 @@ has data => (
     },
 );
 
+sub copy_lexicon {
+    my ( $self, $from, $to ) = @_;
+
+    defined $from
+        or confess 'Undef is not a lexicon name to copy from';
+    exists $self->{data}->{$from}
+        or confess qq{Missing lexicon "$from" to copy from};
+    defined $to
+        or confess 'Undef is not a lexicon name to copy to';
+    $self->{data}->{$to} = $self->{data}->{$from};
+
+    return $self;
+}
+
+sub delete_lexicon {
+    my ( $self, $name ) = @_;
+
+    defined $name
+        or confess 'Undef is not a lexicon name to remove';
+
+    return exists $self->{data}->{$name}
+        ? delete $self->{data}->{$name}
+        : ();
+}
+
+sub move_lexicon {
+    my ( $self, $from, $to ) = @_;
+
+    $self->copy_lexicon($from, $to);
+
+    return $self->delete_lexicon($from);
+}
+
 __PACKAGE__->meta->make_immutable;
 
 1;
@@ -47,7 +81,7 @@ $HeadURL$
 
 =head1 VERSION
 
-1.000
+1.007
 
 =head1 DESCRIPTION
 
@@ -69,6 +103,35 @@ to fill the lexicon or to read from lexicon.
 
     $lexicon_data = Locale::TextDomain::OO::Singleton::Lexicon->instance->data;
 
+=head2 method copy_lexicon
+
+Copy ist mostly used to join data of a language
+to create data for a region with some region different data.
+
+E.g. create the lexicon of language "de" first.
+Then copy that to "de-at".
+Then load the "de-at" lexicon.
+
+    $instance->copy_lexicon('de::', 'de-at::');
+
+=head2 method delete_lexicon
+
+Delete a lexicon from data.
+
+    $instance->copy_lexicon('de::');
+
+=head2 method move_lexicon
+
+Move is typical used to move the "i-default::" lexicon
+into your domain and category.
+With that empty lexicon you are able to translate
+because the header with plural forms is set.
+With no lexicon you would get a missing plural forms error during translation.
+
+Move is copy and delte after.
+
+    $instance->move_lexicon('i-default::', 'i-default:LC_MESSAGES:domain');
+
 =head1 EXAMPLE
 
 Inside of this distribution is a directory named example.
@@ -76,13 +139,15 @@ Run this *.pl files.
 
 =head1 DIAGNOSTICS
 
-none
+confess
 
 =head1 CONFIGURATION AND ENVIRONMENT
 
 none
 
 =head1 DEPENDENCIES
+
+L<Carp|Carp>
 
 L<Moo|Moo>
 
@@ -112,7 +177,7 @@ Steffen Winkler
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2013,
+Copyright (c) 2013 - 2014,
 Steffen Winkler
 C<< <steffenw at cpan.org> >>.
 All rights reserved.

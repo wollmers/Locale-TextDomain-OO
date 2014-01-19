@@ -11,7 +11,7 @@ use MooX::Types::MooseLike::Base qw(CodeRef);
 use Path::Tiny qw(path);
 use namespace::autoclean;
 
-our $VERSION = '1.006';
+our $VERSION = '1.007';
 
 with qw(
     Locale::TextDomain::OO::Lexicon::Role::ExtractHeader
@@ -86,7 +86,9 @@ sub _my_glob {
     # one * in filename
     if ( $file_star_count ) {
         ( my $file_regex = quotemeta $filename ) =~ s{\\[*]}{.*?}xms;
-        return path($dirname)->childreen( qr{$file_regex}xms );
+        return +(
+            sort path($dirname)->children( qr{$file_regex}xms )
+        );
     }
 
     # one * in dir
@@ -97,13 +99,15 @@ sub _my_glob {
     my @left_and_inner_dirs
         = path($left_dir)->children( qr{\A $inner_dir_regex \z}xms );
 
-    return
+    return +(
+        sort
         grep {
             $_->is_file;
         }
         map {
             path($_, $right_dir, $filename);
-        } @left_and_inner_dirs;
+        } @left_and_inner_dirs
+    );
 }
 
 sub lexicon_ref {
@@ -113,11 +117,22 @@ sub lexicon_ref {
     my $search_dirs = $file_lexicon->{search_dirs}
         or confess 'Hash key "search_dirs" expected';
     my $data = $file_lexicon->{data};
-    for my $dir ( @{ $search_dirs } ) {
-        my $index = 0;
-        while ( $index < @{ $file_lexicon->{data} } ) {
-            my ($lexicon_key, $lexicon_value)
-                = ( $data->[ $index++ ], $data->[ $index++ ] );
+    my $index = 0;
+    DATA:
+    while ( $index < @{ $file_lexicon->{data} } ) {
+        my ($lexicon_key, $lexicon_value)
+            = ( $data->[ $index++ ], $data->[ $index++ ] );
+        if ( $lexicon_key eq 'copy_lexicon' ) {
+            my ( $to, $from ) = ( $lexicon_value, $data->[ $index++ ] );
+            $lexicon->copy_lexicon( $from, $to );
+            next DATA;
+        }
+        if ( $lexicon_key eq 'delete_lexicon' ) {
+            my ( $name ) = ( $lexicon_value );
+            $lexicon->delete_lexicon($name);
+            next DATA;
+        }
+        for my $dir ( @{ $search_dirs } ) {
             my $file = path( $dir, $lexicon_value );
             my @files = $self->_my_glob($file);
             for ( @files ) {
@@ -174,7 +189,7 @@ $HeadURL$
 
 =head1 VERSION
 
-1.006
+1.007
 
 =head1 DESCRIPTION
 
@@ -220,6 +235,24 @@ Add a code ref in constructor.
             # search_dir/subdir/de/LC_MESSAGES/domain.mo
             # search_dir/subdir/en/LC_MESSAGES/domain.mo
             '*:LC_MESSAGES:domain' => 'subdir/*/LC_MESSAGES/domain.mo',
+
+            # Some specials:
+            # Read "search_dir/de.mo":
+            'de::' => 'de.mo',
+            # Create the region lexicon from language lexicon
+            # (copy is not clone, so less memory then read 2 files):
+            copy_lexicon => 'de-at::' => 'de::',
+            # Read the different translations from file "search_dir/de-at.mo"
+            # because it contains only this:
+            '::de-at' => 'de-at.mo',
+
+            # And it is possible to delete a lexicon:
+            delete_lexicon => 'de::',
+            #
+            # And it is possible to move a lexicon
+            # (Here the default developer language settings moved
+            # into category "LC_MESSAGES" and domain "domain"):
+            move_lexicon => 'i-default:LC_MESSAGES:domain' => 'i-default::',
         ],
     });
 
