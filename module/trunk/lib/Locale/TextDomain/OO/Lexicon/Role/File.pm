@@ -87,7 +87,7 @@ sub _my_glob {
     if ( $file_star_count ) {
         ( my $file_regex = quotemeta $filename ) =~ s{\\[*]}{.*?}xms;
         return +(
-            sort path($dirname)->children( qr{$file_regex}xms )
+            sort +path($dirname)->children( qr{$file_regex}xms )
         );
     }
 
