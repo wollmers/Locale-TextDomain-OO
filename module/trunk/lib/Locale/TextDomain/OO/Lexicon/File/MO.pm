@@ -7,7 +7,7 @@ use Moo;
 use MooX::StrictConstructor;
 use namespace::autoclean;
 
-our $VERSION = '1.006';
+our $VERSION = '1.007';
 
 with qw(
     Locale::TextDomain::OO::Lexicon::Role::File
@@ -36,7 +36,7 @@ $HeadURL$
 
 =head1 VERSION
 
-1.006
+1.007
 
 =head1 DESCRIPTION
 
@@ -76,10 +76,23 @@ This module reads a gettext mo file into the lexicon.
                 # search_dir/de.mo
                 # search_dir/en.mo
                 '*::' => '*.mo',
+
                 # e.g. de.mo en.mo read from:
                 # search_dir/subdir/de/LC_MESSAGES/domain.mo
                 # search_dir/subdir/en/LC_MESSAGES/domain.mo
                 '*:LC_MESSAGES:domain' => 'subdir/*/LC_MESSAGES/domain.mo',
+
+                # Merge a region lexicon:
+                # Take the header and messages of the "de::" lexicon,
+                # overwrite the header and messages of the "de-at::" lexicon
+                # and store that as "de-at::" lexicon with all messages now.
+                merge_lexicon => 'de::', 'de-at::' => 'de-at::',
+
+                # Move a lexicon into another domain and/or category:
+                move_lexicon => 'i-default::' => 'i-default:LC_MESSAGES:domain',
+
+                # Delete a lexicon:
+                delete_lexicon => 'i-default::',
             ],
         });
 
