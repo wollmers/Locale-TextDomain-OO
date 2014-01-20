@@ -1,9 +1,9 @@
 Revision history for Perl extension Locale::TextDomain::OO.
 
 1.007  Mon Jan 20 22:06:00 2014
-- tested the extended logger
-- removed File::Spec
-- changed log level
+- fixed false writing of method name childre[e]n
+- sort needed for sorted "lexicon load" output
+- added lexicon manipulation with copy/delete/move
 
 1.006  Thu Jan  9 08:54:41 2014
 - tested the extended logger
