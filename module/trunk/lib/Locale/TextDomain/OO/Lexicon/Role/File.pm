@@ -113,25 +113,59 @@ sub _my_glob {
 sub lexicon_ref {
     my ($self, $file_lexicon) = @_;
 
-    my $lexicon = Locale::TextDomain::OO::Singleton::Lexicon->instance;
+    my $instance = Locale::TextDomain::OO::Singleton::Lexicon->instance;
     my $search_dirs = $file_lexicon->{search_dirs}
         or confess 'Hash key "search_dirs" expected';
     my $data = $file_lexicon->{data};
     my $index = 0;
     DATA:
     while ( $index < @{ $file_lexicon->{data} } ) {
-        my ($lexicon_key, $lexicon_value)
-            = ( $data->[ $index++ ], $data->[ $index++ ] );
-        if ( $lexicon_key eq 'copy_lexicon' ) {
-            my ( $to, $from ) = ( $lexicon_value, $data->[ $index++ ] );
-            $lexicon->copy_lexicon( $from, $to );
+        my $identifier = $data->[ $index++ ];
+        if ( $identifier eq 'merge_lexicon' ) {
+            my ( $from1, $from2, $to ) = (
+                $data->[ $index++ ],
+                $data->[ $index++ ],
+                $data->[ $index++ ],
+            );
+            $instance->merge_lexicon( $from1, $from2, $to );
+            $self->logger and $self->logger->(
+                qq{Lexicon "$from1", "$from2" merged to "$to".},
+                {
+                    object => $self,
+                    type   => 'debug',
+                    event  => 'lexicon,merge',
+                },
+            );
             next DATA;
         }
-        if ( $lexicon_key eq 'delete_lexicon' ) {
-            my ( $name ) = ( $lexicon_value );
-            $lexicon->delete_lexicon($name);
+        if ( $identifier eq 'move_lexicon' ) {
+            my ( $from, $to ) = ( $data->[ $index++ ], $data->[ $index++ ] );
+            $instance->move_lexicon( $from, $to );
+            $self->logger and $self->logger->(
+                qq{Lexicon "$from" moved to "$to".},
+                {
+                    object => $self,
+                    type   => 'debug',
+                    event  => 'lexicon,move',
+                },
+            );
             next DATA;
         }
+        if ( $identifier eq 'delete_lexicon' ) {
+            my $name = $data->[ $index++ ];
+            $instance->delete_lexicon($name);
+            $self->logger and $self->logger->(
+                qq{Lexicon "$name" deleted.},
+                {
+                    object => $self,
+                    type   => 'debug',
+                    event  => 'lexicon,delete',
+                },
+            );
+            next DATA;
+        }
+        my ( $lexicon_key, $lexicon_value )
+            = ( $identifier, $data->[ $index++ ] );
         for my $dir ( @{ $search_dirs } ) {
             my $file = path( $dir, $lexicon_value );
             my @files = $self->_my_glob($file);
@@ -158,16 +192,15 @@ sub lexicon_ref {
                 $file_lexicon->{decode}
                     and $self->_decode_messages($messages);
                 $messages = $self->message_array_to_hash($messages);
-                $lexicon->data->{$lexicon_language_key} = $messages;
-                $self->logger
-                    and $self->logger->(
-                        qq{Lexicon "$lexicon_language_key" loaded from file "$filename".},
-                        {
-                            object => $self,
-                            type   => 'debug',
-                            event  => 'lexicon,load',
-                        },
-                    );
+                $instance->data->{$lexicon_language_key} = $messages;
+                $self->logger and $self->logger->(
+                    qq{Lexicon "$lexicon_language_key" loaded from file "$filename".},
+                    {
+                        object => $self,
+                        type   => 'debug',
+                        event  => 'lexicon,load',
+                    },
+                );
             }
         }
     }
@@ -231,28 +264,23 @@ Add a code ref in constructor.
             # search_dir/de.mo
             # search_dir/en.mo
             '*::' => '*.mo',
+
             # e.g. de.mo en.mo read from:
             # search_dir/subdir/de/LC_MESSAGES/domain.mo
             # search_dir/subdir/en/LC_MESSAGES/domain.mo
             '*:LC_MESSAGES:domain' => 'subdir/*/LC_MESSAGES/domain.mo',
 
-            # Some specials:
-            # Read "search_dir/de.mo":
-            'de::' => 'de.mo',
-            # Create the region lexicon from language lexicon
-            # (copy is not clone, so less memory then read 2 files):
-            copy_lexicon => 'de-at::' => 'de::',
-            # Read the different translations from file "search_dir/de-at.mo"
-            # because it contains only this:
-            '::de-at' => 'de-at.mo',
+            # Merge a region lexicon:
+            # Take the header and messages of the "de::" lexicon,
+            # overwrite the header and messages of the "de-at::" lexicon
+            # and store that as "de-at::" lexicon with all messages now.
+            merge_lexicon => 'de::', 'de-at::' => 'de-at::',
 
-            # And it is possible to delete a lexicon:
-            delete_lexicon => 'de::',
-            #
-            # And it is possible to move a lexicon
-            # (Here the default developer language settings moved
-            # into category "LC_MESSAGES" and domain "domain"):
-            move_lexicon => 'i-default:LC_MESSAGES:domain' => 'i-default::',
+            # Move a lexicon into another domain and/or category:
+            move_lexicon => 'i-default::' => 'i-default:LC_MESSAGES:domain',
+
+            # Delete a lexicon:
+            delete_lexicon => 'i-default::',
         ],
     });
 
