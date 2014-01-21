@@ -117,7 +117,7 @@ eq_or_diff
     ),
     {
         'i-default::' => {
-            '{MSG_KEY_SEPARATOR}' => {
+            q{} => {
                 nplurals => 2,
                 plural   => 'n != 1',
             },

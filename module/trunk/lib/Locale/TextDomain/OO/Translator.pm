@@ -9,7 +9,7 @@ use MooX::StrictConstructor;
 use MooX::Types::MooseLike::Base qw(Str);
 use namespace::autoclean;
 
-our $VERSION = '1.005';
+our $VERSION = '1.008';
 
 with qw(
     Locale::TextDomain::OO::Lexicon::Role::Constants
@@ -70,7 +70,7 @@ has filter => (
 sub _calculate_multiplural_index {
     my ($self, $count_ref, $plural_code, $lexicon, $lexicon_key) = @_;
 
-    my $nplurals = $lexicon->{ $self->msg_key_separator }->{multiplural_nplurals}
+    my $nplurals = $lexicon->{ q{} }->{multiplural_nplurals}
         or confess qq{X-Multiplural-Nplurals not found in lexicon "$lexicon_key"};
     my @counts = @{$count_ref}
         or confess 'Count array is empty';
@@ -97,13 +97,19 @@ sub translate { ## no critic (ExcessComplexity ManyArgs)
         ? $lexicon->{$lexicon_key}
         : ();
 
-    my $msg_key = join $self->msg_key_separator, (
-        ( defined $msgctxt      ? $msgctxt      : q{} ),
-        ( defined $msgid        ? $msgid        : q{} ),
-        ( defined $msgid_plural ? $msgid_plural : ()  ),
-    );
+    my $length_or_empty_list = sub {
+        my $item = shift;
+        defined $item or return;
+        length $item or return;
+        return $item;
+    };
+    my $msg_key = join $self->msg_key_separator,
+        $length_or_empty_list->($msgctxt),
+        join $self->plural_separator,
+            $length_or_empty_list->($msgid),
+            $length_or_empty_list->($msgid_plural);
     if ( $is_n ) {
-        my $plural_code = $lexicon->{ $self->msg_key_separator }->{plural_code}
+        my $plural_code = $lexicon->{ q{} }->{plural_code}
             or confess qq{Plural-Forms not found in lexicon "$lexicon_key"};
         my $multiplural_index = ref $count eq 'ARRAY'
             ? $self->_calculate_multiplural_index($count, $plural_code, $lexicon, $lexicon_key)
@@ -193,7 +199,7 @@ $HeadURL$
 
 =head1 VERSION
 
-1.000
+1.008
 
 =head1 DESCRIPTION
 
@@ -268,7 +274,7 @@ Steffen Winkler
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2013,
+Copyright (c) 2013 - 2014,
 Steffen Winkler
 C<< <steffenw at cpan.org> >>.
 All rights reserved.

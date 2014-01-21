@@ -11,7 +11,7 @@ use MooX::Types::MooseLike::Base qw(CodeRef);
 use Path::Tiny qw(path);
 use namespace::autoclean;
 
-our $VERSION = '1.007';
+our $VERSION = '1.008';
 
 with qw(
     Locale::TextDomain::OO::Lexicon::Role::ExtractHeader
@@ -87,7 +87,7 @@ sub _my_glob {
     if ( $file_star_count ) {
         ( my $file_regex = quotemeta $filename ) =~ s{\\[*]}{.*?}xms;
         return +(
-            sort +path($dirname)->children( qr{$file_regex}xms )
+            sort +path($dirname)->children( qr{\A $file_regex \z}xms )
         );
     }
 
@@ -97,7 +97,7 @@ sub _my_glob {
         = split qr{( [^/*]* [*] [^/]* )}xms, $dirname;
     ( my $inner_dir_regex = quotemeta $inner_dir ) =~ s{\\[*]}{.*?}xms;
     my @left_and_inner_dirs
-        = path($left_dir)->children( qr{\A $inner_dir_regex \z}xms );
+        = path($left_dir)->children( qr{$inner_dir_regex}xms );
 
     return +(
         sort
@@ -108,6 +108,56 @@ sub _my_glob {
             path($_, $right_dir, $filename);
         } @left_and_inner_dirs
     );
+}
+
+sub _run_extra_commands {
+    my ($self, $identifier, $instance, $next_data_code) = @_;
+
+    if ( $identifier eq 'merge_lexicon' ) {
+        my ( $from1, $from2, $to ) = (
+            $next_data_code->(),
+            $next_data_code->(),
+            $next_data_code->(),
+        );
+        $instance->merge_lexicon( $from1, $from2, $to );
+        $self->logger and $self->logger->(
+            qq{Lexicon "$from1", "$from2" merged to "$to".},
+            {
+                object => $self,
+                type   => 'debug',
+                event  => 'lexicon,merge',
+            },
+        );
+        return 1;
+    }
+    if ( $identifier eq 'move_lexicon' ) {
+        my ( $from, $to ) = ( $next_data_code->(), $next_data_code->() );
+        $instance->move_lexicon( $from, $to );
+        $self->logger and $self->logger->(
+            qq{Lexicon "$from" moved to "$to".},
+            {
+                object => $self,
+                type   => 'debug',
+                event  => 'lexicon,move',
+            },
+        );
+        return 1;
+    }
+    if ( $identifier eq 'delete_lexicon' ) {
+        my $name = $next_data_code->();
+        $instance->delete_lexicon($name);
+        $self->logger and $self->logger->(
+            qq{Lexicon "$name" deleted.},
+            {
+                object => $self,
+                type   => 'debug',
+                event  => 'lexicon,delete',
+            },
+        );
+        return 1;
+    }
+
+    return;
 }
 
 sub lexicon_ref {
@@ -121,49 +171,11 @@ sub lexicon_ref {
     DATA:
     while ( $index < @{ $file_lexicon->{data} } ) {
         my $identifier = $data->[ $index++ ];
-        if ( $identifier eq 'merge_lexicon' ) {
-            my ( $from1, $from2, $to ) = (
-                $data->[ $index++ ],
-                $data->[ $index++ ],
-                $data->[ $index++ ],
-            );
-            $instance->merge_lexicon( $from1, $from2, $to );
-            $self->logger and $self->logger->(
-                qq{Lexicon "$from1", "$from2" merged to "$to".},
-                {
-                    object => $self,
-                    type   => 'debug',
-                    event  => 'lexicon,merge',
-                },
-            );
-            next DATA;
-        }
-        if ( $identifier eq 'move_lexicon' ) {
-            my ( $from, $to ) = ( $data->[ $index++ ], $data->[ $index++ ] );
-            $instance->move_lexicon( $from, $to );
-            $self->logger and $self->logger->(
-                qq{Lexicon "$from" moved to "$to".},
-                {
-                    object => $self,
-                    type   => 'debug',
-                    event  => 'lexicon,move',
-                },
-            );
-            next DATA;
-        }
-        if ( $identifier eq 'delete_lexicon' ) {
-            my $name = $data->[ $index++ ];
-            $instance->delete_lexicon($name);
-            $self->logger and $self->logger->(
-                qq{Lexicon "$name" deleted.},
-                {
-                    object => $self,
-                    type   => 'debug',
-                    event  => 'lexicon,delete',
-                },
-            );
-            next DATA;
-        }
+        $self->_run_extra_commands(
+            $identifier,
+            $instance,
+            sub { return $data->[ $index++ ] },
+        ) and next DATA;
         my ( $lexicon_key, $lexicon_value )
             = ( $identifier, $data->[ $index++ ] );
         for my $dir ( @{ $search_dirs } ) {
@@ -222,7 +234,7 @@ $HeadURL$
 
 =head1 VERSION
 
-1.007
+1.008
 
 =head1 DESCRIPTION
 

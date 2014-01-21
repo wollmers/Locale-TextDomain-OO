@@ -7,7 +7,7 @@ use Moo;
 use MooX::StrictConstructor;
 use namespace::autoclean;
 
-our $VERSION = '1.000';
+our $VERSION = '1.008';
 
 with qw(
     Locale::TextDomain::OO::Lexicon::Role::StoreFile
@@ -21,6 +21,7 @@ sub to_json {
         encode_json(
             $self->data({
                 msg_key_separator => '{MSG_KEY_SEPARATOR}',
+                plural_separator  => '{PLURAL_SEPARATOR}',
             }),
         ),
     );
@@ -42,7 +43,7 @@ $HeadURL$
 
 =head1 VERSION
 
-1.000
+1.008
 
 =head1 DESCRIPTION
 
@@ -179,7 +180,7 @@ Steffen Winkler
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2013,
+Copyright (c) 2013 - 2014,
 Steffen Winkler
 C<< <steffenw at cpan.org> >>.
 All rights reserved.

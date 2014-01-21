@@ -17,12 +17,12 @@ plan(tests => 6);
 
 my @data = (
     {
-        test => '04_lexicon_store_JSON_utf-8',
-        path => 'example',
+        test   => '04_lexicon_store_JSON_utf-8',
+        path   => 'example',
         script => '-I../lib -T 04_lexicon_store_JSON_utf-8.pl',
         result => <<'EOT',
 Lexicon "en-gb:cat:dom" loaded from hash.
-{"en-gb:cat:dom":{"{MSG_KEY_SEPARATOR}GBP":{"msgstr":"£"},"{MSG_KEY_SEPARATOR}":{"plural":"n","charset":"UTF-8","nplurals":1}},"i-default::":{"{MSG_KEY_SEPARATOR}":{"plural":"n != 1","nplurals":2}}}
+{"en-gb:cat:dom":{"":{"plural":"n","charset":"UTF-8","nplurals":1},"appointment{MSG_KEY_SEPARATOR}date for GBP{PLURAL_SEPARATOR}dates for GBP":{"msgstr":["date for £","dates for £"]}},"i-default::":{"":{"plural":"n != 1","nplurals":2}}}
 EOT
     },
     {

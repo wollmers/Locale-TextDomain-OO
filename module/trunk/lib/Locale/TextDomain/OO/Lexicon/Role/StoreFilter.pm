@@ -8,7 +8,7 @@ use Moo::Role;
 use MooX::Types::MooseLike::Base qw(ArrayRef);
 use namespace::autoclean;
 
-our $VERSION = '1.000';
+our $VERSION = '1.008';
 
 with qw(
     Locale::TextDomain::OO::Lexicon::Role::Constants
@@ -97,14 +97,17 @@ sub data {
         map { ## no critic (ComplexMappings)
             my $lexicon = { %{ $data->{$_} } };
             # not able to serialize code references
-            delete $lexicon->{ $self->msg_key_separator }->{plural_code};
-            if ( $arg_ref->{msg_key_separator} ) {
-                my $binary_separator = $self->msg_key_separator;
+            delete $lexicon->{ q{} }->{plural_code};
+            SEPARATOR_NAME:
+            for my $separator_name ( qw( msg_key_separator plural_separator ) ) {
+                my $text_separator_name = $arg_ref->{$separator_name}
+                    or next SEPARATOR_NAME;
+                my $binary_separator = $self->$separator_name;
                 for my $lexicon_key ( keys %{$lexicon} ) {
                     my $new_key = $lexicon_key;
                     $new_key =~ s{
                         \Q$binary_separator\E
-                    }{$arg_ref->{msg_key_separator}}xmsg;
+                    }{$text_separator_name}xmsg;
                     $lexicon->{$new_key}
                         = delete $lexicon->{$lexicon_key};
                 }
@@ -137,7 +140,7 @@ $HeadURL$
 
 =head1 VERSION
 
-1.000
+1.008
 
 =head1 DESCRIPTION
 
@@ -208,7 +211,10 @@ Get back that filtered lexicon data.
 
 or for special cases without control chars
 
-    $data = $self->data({ msg_key_separator => '{MSG_KEY_SEPARATOR}' });
+    $data = $self->data({
+        msg_key_separator => '{MSG_KEY_SEPARATOR}',
+        plural_separator  => '{PLURAL_SEPARATOR}',
+    });
 
 =head1 EXAMPLE
 
@@ -255,7 +261,7 @@ Steffen Winkler
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2013,
+Copyright (c) 2013 - 2014,
 Steffen Winkler
 C<< <steffenw at cpan.org> >>.
 All rights reserved.

@@ -3,7 +3,7 @@ package Locale::TextDomain::OO; ## no critic (TidyCode)
 use strict;
 use warnings;
 
-our $VERSION = '1.007';
+our $VERSION = '1.008';
 
 use Locale::TextDomain::OO::Translator;
 
@@ -29,7 +29,7 @@ $HeadURL$
 
 =head1 VERSION
 
-1.007
+1.008
 
 Starting with version 1.000 the interface has changed.
 
