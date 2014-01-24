@@ -7,10 +7,8 @@ use Test::More;
 use Test::Differences;
 use Cwd qw(getcwd chdir);
 
-$ENV{AUTHOR_TESTING} 
+$ENV{AUTHOR_TESTING}
     or plan skip_all => 'Set $ENV{AUTHOR_TESTING} to run this test.';
-
-plan tests => 1;
 
 my @data = (
     {
@@ -18,21 +16,36 @@ my @data = (
         path   => 'example',
         script => '-I../lib -T 01_expand_named.pl',
         result => <<'EOT',
-foo + bar + baz = {num} items
-foo + bar + baz = 0 items
-foo + bar + baz = 1 items
-foo + bar + baz = 2 items
-foo + bar + baz = 3.234.567,890 items
-foo + bar + baz = 4.234.567,89 items
-foo + bar + baz =  items
-foo + bar + baz = 0 items
-foo + bar + baz = 1 items
-foo + bar + baz = 2 items
-foo + bar + baz = 3234567.890 items
-foo + bar + baz = 4234567.89 items
+{count} EUR
+0 EUR
+1 EUR
+2 EUR
+345.678,90 EUR
+45.678,9 EUR
+ EUR
+0 EUR
+1 EUR
+2 EUR
+345678.90 EUR
+45678.9 EUR
+EOT
+    },
+    {
+        test   => '02_modifier_code',
+        path   => 'example',
+        script => '-I../lib -T 02_modifier_code.pl',
+        result => <<'EOT',
+ EUR
+0 EUR
+1 EUR
+2 EUR
+345.678,90 EUR
+45.678,9 EUR
 EOT
     },
 );
+
+plan tests => 0 + @data;
 
 for my $data (@data) {
     my $dir = getcwd;

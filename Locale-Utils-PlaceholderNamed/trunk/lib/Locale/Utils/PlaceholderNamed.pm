@@ -16,8 +16,9 @@ has strict => (
 );
 
 has modifier_code => (
-    is  => 'rw',
-    isa => CodeRef,
+    is      => 'rw',
+    isa     => CodeRef,
+    clearer => 'clear_modifier_code',
 );
 
 sub _mangle_value {
@@ -50,7 +51,8 @@ sub expand_named {
         };
 
     my $regex = join q{|}, map { quotemeta $_ } keys %{$arg_ref};
-    $text =~ s{ ## no critic (ComplexRegexes)
+    ## no critic (EscapedMetacharacters)
+    $text =~ s{
         (
             \{
             ( $regex )
@@ -61,6 +63,7 @@ sub expand_named {
     {
         $self->_mangle_value($1, $arg_ref->{$2}, $3)
     }xmsge;
+    ## use critic (EscapedMetacharacters)
 
     return $text;
 }
@@ -118,7 +121,7 @@ If strict is true: no replacement.
 
     $obj->strict(1); # boolean true or false;
 
-=head2 method modifier_code
+=head2 method modifier_code, clear_modifier_code
 
 The modifier code handles named attributes
 to modify the given placeholder value.
@@ -127,17 +130,20 @@ If the placeholder name is C<{foo:bar}> then foo is the placeholder name
 and bar the attribute name.
 Space in front of the attribute name is allowed, e.g. C<{foo :bar}>.
 
-    $obj->modifier_code(
-        sub {
-            my ( $value, $attribute ) = @_;
-            return
-                $attribute eq '%.3f'
-                ? sprintf($attribute, $value)
-                : $attribute eq 'accusative'
-                ? accusative($value)
-                : $value;
-        },
-    );
+    my $code_ref = sub {
+        my ( $value, $attribute ) = @_;
+        return
+            $attribute eq 'num.03'
+            ? sprintf('%.03f, $value)
+            : $attribute eq 'accusative'
+            ? accusative($value)
+            : $value;
+    };
+    $obj->modifier_code($code_ref);
+
+To switch off this code - clear them.
+
+    $obj->clear_modifier_code;
 
 =head2 method expand_named
 
