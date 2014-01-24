@@ -12,8 +12,6 @@ $ENV{AUTHOR_TESTING} or plan(
     skip_all => 'Set $ENV{AUTHOR_TESTING} to run this test.'
 );
 
-plan(tests => 7);
-
 my @data = (
     {
         test   => '02_filter',
@@ -32,6 +30,36 @@ EOT
 i-default
 Lexicon "de::" loaded from hash.
 de
+EOT
+    },
+    {
+        test   => '05_expand_gettext_modifier',
+        path   => 'example',
+        script => '-I../lib -T 05_expand_gettext_modifier.pl',
+        result => <<'EOT',
+Using lexicon "de::". msgstr not found for msgctxt=undef, msgid="{count :num} EUR".
+Using lexicon "de::". msgstr not found for msgctxt=undef, msgid="{count :num} EUR".
+language is i-default
+12,345,678.90 EUR
+language set to de
+12.345.678,90 EUR
+modifier deleted
+12345678.90 EUR
+EOT
+    },
+    {
+        test   => '06_expand_maketext_formatter_code',
+        path   => 'example',
+        script => '-I../lib -T 06_expand_maketext_formatter_code.pl',
+        result => <<'EOT',
+Using lexicon "de::". msgstr not found for msgctxt=undef, msgid="[*,_1,EUR]".
+Using lexicon "de::". msgstr not found for msgctxt=undef, msgid="[*,_1,EUR]".
+language is i-default
+12,345,678.90 EUR
+language set to de
+12.345.678,90 EUR
+formatter_code deleted
+12345678.90 EUR
 EOT
     },
     {
@@ -180,6 +208,8 @@ This is/are [*,_1,date,dates].
 EOT
     },
 );
+
+plan tests => 0 + @data;
 
 for my $data (@data) {
     my $dir = getcwd();

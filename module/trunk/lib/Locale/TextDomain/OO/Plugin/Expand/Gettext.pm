@@ -6,7 +6,7 @@ use Locale::Utils::PlaceholderNamed;
 use Moo::Role;
 use namespace::autoclean;
 
-our $VERSION = '1.000';
+our $VERSION = '1.008';
 
 requires qw(
     translate
@@ -14,13 +14,18 @@ requires qw(
     run_filter
 );
 
-my $lupn = Locale::Utils::PlaceholderNamed->new;
+has expand_gettext => (
+    is      => 'rw',
+    default => sub {
+        return Locale::Utils::PlaceholderNamed->new;
+    },
+);
 
 sub __x {
     my ($self, $msgid, @args) = @_;
 
     my $translation = $self->translate(undef, $msgid);
-    @args and $translation = $lupn->expand_named(
+    @args and $translation = $self->expand_gettext->expand_named(
         $translation,
         @args == 1 ? %{ $args[0] } : @args,
     );
@@ -34,7 +39,7 @@ sub __nx {
     my ($self, $msgid, $msgid_plural, $count, @args) = @_;
 
     my $translation = $self->translate(undef, $msgid, $msgid_plural, $count, 1);
-    @args and $translation = $lupn->expand_named(
+    @args and $translation = $self->expand_gettext->expand_named(
         $translation,
         @args == 1 ? %{ $args[0] } : @args,
     );
@@ -48,7 +53,7 @@ sub __px {
     my ($self, $msgctxt, $msgid, @args) = @_;
 
     my $translation = $self->translate($msgctxt, $msgid);
-    @args and $translation = $lupn->expand_named(
+    @args and $translation = $self->expand_gettext->expand_named(
         $translation,
         @args == 1 ? %{ $args[0] } : @args,
     );
@@ -62,7 +67,7 @@ sub __npx { ## no critic (ManyArgs)
     my ($self, $msgctxt, $msgid, $msgid_plural, $count, @args) = @_;
 
     my $translation = $self->translate($msgctxt, $msgid, $msgid_plural, $count, 1);
-    @args and $translation = $lupn->expand_named(
+    @args and $translation = $self->expand_gettext->expand_named(
         $translation,
         @args == 1 ? %{ $args[0] } : @args,
     );
@@ -108,7 +113,7 @@ $HeadURL$
 
 =head1 VERSION
 
-1.000
+1.008
 
 =head1 DESCRIPTION
 
@@ -125,9 +130,44 @@ for static domain and category handling.
         ...
     );
 
+Optional type formatting or grammer stuff see
+L<Locale::Utils::PlaceholderNamed|Locale::Utils::PlaceholderNamed>
+for possible methods.
+
+    $loc->expand_gettext->modifier_code($code_ref);
+
 =head1 SUBROUTINES/METHODS
 
-=head2 Translations methods
+=head2 method expand_gettext
+
+Returns the Locale::Utils::PlaceholderNamed object
+to be able to set some options.
+
+    my $expander_object = $self->expand_gettext;
+
+e.g.
+
+    $self->expand_gettext->modifier_code(
+        sub {
+            my ( $value, $attribute ) = @_;
+            if ( $attribute eq 'num' ) {
+                # modify that numeric $value
+                # e.g. change 1234.56 to 1.234,56 or 1,234.56
+                ...
+            }
+            elsif ( $attribute eq 'accusative' ) {
+                # modify the string with that grammer rule
+                # e.g. needed for East-European languages
+                # write grammer rules only on msgstr/msgstr_plural[n]
+                # and not on msgid
+                ...
+            }
+            ...
+            return $value;
+        },
+    );
+
+=head2 translation methods
 
 How to build the method name?
 
@@ -167,7 +207,7 @@ Plural
     print $loc->__n(
         'one file read',       # Singular
         'a lot of files read', # Plural
-        $num_files,            # number to select the right plural form
+        $file_count,           # number to select the right plural form
     );
 
 =head3 method __nx
@@ -175,12 +215,23 @@ Plural
 Plural and expand named placeholders
 
     print $loc->__nx(
-        '{num} file read',
-        '{num} files read',
-        $num_files,
+        '{count:num} file read',
+        '{count:num} files read',
+        $file_count,
         # hash or hash_ref
-        num => $num_files,
+        count => $file_count,
     );
+
+What is the meaning of C<{count:num}> or alternative C<{count :num}>?
+
+That is a attribute.
+If there is such an attribute like C<:num>
+and the modifier_code is set,
+the placeholder value will be modified before replacement.
+
+Think about the attribute names.
+Too technical names are able to destroy the translation process
+by translation office stuff.
 
 =head3 method __p
 
@@ -225,11 +276,12 @@ Context, plural and expand named placeholders
 
     print $loc->__npx(
         'maskulin',
-        'Mr. {name} has {num} book.',
-        'Mr. {name} has {num} books.',
-        $books,
+        'Mr. {name} has {count:num} book.',
+        'Mr. {name} has {count:num} books.',
+        $book_count,
         # hash or hash_ref
-        name => $name,
+        name  => $name,
+        count => $book_count,
     );
 
 
@@ -298,7 +350,7 @@ Steffen Winkler
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2009 - 2013,
+Copyright (c) 2009 - 2014,
 Steffen Winkler
 C<< <steffenw at cpan.org> >>.
 All rights reserved.

@@ -10,7 +10,7 @@ Module::Build->new(
     dist_author       => 'Steffen Winkler <steffenw at cpan.org>',
     dist_version_from => 'lib/Locale/TextDomain/OO.pm',
     requires          => {
-        'perl'                               => 5.006,
+        'perl'                               => 5.008,
         'charnames'                          => 0, # perl dist
         'namespace::autoclean'               => 0,
         'Carp'                               => 0, # perl dist
@@ -19,13 +19,13 @@ Module::Build->new(
         'JSON'                               => 0, # perl dist
         'List::MoreUtils'                    => 0, # perl dist
         'Locale::MO::File'                   => 0,
-        'Locale::Utils::PlaceholderMaketext' => 0,
-        'Locale::Utils::PlaceholderNamed'    => 0,
+        'Locale::Utils::PlaceholderMaketext' => '0.004',
+        'Locale::Utils::PlaceholderNamed'    => '0.005',
         'Moo'                                => '1.003001',
         'Moo::Role'                          => 0,
         'MooX::Singleton'                    => 0,
         'MooX::StrictConstructor'            => 0,
-        'MooX::Types::MooseLike::Base'       => 0,
+        'MooX::Types::MooseLike'             => 0,
         'Path::Tiny'                         => '0.052',
         'Safe'                               => 0, # perl dist
         'Tie::Sub'                           => '0.09',

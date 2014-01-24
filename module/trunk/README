@@ -1,4 +1,4 @@
-Locale-TextDomain-OO version 1.007
+Locale-TextDomain-OO version 1.008
 ==================================
 
 Perl OO Interface to Uniforum Message Translation
@@ -30,7 +30,7 @@ This module requires these other modules and libraries:
     Moo::Role
     MooX::Singleton
     MooX::StrictConstructor
-    MooX::Types::MooseLike::Base
+    MooX::Types::MooseLike
     Path::Tiny
     Safe
     Tie::Sub

@@ -6,7 +6,7 @@ use Locale::Utils::PlaceholderMaketext;
 use Moo::Role;
 use namespace::autoclean;
 
-our $VERSION = '1.000';
+our $VERSION = '1.008';
 
 requires qw(
     translate
@@ -14,13 +14,18 @@ requires qw(
     run_filter
 );
 
-my $lupm = Locale::Utils::PlaceholderMaketext->new;
+has expand_maketext => (
+    is      => 'rw',
+    default => sub {
+        return Locale::Utils::PlaceholderMaketext->new;
+    },
+);
 
 sub maketext {
     my ($self, $msgid, @args) = @_;
 
     my $translation = $self->translate(undef, $msgid);
-    $translation = $lupm->expand_maketext(
+    $translation = $self->expand_maketext->expand_maketext(
         $translation,
         @args,
     );
@@ -34,7 +39,7 @@ sub maketext_p {
     my ($self, $msgctxt, $msgid, @args) = @_;
 
     my $translation = $self->translate($msgctxt, $msgid);
-    $translation = $lupm->expand_maketext(
+    $translation = $self->expand_maketext->expand_maketext(
         $translation,
         @args,
     );
@@ -70,7 +75,7 @@ $HeadURL$
 
 =head1 VERSION
 
-1.000
+1.008
 
 =head1 DESCRIPTION
 
@@ -92,9 +97,24 @@ run method maketext_p.
         ...
     );
 
+Optional type formatting see
+L<Locale::Utils::PlaceholderMaketext|Locale::Utils::PlaceholderMaketext>
+for possible methods.
+
+    $loc->expand_maketext->formatter_code($code_ref);
+
 =head1 SUBROUTINES/METHODS
 
-=head2 method maketext
+=head2 method expand_maketext
+
+Returns the Locale::Utils::PlaceholderMaketext object
+to be able to set some options.
+
+    my $expander_object = $self->expand_maketext;
+
+=head2 translation methods
+
+=head3 method maketext
 
 This method includes the expansion as 'quant' or '*'.
 
@@ -113,7 +133,7 @@ This method includes the expansion as 'quant' or '*'.
     );
 
 
-=head2 method maketext_p (allows the context)
+=head3 method maketext_p (allows the context)
 
     print $loc->maketext_p (
         'time',
@@ -139,7 +159,7 @@ This method includes the expansion as 'quant' or '*'.
         $books,
     );
 
-=head2 methods Nmaketext, Nmaketext_p
+=head3 methods Nmaketext, Nmaketext_p
 
 The extractor looks for C<maketext('...>
 and has no problem with C<<$loc->Nmaketext('...>>.
@@ -188,7 +208,7 @@ Steffen Winkler
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2009 - 2013,
+Copyright (c) 2009 - 2014,
 Steffen Winkler
 C<< <steffenw at cpan.org> >>.
 All rights reserved.
