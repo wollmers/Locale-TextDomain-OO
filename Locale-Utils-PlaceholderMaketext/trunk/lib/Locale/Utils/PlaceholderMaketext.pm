@@ -9,7 +9,7 @@ use MooX::StrictConstructor;
 use MooX::Types::MooseLike::Base qw(Bool Str CodeRef);
 use namespace::autoclean;
 
-our $VERSION = '0.004';
+our $VERSION = '0.005';
 
 has strict => (
     is  => 'rw',
@@ -233,7 +233,7 @@ $HeadURL$
 
 =head1 VERSION
 
-0.004
+0.005
 
 =head1 SYNOPSIS
 
@@ -328,7 +328,7 @@ For quant undef will be converted to 0.
 If it is needed to localize e.g. the numerics
 than describe this in a code reference.
 
-    my $coderef = sub {
+    my $code_ref = sub {
         my ($value, $type, $function_name) = @_;
 
         # $value is never undefined
@@ -434,7 +434,7 @@ Steffen Winkler
 
 =head1 LICENSE AND COPYRIGHT
 
-Copyright (c) 2011 - 2013,
+Copyright (c) 2011 - 2014,
 Steffen Winkler
 C<< <steffenw at cpan.org> >>.
 All rights reserved.
