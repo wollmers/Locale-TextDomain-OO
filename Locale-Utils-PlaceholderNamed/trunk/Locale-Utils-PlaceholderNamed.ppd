@@ -1,4 +1,4 @@
-<SOFTPKG NAME="Locale-Utils-PlaceholderNamed" VERSION="0.004">
+<SOFTPKG NAME="Locale-Utils-PlaceholderNamed" VERSION="0.005">
     <ABSTRACT>Locale::Utils::PlaceholderNamed - Utils to expand named placeholders</ABSTRACT>
     <AUTHOR>Steffen Winkler &lt;steffenw at cpan.org&gt;</AUTHOR>
     <IMPLEMENTATION>
@@ -7,6 +7,6 @@
         <REQUIRE NAME="Moo::" VERSION="1.003001" />
         <REQUIRE NAME="MooX::StrictConstructor" VERSION="0" />
         <REQUIRE NAME="Carp::" VERSION="0" />
-        <CODEBASE HREF="PPM-Locale-Utils-PlaceholderNamed-0.004.tar.gz" />
+        <CODEBASE HREF="PPM-Locale-Utils-PlaceholderNamed-0.005.tar.gz" />
     </IMPLEMENTATION>
 </SOFTPKG>
