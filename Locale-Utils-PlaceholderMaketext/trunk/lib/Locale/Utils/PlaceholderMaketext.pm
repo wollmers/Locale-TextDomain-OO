@@ -9,7 +9,7 @@ use MooX::StrictConstructor;
 use MooX::Types::MooseLike::Base qw(Bool Str CodeRef);
 use namespace::autoclean;
 
-our $VERSION = '0.005';
+our $VERSION = '0.004';
 
 has strict => (
     is  => 'rw',
@@ -81,7 +81,7 @@ sub gettext_to_maketext {
             ( [[:alpha:]*\#] [[:alpha:]_]* ) # $3 - function name
             [(]
             [%] ( [1-9] \d* )                # $4 - variable
-            ( [^\)]* )                       # $5 - arguments
+            ( [^)]* )                        # $5 - arguments
             [)]
             |                                # or
             ( [1-9] \d* )                    # $6 - variable
@@ -193,18 +193,18 @@ sub expand_gettext {
 
     ## no critic (ComplexRegexes)
     $text =~ s{
-        [%] ( % )                  # $1: escaped
+        [%] ( % )                 # $1: escaped
         |
-        (                          # $2: text
+        (                         # $2: text
             [%] (?: quant | [*] )
             [(]
-            [%] ( \d+ )            # $3: n
-            [,] ( [^,\)]* )        # $4: singular
-            (?: [,] ( [^,\)]* ) )? # $5: plural
-            (?: [,] ( [^,\)]* ) )? # $6: zero
+            [%] ( \d+ )           # $3: n
+            [,] ( [^,)]* )        # $4: singular
+            (?: [,] ( [^,)]* ) )? # $5: plural
+            (?: [,] ( [^,)]* ) )? # $6: zero
             [)]
             |
-            [%] ( \d+ )            # $7: n
+            [%] ( \d+ )           # $7: n
         )
     }
     {
@@ -233,7 +233,7 @@ $HeadURL$
 
 =head1 VERSION
 
-0.005
+0.004
 
 =head1 SYNOPSIS
 

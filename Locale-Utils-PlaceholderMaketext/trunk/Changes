@@ -1,5 +1,9 @@
 Revision history for Perl extension Locale::Utils::PlaceholderMaketext.
 
+0.004  Fri Jan 24 13:13:54 2014
+- fixed pod error
+- removed old Moose dependency
+
 0.003  Tue Oct 22 18:10:13 2013
 - use Moo
 - removed Build.PL from distribution

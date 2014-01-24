@@ -10,7 +10,7 @@ require Locale::Utils::PlaceholderMaketext;
 my $obj = Locale::Utils::PlaceholderMaketext->new;
 
 () = print
-    Locale::Utils::PlaceholderMaketext
+    +Locale::Utils::PlaceholderMaketext
         ->gettext_to_maketext('foo %1 bar'),
     "\n",
     $obj->gettext_to_maketext('foo %1 bar'),
