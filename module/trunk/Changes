@@ -1,5 +1,11 @@
 Revision history for Perl extension Locale::TextDomain::OO.
 
+1.008  Fri Jan 24 14:51:39 2014
+- fixed role file regex for * in filename
+- simplified the lexicon key
+- working with getext modifier_code
+  and/or maketext formatter_code
+
 1.007  Mon Jan 20 22:06:00 2014
 - fixed false writing of method name childre[e]n
 - sort needed for sorted "lexicon load" output
