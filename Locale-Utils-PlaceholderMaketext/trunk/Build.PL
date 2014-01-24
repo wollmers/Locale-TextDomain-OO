@@ -25,9 +25,8 @@ Module::Build->new(
         'Test::More'        => 0, # dist Test-Simple
     },
     recommends => {
-        'Test::Pod'            => '1.14',
-        'Test::Pod::Coverage'  => '1.04',
-        'Pod::Coverage::Moose' => 0,
+        'Test::Pod'           => '1.14',
+        'Test::Pod::Coverage' => '1.04',
     },
     create_makefile_pl   => 'traditional',
     recursive_test_files => 0,
