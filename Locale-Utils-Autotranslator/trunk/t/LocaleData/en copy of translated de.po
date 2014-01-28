@@ -1,0 +1,30 @@
+msgid ""
+msgstr ""
+"Project-Id-Version: \n"
+"POT-Creation-Date: \n"
+"PO-Revision-Date: \n"
+"Last-Translator: \n"
+"Language-Team: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=n != 1;\n"
+""
+
+msgid "Anzahl der %1: %2"
+msgstr "Number of %1: %2"
+
+msgid "Anzahl der {post items}: {count :num}"
+msgstr "Number of {post items}: {count :num}"
+
+msgid "Schreiben Sie %1 bitte %*(%2,Brief,Briefe), am besten heute noch."
+msgstr "Write %1 please %*(%2,Letter,letters), best today."
+
+msgid "Schreiben Sie bitte am besten heute noch."
+msgstr "Please write best today."
+
+msgid "Schreiben Sie {name} bitte {count :num} Brief, am besten heute noch."
+msgid_plural "Schreiben Sie {name} bitte {count :num} Briefe, am besten heute noch."
+msgstr[0] "Write {name} please {count :num} letter, why not call today."
+msgstr[1] "Write {name} please {count :num} letters, why not call today."
+
