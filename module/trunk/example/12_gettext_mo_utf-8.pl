@@ -32,6 +32,17 @@ my $loc = Locale::TextDomain::OO->new(
     logger   => sub { () = print shift, "\n" },
     plugins  => [ qw( Expand::Gettext ) ],
 );
+$loc->expand_gettext->modifier_code(
+    sub {
+        my ( $value, $attribute ) = @_;
+        $loc->language eq 'ru'
+            or return $value;
+        if ( $attribute eq 'accusative' ) {
+            $value =~ s{ква}{кве}xms; # very primitive, only for this example
+        }
+        return $value;
+    },
+);
 
 # all unicode chars encode to UTF-8
 binmode STDOUT, ':encoding(utf-8)'
@@ -45,23 +56,27 @@ binmode STDOUT, ':encoding(utf-8)'
     $loc->__(
         'book',
     ),
+    $loc->__x(
+        'He lives in {town}.',
+        town => 'Москва',
+    ),
     $loc->__nx(
-        '{count} book',
-        '{count} books',
+        '{books :num} book',
+        '{books :num} books',
         1,
-        count => 1,
+        books => 1,
     ),
     $loc->__nx(
-        '{count} book',
-        '{count} books',
+        '{books :num} book',
+        '{books :num} books',
         3, ## no critic (MagicNumbers)
-        count => 3,
+        books => 3,
     ),
     $loc->__nx(
-        '{count} book',
-        '{count} books',
+        '{books :num} book',
+        '{books :num} books',
         5, ## no critic (MagicNumbers)
-        count => 5,
+        books => 5,
     ),
     $loc->__p(
         'appointment',
@@ -69,24 +84,24 @@ binmode STDOUT, ':encoding(utf-8)'
     ),
     $loc->__npx(
         'appointment',
-        'This is {num} date.',
-        'This are {num} dates.',
+        'This is {dates :num} date.',
+        'This are {dates :num} dates.',
         1,
-        num => 1,
+        dates => 1,
     ),
     $loc->__npx(
         'appointment',
-        'This is {num} date.',
-        'This are {num} dates.',
+        'This is {dates :num} date.',
+        'This are {dates :num} dates.',
         3, ## no critic (MagicNumbers)
-        num => 3,
+        dates => 3,
     ),
     $loc->__npx(
         'appointment',
-        'This is {num} date.',
-        'This are {num} dates.',
+        'This is {dates :num} date.',
+        'This are {dates :num} dates.',
         5, ## no critic (MagicNumbers)
-        num => 5,
+        dates => 5,
     );
 
 # $Id$
@@ -100,6 +115,7 @@ debug: Lexicon "ru::" loaded from file "LocaleData/ru/LC_MESSAGES/example.mo".
 Using lexicon "ru::". msgstr not found for msgctxt=undef, msgid="not existing text".
 not existing text
 книга
+Он живет в Москве.
 1 книга
 3 книги
 5 книг

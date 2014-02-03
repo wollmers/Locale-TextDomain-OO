@@ -18,12 +18,18 @@ msgstr "книга"
 msgid "§ book"
 msgstr "§ книга"
 
+# Add the grammar attribute on string placeholders to run the modifier code with.
+# That attribute is only placed at msgstr or msgstr[n].
+msgid "He lives in {town}."
+msgstr "Он живет в {town :accusative}."
+
 # plural
-msgid "{count} book"
-msgid_plural "{count} books"
-msgstr[0] "{count} книга"
-msgstr[1] "{count} книги"
-msgstr[2] "{count} книг"
+# numeric attribute for better automatic translation
+msgid "{books :num} book"
+msgid_plural "{books :num} books"
+msgstr[0] "{books :num} книга"
+msgstr[1] "{books :num} книги"
+msgstr[2] "{books :num} книг"
 
 # context
 msgctxt "appointment"
@@ -31,10 +37,11 @@ msgid "date"
 msgstr "воссоединение"
 
 # context, plural
+# Add the numeric attribute for better automatic translation on numeric placeholders.
 msgctxt "appointment"
-msgid "This is {num} date."
-msgid_plural "This are {num} dates."
-msgstr[0] "Это {num} воссоединение."
-msgstr[1] "Это {num} воссоединения."
-msgstr[2] "Эти {num} воссоединения."
+msgid "This is {dates :num} date."
+msgid_plural "This are {dates :num} dates."
+msgstr[0] "Это {dates :num} воссоединение."
+msgstr[1] "Это {dates :num} воссоединения."
+msgstr[2] "Эти {dates :num} воссоединения."
 

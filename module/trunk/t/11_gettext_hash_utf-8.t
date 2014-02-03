@@ -76,11 +76,11 @@ Locale::TextDomain::OO::Lexicon::Hash
             },
             {
                 # __nx
-                msgid         => "{num} shelf",
-                msgid_plural  => "{num} shelves",
+                msgid         => "{shelves :num} shelf",
+                msgid_plural  => "{shelves :num} shelves",
                 msgstr_plural => [
-                    "{num} Regal",
-                    "{num} Regale",
+                    "{shelves :num} Regal",
+                    "{shelves :num} Regale",
                 ],
             },
             {
@@ -108,11 +108,11 @@ Locale::TextDomain::OO::Lexicon::Hash
             {
                 # __npx
                 msgctxt       => "appointment",
-                msgid         => "This is {num} date.",
-                msgid_plural  => "This are {num} dates.",
+                msgid         => "This is {dates :num} date.",
+                msgid_plural  => "This are {dates :num} dates.",
                 msgstr_plural => [
-                    "Das ist {num} Date.",
-                    "Das sind {num} Dates.",
+                    "Das ist {dates :num} Date.",
+                    "Das sind {dates :num} Dates.",
                 ],
             },
         ],
@@ -195,19 +195,19 @@ is
     '__n 2';
 is
     $loc->__nx(
-        '{num} shelf',
-        '{num} shelves',
+        '{shelves :num} shelf',
+        '{shelves :num} shelves',
         1,
-        num => 1,
+        shelves => 1,
     ),
     '1 Regal',
     '__nx 1';
 is
     $loc->__nx(
-        '{num} shelf',
-        '{num} shelves',
+        '{shelves :num} shelf',
+        '{shelves :num} shelves',
         2,
-        num => 2,
+        shelves => 2,
     ),
     '2 Regale',
     '__nx 2';
@@ -247,20 +247,20 @@ is
 is
     $loc->__npx(
         'appointment',
-        'This is {num} date.',
-        'This are {num} dates.',
+        'This is {dates :num} date.',
+        'This are {dates :num} dates.',
         1,
-        num => 1,
+        dates => 1,
     ),
     'Das ist 1 Date.',
     '__npx 1';
 is
     $loc->__npx(
         'appointment',
-        'This is {num} date.',
-        'This are {num} dates.',
+        'This is {dates :num} date.',
+        'This are {dates :num} dates.',
         2,
-        num => 2,
+        dates => 2,
     ),
     'Das sind 2 Dates.',
     '__npx 2';

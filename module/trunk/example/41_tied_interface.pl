@@ -67,16 +67,16 @@ sub to_line {
         2,
     ]},
     $__nx{[
-        '{num} shelf',
-        '{num} shelves',
+        '{shelves :num} shelf',
+        '{shelves :num} shelves',
         1,
-        num => 1,
+        shelves => 1,
     ]},
     $__nx->{[
-        '{num} shelf',
-        '{num} shelves',
+        '{shelves :num} shelf',
+        '{shelves :num} shelves',
         2,
-        num => 2,
+        shelves => 2,
     ]},
     $__p{[
         'maskulin',
@@ -110,17 +110,17 @@ sub to_line {
     ]},
     $__npx{[
         'appointment',
-        'This is {num} date.',
-        'This are {num} dates.',
+        'This is {dates :num} date.',
+        'This are {dates :num} dates.',
         1,
-        num => 1,
+        dates => 1,
     ]},
     $__npx->{[
         'appointment',
-        'This is {num} date.',
-        'This are {num} dates.',
+        'This is {dates :num} date.',
+        'This are {dates :num} dates.',
         2,
-        num => 2,
+        dates => 2,
     ]},
     to_line(
         $N__{'text'},
@@ -137,11 +137,11 @@ sub to_line {
     $__dcnpx{[
         'example',
         'appointment',
-        'This is {num} date.',
-        'This are {num} dates.',
+        'This is {dates :num} date.',
+        'This are {dates :num} dates.',
         3, ## no critic (MagicNumbers)
         'LC_MESSAGES',
-        num => 3,
+        dates => 3,
     ]},
     ${$loc_ref}->domain,
     ${$loc_ref}->category;

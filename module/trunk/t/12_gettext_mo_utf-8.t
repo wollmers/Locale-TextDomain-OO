@@ -4,7 +4,7 @@ use strict;
 use warnings;
 use utf8;
 
-use Test::More tests => 20;
+use Test::More tests => 21;
 use Test::NoWarnings;
 
 BEGIN {
@@ -76,6 +76,17 @@ my $loc = Locale::TextDomain::OO->new(
         return;
     },
 );
+$loc->expand_gettext->modifier_code(
+    sub {
+        my ( $value, $attribute ) = @_;
+        $loc->language eq 'ru'
+            or return $value;
+        if ( $attribute eq 'accusative' ) {
+            $value =~ s{ква}{кве}xms; # very primitive, only for this example
+        }
+        return $value;
+    },
+);
 is
     $loc->__(
         'book',
@@ -89,29 +100,35 @@ is
     '§ книга',
     '__ utf-8';
 is
+    $loc->__x(
+        'He lives in {town}.',
+        town => 'Москва',
+    ),
+    'Он живет в Москве.';
+is
     $loc->__nx(
-        '{count} book',
-        '{count} books',
+        '{books :num} book',
+        '{books :num} books',
         1,
-        count => 1,
+        books => 1,
     ),
     '1 книга',
     '__nx 1';
 is
     $loc->__nx(
-        '{count} book',
-        '{count} books',
+        '{books :num} book',
+        '{books :num} books',
         3,
-        count => 3,
+        books => 3,
     ),
     '3 книги',
     '__nx 1';
 is
     $loc->__nx(
-        '{count} book',
-        '{count} books',
+        '{books :num} book',
+        '{books :num} books',
         5,
-        count => 5,
+        books => 5,
     ),
     '5 книг',
     '__nx 5';
@@ -125,30 +142,30 @@ is
 is
     $loc->__npx(
         'appointment',
-        'This is {num} date.',
-        'This are {num} dates.',
+        'This is {dates :num} date.',
+        'This are {dates :num} dates.',
         1,
-        num => 1,
+        dates => 1,
     ),
     'Это 1 воссоединение.',
     '__npx 1';
 is
     $loc->__npx(
         'appointment',
-        'This is {num} date.',
-        'This are {num} dates.',
+        'This is {dates :num} date.',
+        'This are {dates :num} dates.',
         3,
-        num => 3,
+        dates => 3,
     ),
     'Это 3 воссоединения.',
     '__npx 3';
 is
     $loc->__npx(
         'appointment',
-        'This is {num} date.',
-        'This are {num} dates.',
+        'This is {dates :num} date.',
+        'This are {dates :num} dates.',
         5,
-        num => 5,
+        dates => 5,
     ),
     'Эти 5 воссоединения.',
     '__npx 5';

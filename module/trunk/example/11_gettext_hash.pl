@@ -64,11 +64,11 @@ Locale::TextDomain::OO::Lexicon::Hash
             # plural translation + named placeholder
             {
                 # __nx
-                msgid         => "{num} shelf",
-                msgid_plural  => "{num} shelves",
+                msgid         => "{shelves :num} shelf",
+                msgid_plural  => "{shelves :num} shelves",
                 msgstr_plural => [
-                    "{num} Regal",
-                    "{num} Regale",
+                    "{shelves :num} Regal",
+                    "{shelves :num} Regale",
                 ],
             },
             # context - different meaning but the same English phrase for both
@@ -100,11 +100,11 @@ Locale::TextDomain::OO::Lexicon::Hash
             {
                 # __npx
                 msgctxt       => "appointment",
-                msgid         => "This is {num} date.",
-                msgid_plural  => "This are {num} dates.",
+                msgid         => "This is {dates :num} date.",
+                msgid_plural  => "This are {dates :num} dates.",
                 msgstr_plural => [
-                    "Das ist {num} Date.",
-                    "Das sind {num} Dates.",
+                    "Das ist {dates :num} Date.",
+                    "Das sind {dates :num} Dates.",
                 ],
             },
         ],
@@ -151,16 +151,16 @@ my $loc = Locale::TextDomain::OO->new(
         2,
     ),
     $loc->__nx(
-        '{num} shelf',
-        '{num} shelves',
+        '{shelves :num} shelf',
+        '{shelves :num} shelves',
         1,
-        num => 1,
+        shelves => 1,
     ),
     $loc->__nx(
-        '{num} shelf',
-        '{num} shelves',
+        '{shelves :num} shelf',
+        '{shelves :num} shelves',
         2,
-        num => 2,
+        shelves => 2,
     ),
     $loc->__p(
         'maskulin',
@@ -185,17 +185,17 @@ my $loc = Locale::TextDomain::OO->new(
     ),
     $loc->__npx(
         'appointment',
-        'This is {num} date.',
-        'This are {num} dates.',
+        'This is {dates :num} date.',
+        'This are {dates :num} dates.',
         1,
-        num => 1,
+        dates => 1,
     ),
     $loc->__npx(
         'appointment',
-        'This is {num} date.',
-        'This are {num} dates.',
+        'This is {dates :num} date.',
+        'This are {dates :num} dates.',
         2,
-        num => 2,
+        dates => 2,
     );
 
 # $Id$

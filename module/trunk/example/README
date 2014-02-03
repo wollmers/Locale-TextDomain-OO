@@ -43,12 +43,19 @@ attachment." and "There is/are 2 attachments.".
     This example shows how to use the lexicon as JSON for JavaScript. Because
     not the full lexicon is used in JavaScript, you can set the filter.
 
+05_expand_gettext_modifier.pl
+    This example shows how to format numbers.
+
+06_expand_maketext_formatter_code.pl
+   This example shows how to format numbers.
+
 11_gettext_hash.pl
     This example shows how to create a lexicon from hash.
 
 12_gettext_mo_utf-8.pl
     This example shows how to create a lexicon from mo file.
     Also that is using Russian language with 3 plural forms.
+    It also shows how to work with grammar attributes.
 
 13_gettext_mo_cp1252.pl
     It is also possible to read the mo file with Windows charset cp1252.

@@ -6,7 +6,7 @@ use Locale::Utils::PlaceholderNamed;
 use Moo::Role;
 use namespace::autoclean;
 
-our $VERSION = '1.008';
+our $VERSION = '1.009';
 
 requires qw(
     translate
@@ -113,7 +113,7 @@ $HeadURL$
 
 =head1 VERSION
 
-1.008
+1.009
 
 =head1 DESCRIPTION
 
@@ -130,7 +130,7 @@ for static domain and category handling.
         ...
     );
 
-Optional type formatting or grammer stuff see
+Optional type formatting or grammar stuff see
 L<Locale::Utils::PlaceholderNamed|Locale::Utils::PlaceholderNamed>
 for possible methods.
 
@@ -156,9 +156,9 @@ e.g.
                 ...
             }
             elsif ( $attribute eq 'accusative' ) {
-                # modify the string with that grammer rule
+                # modify the string with that grammar rule
                 # e.g. needed for East-European languages
-                # write grammer rules only on msgstr/msgstr_plural[n]
+                # write grammar rules only on msgstr/msgstr_plural[n]
                 # and not on msgid
                 ...
             }

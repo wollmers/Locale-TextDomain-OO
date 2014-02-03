@@ -48,8 +48,8 @@ my @data = (
 while ( my ( $books, $shelves, $expected ) = splice @data, 0, 3 ) {
     is
         $loc->__nx(
-            'There is {books} book and {shelves} shelve.',
-            'There are {books} books and {shelves} shelves.',
+            'There is {books :num} book and {shelves :num} shelve.',
+            'There are {books :num} books and {shelves :num} shelves.',
             [ $books, $shelves ],
             books   => $books,
             shelves => $shelves,

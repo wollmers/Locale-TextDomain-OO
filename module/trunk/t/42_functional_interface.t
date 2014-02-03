@@ -60,20 +60,20 @@ is
 is
     __npx(
         'appointment',
-        'This is {num} date.',
-        'This are {num} dates.',
+        'This is {dates :num} date.',
+        'This are {dates :num} dates.',
         1,
-        num => 1,
+        dates => 1,
     ),
     'Das ist 1 Date.',
     '__npx 1';
 is
     __npx(
         'appointment',
-        'This is {num} date.',
-        'This are {num} dates.',
+        'This is {dates :num} date.',
+        'This are {dates :num} dates.',
         2,
-        num => 2,
+        dates => 2,
     ),
     'Das sind 2 Dates.',
     '$__npx 2';
@@ -98,11 +98,11 @@ is
     __dcnpx(
         'test',
         'appointment',
-        'This is {num} date.',
-        'This are {num} dates.',
+        'This is {dates :num} date.',
+        'This are {dates :num} dates.',
         3,
         'LC_MESSAGES',
-        num => 3,
+        dates => 3,
     ),
     'Das sind 3 Dates.',
     '__dcnpx 3';

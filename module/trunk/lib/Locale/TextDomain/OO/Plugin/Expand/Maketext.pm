@@ -6,7 +6,7 @@ use Locale::Utils::PlaceholderMaketext;
 use Moo::Role;
 use namespace::autoclean;
 
-our $VERSION = '1.008';
+our $VERSION = '1.009';
 
 requires qw(
     translate
@@ -75,7 +75,7 @@ $HeadURL$
 
 =head1 VERSION
 
-1.008
+1.009
 
 =head1 DESCRIPTION
 

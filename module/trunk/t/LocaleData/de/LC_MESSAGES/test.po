@@ -29,10 +29,10 @@ msgstr[0] "Einzahl"
 msgstr[1] "Mehrzahl"
 
 # __nx
-msgid "{num} shelf"
-msgid_plural "{num} shelves"
-msgstr[0] "{num} Regal"
-msgstr[1] "{num} Regale"
+msgid "{shelves :num} shelf"
+msgid_plural "{shelves :num} shelves"
+msgstr[0] "{shelves :num} Regal"
+msgstr[1] "{shelves :num} Regale"
 
 # __p
 msgctxt "maskulin"
@@ -53,8 +53,8 @@ msgstr[1] "Dates"
 
 # __npx
 msgctxt "appointment"
-msgid "This is {num} date."
-msgid_plural "This are {num} dates."
-msgstr[0] "Das ist {num} Date."
-msgstr[1] "Das sind {num} Dates."
+msgid "This is {dates :num} date."
+msgid_plural "This are {dates :num} dates."
+msgstr[0] "Das ist {dates :num} Date."
+msgstr[1] "Das sind {dates :num} Dates."
 

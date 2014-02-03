@@ -35,6 +35,7 @@ debug: Lexicon "ru::" loaded from file "LocaleData/ru/LC_MESSAGES/example.mo".
 Using lexicon "ru::". msgstr not found for msgctxt=undef, msgid="not existing text".
 not existing text
 книга
+Он живет в Москве.
 1 книга
 3 книги
 5 книг
